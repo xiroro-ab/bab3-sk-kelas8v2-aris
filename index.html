@@ -1,0 +1,1576 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMP58 PLG - Pembelajaran Sistem Komputer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&display=swap');
+        
+        :root {
+            --primary-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            --secondary-gradient: linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%);
+            --accent-gradient: linear-gradient(135deg, #4c1d95 0%, #581c87 100%);
+            --dark-gradient: linear-gradient(135deg, #111827 0%, #1f2937 100%);
+            --glass-bg: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --sidebar-width: 280px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #475569 75%, #64748b 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 20s ease infinite;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        @media (min-width: 768px) {
+            body {
+                padding-left: var(--sidebar-width);
+            }
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .glass-morphism {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+        
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -100%;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+            padding: 2rem 1.5rem;
+            overflow-y: auto;
+            transition: left 0.3s ease;
+        }
+        
+        .sidebar.open {
+            left: 0;
+        }
+        
+        @media (min-width: 768px) {
+            .sidebar {
+                left: 0;
+            }
+        }
+        
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .sidebar-nav-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        
+        .sidebar-nav-item:hover {
+            background: rgba(59, 130, 246, 0.1);
+            color: #60a5fa;
+            transform: translateX(5px);
+        }
+        
+        .sidebar-nav-item.active {
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: 0 4px 15px rgba(30, 27, 75, 0.4);
+        }
+        
+        .sidebar-nav-item .icon {
+            font-size: 1.25rem;
+            margin-right: 0.75rem;
+            width: 24px;
+            text-align: center;
+        }
+        
+        .sidebar-submenu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            margin-left: 2rem;
+            margin-top: 0.5rem;
+        }
+        
+        .sidebar-submenu.open {
+            max-height: 500px;
+        }
+        
+        .sidebar-submenu-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: 400;
+            font-size: 0.9rem;
+            cursor: pointer;
+            margin-bottom: 0.25rem;
+        }
+        
+        .sidebar-submenu-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.9);
+            transform: translateX(3px);
+        }
+        
+        .sidebar-submenu-item.active {
+            background: rgba(124, 45, 18, 0.3);
+            color: #fca5a5;
+        }
+        
+        .main-content {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            margin: 2rem;
+            min-height: calc(100vh - 4rem);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .content-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+        
+        .sub-content-card {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 15px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        }
+        
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .gradient-text {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .fade-in {
+            animation: fadeInUp 0.8s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(30px);
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0);
+            }
+        }
+        
+        .floating-animation {
+            animation: floating 6s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .btn-elegant {
+            background: var(--primary-gradient);
+            border: none;
+            border-radius: 50px;
+            padding: 12px 30px;
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-elegant:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Mobile Menu Button -->
+    <button id="mobile-menu-btn" class="md:hidden fixed top-4 left-4 z-50 bg-gradient-to-r from-indigo-900 to-purple-900 text-white p-3 rounded-lg shadow-lg">
+        <span class="text-xl">☰</span>
+    </button>
+    
+    <!-- Mobile Overlay -->
+    <div id="mobile-overlay" class="md:hidden fixed inset-0 bg-black bg-opacity-50 z-40 hidden"></div>
+    
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-brand fade-in">
+            <div class="w-12 h-12 rounded-xl overflow-hidden floating-animation shadow-lg mr-3 border-2 border-white border-opacity-20">
+                <img src="https://raw.githubusercontent.com/xiroro-ab/aris-bermansyah-komponen-sistem-komputer/refs/heads/main/IMG_7135.jpg" 
+                     alt="Aris Bermansyah" 
+                     class="w-full h-full object-cover"
+                     onerror="this.src=''; this.parentElement.innerHTML='<span class=\'text-white font-bold text-xl flex items-center justify-center w-full h-full bg-gradient-to-r from-blue-500 to-indigo-600\'>💻</span>';">
+            </div>
+            <div>
+                <h1 class="text-xl font-bold text-white">SMP58 PLG</h1>
+                <p class="text-gray-400 text-sm">Sistem Komputer</p>
+            </div>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <div onclick="showSection('home')" class="sidebar-nav-item active">
+                <span class="icon">🏠</span>
+                <span>Beranda</span>
+            </div>
+            
+            <div class="sidebar-nav-item" onclick="toggleSubmenu('learning')">
+                <span class="icon">📚</span>
+                <span>Pembelajaran</span>
+                <span class="ml-auto text-sm">▼</span>
+            </div>
+            <div id="learning-submenu" class="sidebar-submenu">
+                <div class="sidebar-submenu-item" onclick="showLearningTopic('cara-kerja')">
+                    <span class="icon text-sm">🔧</span>
+                    <span>Cara Kerja Komputer</span>
+                </div>
+                <div class="sidebar-submenu-item" onclick="showLearningTopic('hardware')">
+                    <span class="icon text-sm">🖥️</span>
+                    <span>Hardware</span>
+                </div>
+                <div class="sidebar-submenu-item" onclick="showLearningTopic('software')">
+                    <span class="icon text-sm">💿</span>
+                    <span>Software</span>
+                </div>
+                <div class="sidebar-submenu-item" onclick="showLearningTopic('brainware')">
+                    <span class="icon text-sm">👨‍💻</span>
+                    <span>Brainware</span>
+                </div>
+            </div>
+            
+            <div onclick="showSection('quiz')" class="sidebar-nav-item">
+                <span class="icon">❓</span>
+                <span>Kuis</span>
+            </div>
+            
+            <div class="sidebar-nav-item" onclick="toggleSubmenu('games')">
+                <span class="icon">🎮</span>
+                <span>Game</span>
+                <span class="ml-auto text-sm submenu-arrow">▼</span>
+            </div>
+            <div id="games-submenu" class="sidebar-submenu">
+                <div class="sidebar-submenu-item" onclick="showGameDirect('matching')">
+                    <span class="icon text-sm">🎯</span>
+                    <span>Tebak Komponen</span>
+                </div>
+                <div class="sidebar-submenu-item" onclick="showGameDirect('drag-drop')">
+                    <span class="icon text-sm">🧩</span>
+                    <span>Susun Komputer</span>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="mt-auto pt-8 border-t border-gray-700">
+            <div class="text-center">
+                <p class="text-gray-400 text-xs">© 2025 Aris Bermansyah</p>
+                <p class="text-gray-500 text-xs mt-1">Platform Pembelajaran</p>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <main class="container mx-auto px-8 py-8">
+        <!-- Home Section -->
+        <section id="home" class="section-content">
+            <div class="text-center mb-16 fade-in">
+                <h1 class="section-title gradient-text mb-8">Selamat Datang di Platform Pembelajaran</h1>
+                
+                <!-- Profile Photo -->
+                <div class="mb-8">
+                    <img src="https://raw.githubusercontent.com/xiroro-ab/aris-bermansyah-komponen-sistem-komputer/refs/heads/main/IMG_7135.jpg" 
+                         alt="Aris Bermansyah - Pengajar Sistem Komputer" 
+                         class="w-32 h-32 rounded-full mx-auto shadow-2xl border-4 border-white border-opacity-20 floating-animation"
+                         onerror="this.src=''; this.alt='Foto tidak dapat dimuat'; this.style.display='none';">
+                </div>
+                
+                <p class="text-2xl text-gray-200 max-w-3xl mx-auto leading-relaxed">
+                    Jelajahi dunia <span class="font-bold text-blue-400">Sistem Komputer</span> dengan cara yang 
+                    <span class="font-bold text-green-400">interaktif</span> dan 
+                    <span class="font-bold text-purple-400">menyenangkan</span>
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8 mb-16">
+                <div class="content-card text-center p-8 fade-in">
+                    <div class="text-6xl mb-6 floating-animation">📚</div>
+                    <h3 class="text-2xl font-bold mb-4 text-white">Pembelajaran</h3>
+                    <p class="text-gray-300 mb-6 leading-relaxed">Materi lengkap tentang komponen sistem komputer dengan visualisasi 3D interaktif</p>
+                    <button onclick="showSection('learning')" class="btn-elegant w-full">
+                        Mulai Belajar
+                    </button>
+                </div>
+                
+                <div class="content-card text-center p-8 fade-in">
+                    <div class="text-6xl mb-6 floating-animation">❓</div>
+                    <h3 class="text-2xl font-bold mb-4 text-white">Kuis Interaktif</h3>
+                    <p class="text-gray-300 mb-6 leading-relaxed">Uji pemahaman Anda dengan kuis yang menantang dan feedback real-time</p>
+                    <button onclick="showSection('quiz')" class="btn-elegant w-full" style="background: var(--secondary-gradient);">
+                        Mulai Kuis
+                    </button>
+                </div>
+                
+                <div class="content-card text-center p-8 fade-in">
+                    <div class="text-6xl mb-6 floating-animation">🎮</div>
+                    <h3 class="text-2xl font-bold mb-4 text-white">Game Edukatif</h3>
+                    <p class="text-gray-300 mb-6 leading-relaxed">Belajar sambil bermain dengan game drag & drop dan matching yang seru</p>
+                    <button onclick="showSection('games')" class="btn-elegant w-full" style="background: var(--accent-gradient);">
+                        Main Game
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Learning Section -->
+        <section id="learning" class="section-content hidden">
+            <!-- Cara Kerja Komputer -->
+            <div id="cara-kerja-content" class="content-card rounded-xl p-8 shadow-lg hidden">
+                <h2 class="text-3xl font-bold text-white mb-6 text-center">Cara Kerja Komputer</h2>
+                
+                <div class="sub-content-card p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-semibold text-white mb-4">🔄 Prinsip Dasar Kerja Komputer</h3>
+                    <p class="text-gray-300 mb-4 leading-relaxed">
+                        Komputer bekerja berdasarkan prinsip <strong>Input-Process-Output (IPO)</strong>. Setiap operasi komputer mengikuti siklus ini untuk mengubah data mentah menjadi informasi yang berguna.
+                    </p>
+                    
+                    <div class="grid md:grid-cols-3 gap-4 mb-6">
+                        <div class="sub-content-card p-4 rounded-lg text-center">
+                            <div class="text-3xl mb-2">📥</div>
+                            <h4 class="font-semibold text-blue-300 mb-2">INPUT</h4>
+                            <p class="text-sm text-gray-300">Data masuk melalui perangkat input</p>
+                        </div>
+                        <div class="sub-content-card p-4 rounded-lg text-center">
+                            <div class="text-3xl mb-2">⚙️</div>
+                            <h4 class="font-semibold text-yellow-300 mb-2">PROCESS</h4>
+                            <p class="text-sm text-gray-300">CPU memproses data sesuai instruksi</p>
+                        </div>
+                        <div class="sub-content-card p-4 rounded-lg text-center">
+                            <div class="text-3xl mb-2">📤</div>
+                            <h4 class="font-semibold text-green-300 mb-2">OUTPUT</h4>
+                            <p class="text-sm text-gray-300">Hasil ditampilkan ke pengguna</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Video Section -->
+                <div class="sub-content-card p-6 rounded-lg">
+                    <h4 class="text-xl font-semibold text-white mb-4 text-center">📹 Video Pembelajaran</h4>
+                    <div class="bg-gray-900 rounded-lg p-4">
+                        <div class="relative w-full" style="padding-bottom: 56.25%; height: 0;">
+                            <iframe 
+                                class="absolute top-0 left-0 w-full h-full rounded-lg" 
+                                src="https://www.youtube.com/embed/A4A8bLzqJc4?si=IRkYIPAsLoxfOv3Z" 
+                                title="YouTube video player" 
+                                frameborder="0" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                                referrerpolicy="strict-origin-when-cross-origin" 
+                                allowfullscreen>
+                            </iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hardware Content -->
+            <div id="hardware-content" class="content-card rounded-xl p-8 shadow-lg hidden">
+                <h2 class="text-3xl font-bold text-white mb-6 text-center">Hardware Komputer</h2>
+                
+                <div class="sub-content-card p-6 rounded-lg mb-6">
+                    <p class="text-gray-300 mb-4 leading-relaxed">
+                        Hardware adalah komponen fisik dari sistem komputer yang dapat dilihat dan disentuh. Berikut adalah 11 komponen hardware utama dalam model 3D interaktif.
+                    </p>
+                </div>
+                
+                <!-- Slide Navigation -->
+                <div class="sub-content-card p-4 border-b border-white border-opacity-10 mb-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="font-semibold text-white">Komponen <span id="current-slide">1</span> dari 11</h4>
+                        <div class="flex space-x-2">
+                            <button onclick="previousSlide()" id="prev-slide" class="bg-gray-600 text-gray-300 px-3 py-1 rounded-lg hover:bg-gray-500 transition-colors" disabled>
+                                ← Sebelumnya
+                            </button>
+                            <button onclick="nextSlide()" id="next-slide" class="bg-slate-700 text-white px-3 py-1 rounded-lg hover:bg-slate-600 transition-colors">
+                                Selanjutnya →
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Progress Bar -->
+                    <div class="bg-gray-600 rounded-full h-2">
+                        <div id="slide-progress" class="bg-gradient-to-r from-slate-700 to-gray-700 h-2 rounded-full transition-all duration-300" style="width: 9.09%"></div>
+                    </div>
+                </div>
+                
+                <!-- Hardware Slides -->
+                <div id="hardware-slides">
+                    <!-- Slide 1: CPU -->
+                    <div class="hardware-slide active" data-slide="1">
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <div class="order-2 md:order-1">
+                                <h4 class="text-xl font-bold text-white mb-4 flex items-center">
+                                    <span class="text-2xl mr-3">🧠</span> CPU (Central Processing Unit)
+                                </h4>
+                                <p class="text-gray-300 mb-4 leading-relaxed">
+                                    CPU adalah "otak" komputer yang bertanggung jawab memproses semua instruksi dan operasi. CPU terdiri dari unit kontrol, unit aritmatika logika (ALU), dan register.
+                                </p>
+                                <div class="sub-content-card p-4 rounded-lg mb-4">
+                                    <h5 class="font-semibold text-blue-300 mb-2">Fungsi Utama:</h5>
+                                    <ul class="text-gray-300 space-y-1 text-sm">
+                                        <li>• Mengeksekusi instruksi program</li>
+                                        <li>• Melakukan operasi aritmatika dan logika</li>
+                                        <li>• Mengontrol alur data dalam sistem</li>
+                                        <li>• Koordinasi dengan komponen lain</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="order-1 md:order-2">
+                                <div class="sub-content-card rounded-lg p-2 h-80 overflow-hidden">
+                                    <div class="sketchfab-embed-wrapper h-full">
+                                        <iframe title="CPU ALL PARTSCPU" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share width="100%" height="100%" src="https://sketchfab.com/models/2e11c4583ebe4fc98c073fd8a2690a06/embed?autostart=1&transparent=1" class="rounded-lg"></iframe>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Slide 2: RAM -->
+                    <div class="hardware-slide hidden" data-slide="2">
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <div class="order-2 md:order-1">
+                                <h4 class="text-xl font-bold text-white mb-4 flex items-center">
+                                    <span class="text-2xl mr-3">🚀</span> RAM (Random Access Memory)
+                                </h4>
+                                <p class="text-gray-300 mb-4 leading-relaxed">
+                                    RAM adalah memori utama komputer yang menyimpan data dan program yang sedang digunakan. Data dalam RAM bersifat volatile (hilang saat komputer dimatikan).
+                                </p>
+                                <div class="sub-content-card p-4 rounded-lg mb-4">
+                                    <h5 class="font-semibold text-green-300 mb-2">Karakteristik:</h5>
+                                    <ul class="text-gray-300 space-y-1 text-sm">
+                                        <li>• Akses data sangat cepat</li>
+                                        <li>• Volatile memory (data hilang saat mati)</li>
+                                        <li>• Kapasitas terbatas</li>
+                                        <li>• Harga relatif mahal per GB</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="order-1 md:order-2">
+                                <div class="sub-content-card rounded-lg p-2 h-80 overflow-hidden">
+                                    <div class="sketchfab-embed-wrapper h-full">
+                                        <iframe title="Random access memory (RAM) DDR3" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share width="100%" height="100%" src="https://sketchfab.com/models/d2715d60f139421eb6028efd5153fdaf/embed?autostart=1&transparent=1" class="rounded-lg"></iframe>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Slide 3: Motherboard -->
+                    <div class="hardware-slide hidden" data-slide="3">
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <div class="order-2 md:order-1">
+                                <h4 class="text-xl font-bold text-white mb-4 flex items-center">
+                                    <span class="text-2xl mr-3">🔌</span> Motherboard
+                                </h4>
+                                <p class="text-gray-300 mb-4 leading-relaxed">
+                                    Motherboard adalah papan sirkuit utama yang menghubungkan semua komponen komputer. Semua komponen hardware terpasang atau terhubung ke motherboard.
+                                </p>
+                                <div class="sub-content-card p-4 rounded-lg mb-4">
+                                    <h5 class="font-semibold text-purple-300 mb-2">Komponen Utama:</h5>
+                                    <ul class="text-gray-300 space-y-1 text-sm">
+                                        <li>• Socket CPU dan chipset</li>
+                                        <li>• Slot RAM dan expansion slots</li>
+                                        <li>• Port I/O dan konektor</li>
+                                        <li>• BIOS/UEFI chip</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="order-1 md:order-2">
+                                <div class="sub-content-card rounded-lg p-2 h-80 overflow-hidden">
+                                    <div class="sketchfab-embed-wrapper h-full">
+                                        <iframe title="Motherboard mATX" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share width="100%" height="100%" src="https://sketchfab.com/models/4cec4b403f5b41e89690c000553c43bb/embed?autostart=1&transparent=1" class="rounded-lg"></iframe>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Slide 4: Hard Disk -->
+                    <div class="hardware-slide hidden" data-slide="4">
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <div class="order-2 md:order-1">
+                                <h4 class="text-xl font-bold text-white mb-4 flex items-center">
+                                    <span class="text-2xl mr-3">💿</span> Hard Disk Drive (HDD)
+                                </h4>
+                                <p class="text-gray-300 mb-4 leading-relaxed">
+                                    HDD adalah perangkat penyimpanan data permanen yang menggunakan piringan magnetik berputar. Data tersimpan secara permanen bahkan saat komputer dimatikan.
+                                </p>
+                                <div class="sub-content-card p-4 rounded-lg mb-4">
+                                    <h5 class="font-semibold text-orange-300 mb-2">Keunggulan:</h5>
+                                    <ul class="text-gray-300 space-y-1 text-sm">
+                                        <li>• Kapasitas penyimpanan besar</li>
+                                        <li>• Harga murah per GB</li>
+                                        <li>• Data permanen (non-volatile)</li>
+                                        <li>• Teknologi matang dan stabil</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="order-1 md:order-2">
+                                <div class="sub-content-card rounded-lg p-2 h-80 overflow-hidden">
+                                    <div class="sketchfab-embed-wrapper h-full">
+                                        <iframe title="HDD" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share width="100%" height="100%" src="https://sketchfab.com/models/66abd679b8934298ba8af35db56d8106/embed?autostart=1&transparent=1" class="rounded-lg"></iframe>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Slide 5: SSD -->
+                    <div class="hardware-slide hidden" data-slide="5">
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <div class="order-2 md:order-1">
+                                <h4 class="text-xl font-bold text-white mb-4 flex items-center">
+                                    <span class="text-2xl mr-3">⚡</span> SSD (Solid State Drive)
+                                </h4>
+                                <p class="text-gray-300 mb-4 leading-relaxed">
+                                    SSD adalah perangkat penyimpanan modern yang menggunakan memory flash. Tidak memiliki bagian bergerak sehingga lebih cepat, tahan lama, dan hemat energi.
+                                </p>
+                                <div class="sub-content-card p-4 rounded-lg mb-4">
+                                    <h5 class="font-semibold text-teal-300 mb-2">Keunggulan:</h5>
+                                    <ul class="text-gray-300 space-y-1 text-sm">
+                                        <li>• Kecepatan baca/tulis sangat tinggi</li>
+                                        <li>• Tidak ada bagian bergerak</li>
+                                        <li>• Tahan guncangan dan getaran</li>
+                                        <li>• Konsumsi daya rendah</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="order-1 md:order-2">
+                                <div class="sub-content-card rounded-lg p-2 h-80 overflow-hidden">
+                                    <div class="sketchfab-embed-wrapper h-full">
+                                        <iframe title="SSD M.2" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share width="100%" height="100%" src="https://sketchfab.com/models/5f0d45fe9a694144becb66c662986a4b/embed?autostart=1&transparent=1" class="rounded-lg"></iframe>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Slide 6: Graphics Card -->
+                    <div class="hardware-slide hidden" data-slide="6">
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <div class="order-2 md:order-1">
+                                <h4 class="text-xl font-bold text-white mb-4 flex items-center">
+                                    <span class="text-2xl mr-3">🎮</span> Graphics Card (GPU)
+                                </h4>
+                                <p class="text-gray-300 mb-4 leading-relaxed">
+                                    GPU adalah prosesor khusus untuk memproses grafik dan visual. Modern GPU juga digunakan untuk komputasi paralel, AI, dan cryptocurrency mining.
+                                </p>
+                                <div class="sub-content-card p-4 rounded-lg mb-4">
+                                    <h5 class="font-semibold text-red-300 mb-2">Fungsi:</h5>
+                                    <ul class="text-gray-300 space-y-1 text-sm">
+                                        <li>• Rendering grafik 2D dan 3D</li>
+                                        <li>• Akselerasi video dan gaming</li>
+                                        <li>• Komputasi paralel (GPGPU)</li>
+                                        <li>• Machine learning dan AI</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="order-1 md:order-2">
+                                <div class="sub-content-card rounded-lg p-2 h-80 overflow-hidden">
+                                    <div class="sketchfab-embed-wrapper h-full">
+                                        <iframe title="RTX 3060 TI Zotac Twin Edge OC (GPU Model)" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share width="100%" height="100%" src="https://sketchfab.com/models/a5a78b9331b14c61b6bc0e99afd21b1c/embed?autostart=1&transparent=1" class="rounded-lg"></iframe>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Slide 7: Power Supply -->
+                    <div class="hardware-slide hidden" data-slide="7">
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <div class="order-2 md:order-1">
+                                <h4 class="text-xl font-bold text-white mb-4 flex items-center">
+                                    <span class="text-2xl mr-3">🔋</span> Power Supply Unit (PSU)
+                                </h4>
+                                <p class="text-gray-300 mb-4 leading-relaxed">
+                                    PSU mengubah arus listrik AC dari stopkontak menjadi arus DC dengan voltase yang tepat untuk komponen komputer. PSU yang baik penting untuk stabilitas sistem.
+                                </p>
+                                <div class="sub-content-card p-4 rounded-lg mb-4">
+                                    <h5 class="font-semibold text-yellow-300 mb-2">Spesifikasi Penting:</h5>
+                                    <ul class="text-gray-300 space-y-1 text-sm">
+                                        <li>• Wattage (daya output)</li>
+                                        <li>• Efisiensi energi (80+ rating)</li>
+                                        <li>• Modular/non-modular cables</li>
+                                        <li>• Proteksi over-voltage/current</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="order-1 md:order-2">
+                                <div class="sub-content-card rounded-lg p-2 h-80 overflow-hidden">
+                                    <div class="sketchfab-embed-wrapper h-full">
+                                        <iframe title="Corsair PSU" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share width="100%" height="100%" src="https://sketchfab.com/models/e1bea21a1690441886a3414fc27c1093/embed?autostart=1&transparent=1" class="rounded-lg"></iframe>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Slide 8: Cooling System -->
+                    <div class="hardware-slide hidden" data-slide="8">
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <div class="order-2 md:order-1">
+                                <h4 class="text-xl font-bold text-white mb-4 flex items-center">
+                                    <span class="text-2xl mr-3">❄️</span> Cooling System
+                                </h4>
+                                <p class="text-gray-300 mb-4 leading-relaxed">
+                                    Sistem pendingin menjaga suhu komponen komputer agar tidak overheat. Terdiri dari heatsink, fan, dan thermal paste untuk transfer panas yang efisien.
+                                </p>
+                                <div class="sub-content-card p-4 rounded-lg mb-4">
+                                    <h5 class="font-semibold text-cyan-300 mb-2">Jenis Pendingin:</h5>
+                                    <ul class="text-gray-300 space-y-1 text-sm">
+                                        <li>• Air cooling (heatsink + fan)</li>
+                                        <li>• Liquid cooling (AIO/Custom)</li>
+                                        <li>• Thermal paste dan pads</li>
+                                        <li>• Case fans untuk airflow</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="order-1 md:order-2">
+                                <div class="sub-content-card rounded-lg p-2 h-80 overflow-hidden">
+                                    <div class="sketchfab-embed-wrapper h-full">
+                                        <iframe title="Custom CPU cooling system" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share width="100%" height="100%" src="https://sketchfab.com/models/b6982d66fded4e68b352599ea4a38134/embed?autostart=1&transparent=1" class="rounded-lg"></iframe>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Slide 9: Keyboard -->
+                    <div class="hardware-slide hidden" data-slide="9">
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <div class="order-2 md:order-1">
+                                <h4 class="text-xl font-bold text-white mb-4 flex items-center">
+                                    <span class="text-2xl mr-3">⌨️</span> Keyboard
+                                </h4>
+                                <p class="text-gray-300 mb-4 leading-relaxed">
+                                    Keyboard adalah perangkat input utama untuk memasukkan teks dan perintah. Tersedia dalam berbagai jenis switch dan layout sesuai kebutuhan pengguna.
+                                </p>
+                                <div class="sub-content-card p-4 rounded-lg mb-4">
+                                    <h5 class="font-semibold text-indigo-300 mb-2">Jenis Keyboard:</h5>
+                                    <ul class="text-gray-300 space-y-1 text-sm">
+                                        <li>• Mechanical (tactile feedback)</li>
+                                        <li>• Membrane (quiet, murah)</li>
+                                        <li>• Wireless/Bluetooth</li>
+                                        <li>• Gaming keyboard (RGB, macro)</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="order-1 md:order-2">
+                                <div class="sub-content-card rounded-lg p-2 h-80 overflow-hidden">
+                                    <div class="sketchfab-embed-wrapper h-full">
+                                        <iframe title="Keyboard" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share width="100%" height="100%" src="https://sketchfab.com/models/cc7e7ed38d9a469ea499893295bc767a/embed?autostart=1&transparent=1" class="rounded-lg"></iframe>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Slide 10: Mouse -->
+                    <div class="hardware-slide hidden" data-slide="10">
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <div class="order-2 md:order-1">
+                                <h4 class="text-xl font-bold text-white mb-4 flex items-center">
+                                    <span class="text-2xl mr-3">🖱️</span> Mouse
+                                </h4>
+                                <p class="text-gray-300 mb-4 leading-relaxed">
+                                    Mouse adalah perangkat pointing untuk mengontrol kursor di layar. Modern mouse menggunakan sensor optik atau laser untuk tracking yang presisi.
+                                </p>
+                                <div class="sub-content-card p-4 rounded-lg mb-4">
+                                    <h5 class="font-semibold text-pink-300 mb-2">Teknologi Mouse:</h5>
+                                    <ul class="text-gray-300 space-y-1 text-sm">
+                                        <li>• Optical sensor (LED)</li>
+                                        <li>• Laser sensor (presisi tinggi)</li>
+                                        <li>• Wireless (RF/Bluetooth)</li>
+                                        <li>• Gaming mouse (high DPI)</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="order-1 md:order-2">
+                                <div class="sub-content-card rounded-lg p-2 h-80 overflow-hidden">
+                                    <div class="sketchfab-embed-wrapper h-full">
+                                        <iframe title="Logitech G102 Prodigy Gaming Mouse" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share width="100%" height="100%" src="https://sketchfab.com/models/ed74385debca426f83545edc41ad0eb9/embed?autostart=1&transparent=1" class="rounded-lg"></iframe>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Slide 11: Monitor -->
+                    <div class="hardware-slide hidden" data-slide="11">
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <div class="order-2 md:order-1">
+                                <h4 class="text-xl font-bold text-white mb-4 flex items-center">
+                                    <span class="text-2xl mr-3">🖥️</span> Monitor
+                                </h4>
+                                <p class="text-gray-300 mb-4 leading-relaxed">
+                                    Monitor menampilkan output visual dari komputer. Teknologi panel yang berbeda memberikan kualitas gambar, kecepatan refresh, dan akurasi warna yang bervariasi.
+                                </p>
+                                <div class="sub-content-card p-4 rounded-lg mb-4">
+                                    <h5 class="font-semibold text-emerald-300 mb-2">Jenis Panel:</h5>
+                                    <ul class="text-gray-300 space-y-1 text-sm">
+                                        <li>• LCD (TN, IPS, VA panels)</li>
+                                        <li>• OLED (contrast tinggi)</li>
+                                        <li>• QLED (quantum dot)</li>
+                                        <li>• Gaming monitor (high refresh)</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="order-1 md:order-2">
+                                <div class="sub-content-card rounded-lg p-2 h-80 overflow-hidden">
+                                    <div class="sketchfab-embed-wrapper h-full">
+                                        <iframe title="Monitor" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share width="100%" height="100%" src="https://sketchfab.com/models/9f6f9018f14a4dbea1ad1aea0ce89e7c/embed" class="rounded-lg"></iframe>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Software Content -->
+            <div id="software-content" class="content-card rounded-xl p-8 shadow-lg hidden">
+                <h2 class="text-3xl font-bold text-white mb-6 text-center">Software (Perangkat Lunak)</h2>
+                <p class="text-gray-300 mb-6 leading-relaxed text-center">
+                    Software adalah kumpulan program, instruksi, dan dokumentasi yang menjalankan tugas pada sistem komputer. Software tidak dapat dilihat secara fisik tetapi dapat dirasakan fungsinya.
+                </p>
+                
+                <div class="space-y-6">
+                    <div class="sub-content-card p-6 rounded-lg">
+                        <h4 class="font-semibold text-blue-300 mb-3 flex items-center">
+                            <span class="text-2xl mr-2">🖥️</span> Sistem Operasi
+                        </h4>
+                        <p class="text-gray-300 mb-3">Software dasar yang mengatur dan mengontrol seluruh operasi komputer</p>
+                        <div class="grid md:grid-cols-3 gap-3">
+                            <div class="sub-content-card p-3 rounded text-center">
+                                <div class="text-xl mb-1">🪟</div>
+                                <p class="text-sm font-medium text-white">Windows</p>
+                            </div>
+                            <div class="sub-content-card p-3 rounded text-center">
+                                <div class="text-xl mb-1">🍎</div>
+                                <p class="text-sm font-medium text-white">macOS</p>
+                            </div>
+                            <div class="sub-content-card p-3 rounded text-center">
+                                <div class="text-xl mb-1">🐧</div>
+                                <p class="text-sm font-medium text-white">Linux</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="sub-content-card p-6 rounded-lg">
+                        <h4 class="font-semibold text-green-300 mb-3 flex items-center">
+                            <span class="text-2xl mr-2">📱</span> Software Aplikasi
+                        </h4>
+                        <p class="text-gray-300 mb-3">Program yang dirancang untuk membantu pengguna menyelesaikan tugas tertentu</p>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <ul class="text-gray-300 space-y-2">
+                                <li>• <strong>Microsoft Office</strong> - Produktivitas</li>
+                                <li>• <strong>Adobe Photoshop</strong> - Edit gambar</li>
+                                <li>• <strong>Google Chrome</strong> - Web browser</li>
+                            </ul>
+                            <ul class="text-gray-300 space-y-2">
+                                <li>• <strong>VLC Media Player</strong> - Pemutar media</li>
+                                <li>• <strong>Antivirus</strong> - Keamanan</li>
+                                <li>• <strong>Games</strong> - Hiburan</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="sub-content-card p-6 rounded-lg">
+                        <h4 class="font-semibold text-purple-300 mb-3 flex items-center">
+                            <span class="text-2xl mr-2">🔧</span> Software Utilitas
+                        </h4>
+                        <p class="text-gray-300 mb-3">Program yang membantu memelihara dan mengoptimalkan kinerja komputer</p>
+                        <ul class="text-gray-300 space-y-2">
+                            <li>• <strong>Disk Cleanup</strong> - Membersihkan file sampah</li>
+                            <li>• <strong>Defragmenter</strong> - Mengatur ulang data</li>
+                            <li>• <strong>Registry Cleaner</strong> - Membersihkan registry</li>
+                            <li>• <strong>Backup Software</strong> - Mencadangkan data</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Brainware Content -->
+            <div id="brainware-content" class="content-card rounded-xl p-8 shadow-lg hidden">
+                <h2 class="text-3xl font-bold text-white mb-6 text-center">Brainware (Sumber Daya Manusia)</h2>
+                <p class="text-gray-300 mb-6 leading-relaxed text-center">
+                    Brainware adalah manusia yang terlibat dalam pengoperasian sistem komputer. Tanpa brainware, hardware dan software tidak akan berfungsi dengan optimal.
+                </p>
+                
+                <div class="grid md:grid-cols-2 gap-6 mb-6">
+                    <div class="sub-content-card p-6 rounded-lg">
+                        <h4 class="font-semibold text-blue-300 mb-3 flex items-center">
+                            <span class="text-2xl mr-2">👨‍💻</span> Programmer
+                        </h4>
+                        <p class="text-gray-300 mb-3">Orang yang membuat dan mengembangkan software</p>
+                        <ul class="text-gray-300 text-sm space-y-1">
+                            <li>• Menulis kode program</li>
+                            <li>• Debugging dan testing</li>
+                            <li>• Maintenance aplikasi</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="sub-content-card p-6 rounded-lg">
+                        <h4 class="font-semibold text-green-300 mb-3 flex items-center">
+                            <span class="text-2xl mr-2">🔧</span> System Administrator
+                        </h4>
+                        <p class="text-gray-300 mb-3">Mengelola dan memelihara sistem komputer</p>
+                        <ul class="text-gray-300 text-sm space-y-1">
+                            <li>• Instalasi sistem</li>
+                            <li>• Monitoring performa</li>
+                            <li>• Backup dan recovery</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="sub-content-card p-6 rounded-lg">
+                        <h4 class="font-semibold text-purple-300 mb-3 flex items-center">
+                            <span class="text-2xl mr-2">👥</span> End User
+                        </h4>
+                        <p class="text-gray-300 mb-3">Pengguna akhir yang menggunakan komputer</p>
+                        <ul class="text-gray-300 text-sm space-y-1">
+                            <li>• Mengoperasikan aplikasi</li>
+                            <li>• Input dan output data</li>
+                            <li>• Perawatan dasar</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="sub-content-card p-6 rounded-lg">
+                        <h4 class="font-semibold text-orange-300 mb-3 flex items-center">
+                            <span class="text-2xl mr-2">🛠️</span> Teknisi
+                        </h4>
+                        <p class="text-gray-300 mb-3">Ahli perbaikan dan maintenance hardware</p>
+                        <ul class="text-gray-300 text-sm space-y-1">
+                            <li>• Perbaikan hardware</li>
+                            <li>• Instalasi perangkat</li>
+                            <li>• Troubleshooting</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="sub-content-card p-6 rounded-lg">
+                    <h4 class="font-semibold text-yellow-300 mb-2">💡 Pentingnya Brainware</h4>
+                    <p class="text-gray-300">
+                        Brainware adalah komponen terpenting dalam sistem komputer karena mereka yang menentukan bagaimana hardware dan software digunakan untuk mencapai tujuan tertentu. Tanpa brainware yang kompeten, teknologi canggih sekalipun tidak akan memberikan manfaat optimal.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quiz Section -->
+        <section id="quiz" class="section-content hidden">
+            <div class="content-card max-w-5xl mx-auto p-10 fade-in">
+                <div class="text-center mb-12">
+                    <h2 class="section-title gradient-text mb-6">Kuis Sistem Komputer</h2>
+                    <div class="bg-gray-600 rounded-full h-4 mb-6 overflow-hidden">
+                        <div id="quiz-progress" class="bg-gradient-to-r from-slate-700 to-gray-700 h-4 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                    <div class="sub-content-card rounded-2xl px-6 py-3 inline-block">
+                        <p class="text-white font-medium">Pertanyaan <span id="current-question" class="text-yellow-300 font-bold">1</span> dari <span id="total-questions" class="text-yellow-300 font-bold">5</span></p>
+                    </div>
+                </div>
+
+                <div id="quiz-container">
+                    <div id="question-card" class="fade-in">
+                        <div class="sub-content-card rounded-2xl p-8 mb-8">
+                            <h3 id="question-text" class="text-2xl font-bold mb-6 text-white text-center"></h3>
+                        </div>
+                        <div id="options-container" class="space-y-4">
+                            <!-- Options will be loaded dynamically -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-12 flex justify-between">
+                    <button id="prev-btn" onclick="previousQuestion()" class="btn-elegant" style="background: linear-gradient(135deg, #6b7280, #4b5563);" disabled>
+                        ← Sebelumnya
+                    </button>
+                    <button id="next-btn" onclick="nextQuestion()" class="btn-elegant" disabled>
+                        Selanjutnya →
+                    </button>
+                </div>
+
+                <div id="quiz-result" class="hidden mt-12 text-center">
+                    <div class="sub-content-card rounded-3xl p-12">
+                        <h3 class="text-4xl font-bold mb-6 text-white">Hasil Kuis</h3>
+                        <div class="text-8xl mb-6 floating-animation" id="result-emoji">🎉</div>
+                        <p class="text-2xl mb-6 text-white">Skor Anda: <span id="final-score" class="font-bold text-yellow-300 text-3xl"></span></p>
+                        <p class="text-white text-lg mb-8 opacity-90" id="result-message"></p>
+                        <div class="space-x-4">
+                            <button onclick="restartQuiz()" class="btn-elegant">
+                                🔄 Ulangi Kuis
+                            </button>
+                            <button onclick="showSection('games')" class="btn-elegant" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+                                🎮 Main Game
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Games Section -->
+        <section id="games" class="section-content hidden">
+            <!-- Matching Game -->
+            <div id="matching-game" class="content-card rounded-xl p-8 shadow-lg hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <button onclick="showSection('games')" class="text-blue-300 hover:text-blue-100">← Kembali ke Menu Game</button>
+                    <h3 class="text-2xl font-bold text-white">Tebak Komponen</h3>
+                    <div class="text-lg font-semibold text-blue-300">Skor: <span id="match-score">0</span></div>
+                </div>
+                
+                <div class="text-center mb-6">
+                    <p class="text-gray-300">Klik pada kartu yang cocok!</p>
+                </div>
+
+                <div id="matching-cards" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <!-- Cards will be generated dynamically -->
+                </div>
+
+                <div id="match-result" class="hidden mt-6 text-center">
+                    <h4 class="text-xl font-bold mb-4 text-white">Permainan Selesai!</h4>
+                    <p class="text-lg mb-4 text-gray-300">Skor Akhir: <span id="final-match-score" class="font-bold text-purple-300"></span></p>
+                    <button onclick="restartMatchingGame()" class="bg-gradient-to-r from-violet-800 to-purple-900 text-white px-6 py-3 rounded-lg hover:from-violet-700 hover:to-purple-800 transition-colors">
+                        Main Lagi
+                    </button>
+                </div>
+            </div>
+
+            <!-- Drag Drop Game -->
+            <div id="drag-drop-game" class="content-card rounded-xl p-8 shadow-lg hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <button onclick="showSection('games')" class="text-blue-300 hover:text-blue-100">← Kembali ke Menu Game</button>
+                    <h3 class="text-2xl font-bold text-white">Susun Komputer</h3>
+                    <div class="text-lg font-semibold text-red-300">Benar: <span id="drag-score">0</span>/4</div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="text-lg font-semibold mb-4 text-white">Komponen:</h4>
+                        <div id="drag-items" class="space-y-3">
+                            <!-- Drag items will be generated -->
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="text-lg font-semibold mb-4 text-white">Kategori:</h4>
+                        <div id="drop-zones" class="space-y-3">
+                            <!-- Drop zones will be generated -->
+                        </div>
+                    </div>
+                </div>
+
+                <div id="drag-result" class="hidden mt-6 text-center">
+                    <h4 class="text-xl font-bold mb-4 text-white">Selamat!</h4>
+                    <p class="text-lg mb-4 text-gray-300">Anda berhasil menyusun semua komponen dengan benar!</p>
+                    <button onclick="restartDragDropGame()" class="bg-gradient-to-r from-red-900 to-red-800 text-white px-6 py-3 rounded-lg hover:from-red-800 hover:to-red-700 transition-colors">
+                        Main Lagi
+                    </button>
+                </div>
+            </div>
+
+            <!-- Games Menu -->
+            <div id="games-menu" class="text-center">
+                <h2 class="text-3xl font-bold text-white mb-4">Game Edukatif</h2>
+                <p class="text-gray-300 mb-8">Belajar sambil bermain dengan game interaktif</p>
+
+                <div class="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+                    <div class="content-card rounded-xl p-6 shadow-lg text-center cursor-pointer hover:scale-105 transition-transform" onclick="startGame('matching')">
+                        <div class="text-5xl mb-4">🎯</div>
+                        <h3 class="text-xl font-semibold mb-3 text-white">Tebak Komponen</h3>
+                        <p class="text-gray-300 mb-4">Cocokkan komponen dengan fungsinya</p>
+                        <button class="bg-gradient-to-r from-violet-800 to-purple-900 text-white px-6 py-2 rounded-lg hover:from-violet-700 hover:to-purple-800 transition-colors">
+                            Main Sekarang
+                        </button>
+                    </div>
+
+                    <div class="content-card rounded-xl p-6 shadow-lg text-center cursor-pointer hover:scale-105 transition-transform" onclick="startGame('drag-drop')">
+                        <div class="text-5xl mb-4">🧩</div>
+                        <h3 class="text-xl font-semibold mb-3 text-white">Susun Komputer</h3>
+                        <p class="text-gray-300 mb-4">Drag & drop komponen ke tempat yang tepat</p>
+                        <button class="bg-gradient-to-r from-red-900 to-red-800 text-white px-6 py-2 rounded-lg hover:from-red-800 hover:to-red-700 transition-colors">
+                            Main Sekarang
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        </main>
+    </div>
+
+    <script>
+        // Global variables
+        let currentQuestionIndex = 0;
+        let selectedAnswers = [];
+        let quizScore = 0;
+        let matchingScore = 0;
+        let dragScore = 0;
+        let currentSlideIndex = 1;
+
+        // Quiz questions
+        const quizQuestions = [
+            {
+                question: "Apa yang dimaksud dengan sistem komputer?",
+                options: [
+                    "Hanya perangkat keras komputer",
+                    "Kumpulan komponen yang bekerja sama memproses data",
+                    "Program aplikasi komputer",
+                    "Jaringan internet"
+                ],
+                correct: 1
+            },
+            {
+                question: "Manakah yang termasuk perangkat input?",
+                options: ["Monitor", "Printer", "Keyboard", "Speaker"],
+                correct: 2
+            },
+            {
+                question: "CPU adalah singkatan dari?",
+                options: [
+                    "Computer Processing Unit",
+                    "Central Processing Unit", 
+                    "Central Program Unit",
+                    "Computer Program Unit"
+                ],
+                correct: 1
+            },
+            {
+                question: "Manakah yang termasuk software sistem operasi?",
+                options: ["Microsoft Word", "Windows", "Google Chrome", "Adobe Photoshop"],
+                correct: 1
+            },
+            {
+                question: "Brainware dalam sistem komputer adalah?",
+                options: [
+                    "Perangkat keras",
+                    "Program komputer",
+                    "Manusia pengguna komputer",
+                    "Jaringan komputer"
+                ],
+                correct: 2
+            }
+        ];
+
+        // Game data
+        const matchingPairs = [
+            { id: 1, text: "CPU", match: "Memproses instruksi komputer" },
+            { id: 2, text: "RAM", match: "Menyimpan data sementara" },
+            { id: 3, text: "Monitor", match: "Menampilkan output visual" },
+            { id: 4, text: "Keyboard", match: "Memasukkan teks dan perintah" },
+            { id: 5, text: "Hard Disk", match: "Menyimpan data permanen" },
+            { id: 6, text: "Mouse", match: "Mengontrol pointer di layar" }
+        ];
+
+        const dragDropItems = [
+            { text: "Keyboard", category: "input", color: "bg-blue-100" },
+            { text: "Monitor", category: "output", color: "bg-green-100" },
+            { text: "CPU", category: "process", color: "bg-purple-100" },
+            { text: "Hard Disk", category: "storage", color: "bg-orange-100" }
+        ];
+
+        // Mobile menu functions
+        function toggleMobileMenu() {
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('hidden');
+        }
+        
+        // Submenu functions
+        function toggleSubmenu(menuName) {
+            const submenu = document.getElementById(menuName + '-submenu');
+            const menuItem = event.currentTarget;
+            const arrow = menuItem.querySelector('.submenu-arrow') || menuItem.querySelector('span:last-child');
+            
+            submenu.classList.toggle('open');
+            if (arrow && arrow.textContent.includes('▼')) {
+                arrow.textContent = submenu.classList.contains('open') ? '▲' : '▼';
+            }
+        }
+        
+        function showLearningTopic(topicName) {
+            showSection('learning');
+            
+            // Hide all content sections
+            document.getElementById('cara-kerja-content').classList.add('hidden');
+            document.getElementById('hardware-content').classList.add('hidden');
+            document.getElementById('software-content').classList.add('hidden');
+            document.getElementById('brainware-content').classList.add('hidden');
+            
+            // Show selected content
+            document.getElementById(topicName + '-content').classList.remove('hidden');
+            
+            closeMobileMenu();
+        }
+        
+        function showGameDirect(gameType) {
+            showSection('games');
+            setTimeout(() => {
+                startGame(gameType);
+            }, 100);
+            closeMobileMenu();
+        }
+        
+        function closeMobileMenu() {
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            
+            sidebar.classList.remove('open');
+            overlay.classList.add('hidden');
+        }
+
+        // Navigation functions
+        function showSection(sectionName) {
+            document.querySelectorAll('.section-content').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            document.getElementById(sectionName).classList.remove('hidden');
+            
+            document.querySelectorAll('.sidebar-nav-item').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Find and activate the correct nav item
+            const navItems = document.querySelectorAll('.sidebar-nav-item');
+            navItems.forEach(item => {
+                if (item.textContent.includes('Beranda') && sectionName === 'home') {
+                    item.classList.add('active');
+                } else if (item.textContent.includes('Kuis') && sectionName === 'quiz') {
+                    item.classList.add('active');
+                }
+            });
+
+            if (sectionName === 'quiz') {
+                loadQuiz();
+            } else if (sectionName === 'games') {
+                // Show games menu by default
+                document.getElementById('games-menu').classList.remove('hidden');
+                document.getElementById('matching-game').classList.add('hidden');
+                document.getElementById('drag-drop-game').classList.add('hidden');
+            }
+            
+            closeMobileMenu();
+        }
+
+        // Quiz functions
+        function loadQuiz() {
+            currentQuestionIndex = 0;
+            selectedAnswers = new Array(quizQuestions.length).fill(null);
+            quizScore = 0;
+            
+            document.getElementById('total-questions').textContent = quizQuestions.length;
+            document.getElementById('quiz-result').classList.add('hidden');
+            document.getElementById('quiz-container').classList.remove('hidden');
+            
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const question = quizQuestions[currentQuestionIndex];
+            
+            document.getElementById('current-question').textContent = currentQuestionIndex + 1;
+            document.getElementById('question-text').textContent = question.question;
+            
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach((option, index) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = `sub-content-card p-6 cursor-pointer transition-all hover:scale-105 ${selectedAnswers[currentQuestionIndex] === index ? 'bg-blue-600 text-white' : 'hover:bg-gray-100'}`;
+                optionDiv.innerHTML = `
+                    <label class="flex items-center cursor-pointer">
+                        <div class="w-6 h-6 rounded-full border-2 border-gray-300 mr-4 flex items-center justify-center ${selectedAnswers[currentQuestionIndex] === index ? 'border-white bg-white' : ''}">
+                            ${selectedAnswers[currentQuestionIndex] === index ? '<div class="w-3 h-3 rounded-full bg-blue-600"></div>' : ''}
+                        </div>
+                        <span class="text-lg font-medium">${option}</span>
+                    </label>
+                `;
+                
+                optionDiv.addEventListener('click', () => selectAnswer(index));
+                optionsContainer.appendChild(optionDiv);
+            });
+            
+            updateQuizProgress();
+            updateQuizButtons();
+        }
+
+        function selectAnswer(answerIndex) {
+            selectedAnswers[currentQuestionIndex] = answerIndex;
+            loadQuestion(); // Reload to update styling
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < quizQuestions.length - 1) {
+                currentQuestionIndex++;
+                loadQuestion();
+            } else {
+                finishQuiz();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                loadQuestion();
+            }
+        }
+
+        function updateQuizProgress() {
+            const progress = ((currentQuestionIndex + 1) / quizQuestions.length) * 100;
+            document.getElementById('quiz-progress').style.width = progress + '%';
+        }
+
+        function updateQuizButtons() {
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            
+            prevBtn.disabled = currentQuestionIndex === 0;
+            nextBtn.disabled = selectedAnswers[currentQuestionIndex] === null;
+            
+            if (currentQuestionIndex === quizQuestions.length - 1) {
+                nextBtn.textContent = 'Selesai';
+            } else {
+                nextBtn.textContent = 'Selanjutnya →';
+            }
+        }
+
+        function finishQuiz() {
+            quizScore = 0;
+            selectedAnswers.forEach((answer, index) => {
+                if (answer === quizQuestions[index].correct) {
+                    quizScore++;
+                }
+            });
+            
+            const percentage = Math.round((quizScore / quizQuestions.length) * 100);
+            
+            document.getElementById('quiz-container').classList.add('hidden');
+            document.getElementById('quiz-result').classList.remove('hidden');
+            document.getElementById('final-score').textContent = `${quizScore}/${quizQuestions.length} (${percentage}%)`;
+            
+            let message, emoji;
+            if (percentage >= 80) {
+                message = "Luar biasa! Anda sangat memahami sistem komputer.";
+                emoji = "🎉";
+            } else if (percentage >= 60) {
+                message = "Bagus! Anda cukup memahami materi ini.";
+                emoji = "👏";
+            } else {
+                message = "Tetap semangat! Mari belajar lagi untuk hasil yang lebih baik.";
+                emoji = "💪";
+            }
+            
+            document.getElementById('result-message').textContent = message;
+            document.getElementById('result-emoji').textContent = emoji;
+        }
+
+        function restartQuiz() {
+            loadQuiz();
+        }
+
+        // Game functions
+        function startGame(gameType) {
+            document.getElementById('games-menu').classList.add('hidden');
+            
+            if (gameType === 'matching') {
+                document.getElementById('matching-game').classList.remove('hidden');
+                initMatchingGame();
+            } else if (gameType === 'drag-drop') {
+                document.getElementById('drag-drop-game').classList.remove('hidden');
+                initDragDropGame();
+            }
+        }
+
+        // Matching Game
+        function initMatchingGame() {
+            matchingScore = 0;
+            document.getElementById('match-score').textContent = matchingScore;
+            document.getElementById('match-result').classList.add('hidden');
+            
+            const cards = [...matchingPairs.map(p => ({...p, type: 'question'})), 
+                          ...matchingPairs.map(p => ({...p, type: 'answer', text: p.match}))];
+            
+            // Shuffle cards
+            for (let i = cards.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [cards[i], cards[j]] = [cards[j], cards[i]];
+            }
+            
+            const container = document.getElementById('matching-cards');
+            container.innerHTML = '';
+            
+            cards.forEach(card => {
+                const cardDiv = document.createElement('div');
+                cardDiv.className = `p-4 sub-content-card border-2 border-gray-600 rounded-lg cursor-pointer text-center transition-all hover:shadow-lg ${card.type === 'question' ? 'bg-blue-900' : 'bg-green-900'}`;
+                cardDiv.innerHTML = `<p class="font-medium text-white">${card.text}</p>`;
+                cardDiv.dataset.id = card.id;
+                cardDiv.dataset.type = card.type;
+                
+                cardDiv.addEventListener('click', () => selectMatchingCard(cardDiv));
+                container.appendChild(cardDiv);
+            });
+        }
+
+        let selectedMatchingCards = [];
+
+        function selectMatchingCard(cardElement) {
+            if (selectedMatchingCards.length < 2 && !cardElement.classList.contains('matched')) {
+                cardElement.classList.add('border-blue-500', 'bg-blue-700');
+                selectedMatchingCards.push(cardElement);
+                
+                if (selectedMatchingCards.length === 2) {
+                    setTimeout(checkMatchingPair, 500);
+                }
+            }
+        }
+
+        function checkMatchingPair() {
+            const [card1, card2] = selectedMatchingCards;
+            const id1 = card1.dataset.id;
+            const id2 = card2.dataset.id;
+            const type1 = card1.dataset.type;
+            const type2 = card2.dataset.type;
+            
+            if (id1 === id2 && type1 !== type2) {
+                // Match found
+                card1.classList.add('matched', 'bg-green-600');
+                card2.classList.add('matched', 'bg-green-600');
+                card1.classList.remove('bg-blue-700');
+                card2.classList.remove('bg-blue-700');
+                matchingScore++;
+                document.getElementById('match-score').textContent = matchingScore;
+                
+                if (matchingScore === matchingPairs.length) {
+                    setTimeout(() => {
+                        document.getElementById('final-match-score').textContent = matchingScore;
+                        document.getElementById('match-result').classList.remove('hidden');
+                    }, 1000);
+                }
+            } else {
+                // No match
+                card1.classList.remove('border-blue-500', 'bg-blue-700');
+                card2.classList.remove('border-blue-500', 'bg-blue-700');
+                card1.classList.add('bg-red-600');
+                card2.classList.add('bg-red-600');
+                
+                setTimeout(() => {
+                    card1.classList.remove('bg-red-600');
+                    card2.classList.remove('bg-red-600');
+                }, 1000);
+            }
+            
+            selectedMatchingCards = [];
+        }
+
+        function restartMatchingGame() {
+            initMatchingGame();
+        }
+
+        // Drag Drop Game
+        function initDragDropGame() {
+            dragScore = 0;
+            document.getElementById('drag-score').textContent = dragScore;
+            document.getElementById('drag-result').classList.add('hidden');
+            
+            const itemsContainer = document.getElementById('drag-items');
+            const zonesContainer = document.getElementById('drop-zones');
+            
+            itemsContainer.innerHTML = '';
+            zonesContainer.innerHTML = '';
+            
+            // Create drag items
+            const shuffledItems = [...dragDropItems].sort(() => Math.random() - 0.5);
+            shuffledItems.forEach(item => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = `p-3 ${item.color} border-2 border-gray-300 rounded-lg text-center font-medium cursor-grab sub-content-card`;
+                itemDiv.textContent = item.text;
+                itemDiv.draggable = true;
+                itemDiv.dataset.category = item.category;
+                
+                itemDiv.addEventListener('dragstart', handleDragStart);
+                itemsContainer.appendChild(itemDiv);
+            });
+            
+            // Create drop zones
+            const categories = [
+                { name: 'input', label: 'Input Device', color: 'bg-blue-900 border-blue-600' },
+                { name: 'output', label: 'Output Device', color: 'bg-green-900 border-green-600' },
+                { name: 'process', label: 'Processing Unit', color: 'bg-purple-900 border-purple-600' },
+                { name: 'storage', label: 'Storage Device', color: 'bg-orange-900 border-orange-600' }
+            ];
+            
+            categories.forEach(category => {
+                const zoneDiv = document.createElement('div');
+                zoneDiv.className = `p-4 ${category.color} border-2 border-dashed rounded-lg text-center min-h-16 flex items-center justify-center sub-content-card`;
+                zoneDiv.innerHTML = `<span class="font-medium text-white">${category.label}</span>`;
+                zoneDiv.dataset.category = category.name;
+                
+                zoneDiv.addEventListener('dragover', handleDragOver);
+                zoneDiv.addEventListener('drop', handleDrop);
+                zonesContainer.appendChild(zoneDiv);
+            });
+        }
+
+        let draggedElement = null;
+
+        function handleDragStart(e) {
+            draggedElement = e.target;
+            e.target.style.opacity = '0.5';
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.target.closest('.sub-content-card').classList.add('scale-105');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            const dropZone = e.target.closest('.sub-content-card');
+            dropZone.classList.remove('scale-105');
+            
+            if (draggedElement && dropZone.dataset.category === draggedElement.dataset.category) {
+                dropZone.innerHTML = `<span class="font-medium text-green-300">✓ ${draggedElement.textContent}</span>`;
+                draggedElement.remove();
+                dragScore++;
+                document.getElementById('drag-score').textContent = dragScore;
+                
+                if (dragScore === 4) {
+                    setTimeout(() => {
+                        document.getElementById('drag-result').classList.remove('hidden');
+                    }, 500);
+                }
+            }
+            
+            if (draggedElement) {
+                draggedElement.style.opacity = '1';
+                draggedElement = null;
+            }
+        }
+
+        function restartDragDropGame() {
+            initDragDropGame();
+        }
+
+        // Hardware Slide Functions
+        function nextSlide() {
+            if (currentSlideIndex < 11) {
+                currentSlideIndex++;
+                showSlide(currentSlideIndex);
+            }
+        }
+
+        function previousSlide() {
+            if (currentSlideIndex > 1) {
+                currentSlideIndex--;
+                showSlide(currentSlideIndex);
+            }
+        }
+
+        function showSlide(slideNumber) {
+            // Hide all slides
+            document.querySelectorAll('.hardware-slide').forEach(slide => {
+                slide.classList.add('hidden');
+            });
+            
+            // Show current slide
+            const currentSlide = document.querySelector(`[data-slide="${slideNumber}"]`);
+            if (currentSlide) {
+                currentSlide.classList.remove('hidden');
+            }
+            
+            // Update slide counter
+            document.getElementById('current-slide').textContent = slideNumber;
+            
+            // Update progress bar
+            const progress = (slideNumber / 11) * 100;
+            document.getElementById('slide-progress').style.width = progress + '%';
+            
+            // Update navigation buttons
+            const prevBtn = document.getElementById('prev-slide');
+            const nextBtn = document.getElementById('next-slide');
+            
+            prevBtn.disabled = slideNumber === 1;
+            nextBtn.disabled = slideNumber === 11;
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            showSection('home');
+            showSlide(1); // Initialize first slide
+            
+            // Mobile menu event listeners
+            document.getElementById('mobile-menu-btn').addEventListener('click', toggleMobileMenu);
+            document.getElementById('mobile-overlay').addEventListener('click', closeMobileMenu);
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9739f58dd1e74573',t:'MTc1NTk0NTI4NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
