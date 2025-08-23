@@ -1,4 +1,4 @@
-# aris-bermansyah-komponen-sistem-komputer-v2
+aris-bermansyah-komponen-sistem-komputer-v2
 
 ini adalah website yang saya kembangkan berdasarkan perintah canva ai, 
 website ini digunakan untuk media pembelajaran yang interaktif, 
