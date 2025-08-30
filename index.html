@@ -927,29 +927,22 @@
                 const sliderWrapper = document.querySelector('#hardware-slider .slides-wrapper');
                 sliderWrapper.innerHTML = ''; // Clear previous slides
 
-                // Create and prepend the introductory slide
                 const introSlide = document.createElement('div');
                 introSlide.className = 'slide';
                 introSlide.innerHTML = `
                     <h3 class="text-2xl font-bold text-sky-400 mb-4">Apa itu Hardware?</h3>
-                    <div class="grid md:grid-cols-2 gap-8 items-center">
-                        <div>
-                            <p class="text-slate-400 leading-relaxed mb-4"><strong>Hardware (Perangkat Keras)</strong> adalah semua komponen fisik dari sebuah sistem komputer. Singkatnya, ini adalah semua bagian yang bisa kita lihat dan sentuh secara langsung.</p>
-                            <p class="text-slate-400 leading-relaxed">Hardware dikelompokkan berdasarkan fungsinya:</p>
-                            <ul class="list-disc list-inside space-y-2 pl-4 mt-4 text-slate-300">
-                                <li><strong>Perangkat Input:</strong> Untuk memasukkan data (Contoh: Mouse, Keyboard).</li>
-                                <li><strong>Perangkat Proses:</strong> Otak yang memproses data (Contoh: CPU, RAM).</li>
-                                <li><strong>Perangkat Output:</strong> Untuk menampilkan hasil (Contoh: Monitor, Speaker).</li>
-                            </ul>
-                        </div>
-                        <div class="flex justify-center items-center">
-                             <img src="https://placehold.co/400x300/16213e/9b59b6?text=Komponen+Fisik" alt="Komponen Hardware" class="rounded-lg max-w-full h-auto shadow-lg">
-                        </div>
+                    <div>
+                        <p class="text-slate-400 leading-relaxed mb-4"><strong>Hardware (Perangkat Keras)</strong> adalah semua komponen fisik dari sebuah sistem komputer. Singkatnya, ini adalah semua bagian yang bisa kita lihat dan sentuh secara langsung.</p>
+                        <p class="text-slate-400 leading-relaxed">Hardware dikelompokkan berdasarkan fungsinya:</p>
+                        <ul class="list-disc list-inside space-y-2 pl-4 mt-4 text-slate-300">
+                            <li><strong>Perangkat Input:</strong> Untuk memasukkan data (Contoh: Mouse, Keyboard).</li>
+                            <li><strong>Perangkat Proses:</strong> Otak yang memproses data (Contoh: CPU, RAM).</li>
+                            <li><strong>Perangkat Output:</strong> Untuk menampilkan hasil (Contoh: Monitor, Speaker).</li>
+                        </ul>
                     </div>
                 `;
                 sliderWrapper.appendChild(introSlide);
 
-                // Create slides for each hardware item
                 hardwareData.forEach(item => {
                     const slide = document.createElement('div');
                     slide.className = 'slide';
