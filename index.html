@@ -1,0 +1,1962 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pembelajaran Sistem Komputer - Kelas 8</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #1a1a2e;
+            --bg-sidebar: #16213e;
+            --primary: #e94560;
+            --secondary: #fca311;
+            --accent: #9b59b6;
+            --text-light: #e0e0e0;
+            --text-dark: #1f2937;
+            --glow-primary: rgba(233, 69, 96, 0.5);
+            --glow-accent: rgba(155, 89, 182, 0.6);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+        }
+
+        /* Smooth Scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-sidebar);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #d83a56;
+        }
+
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: rgba(22, 33, 62, 0.2);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 260px;
+            background: rgba(22, 33, 62, 0.2);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            z-index: 100;
+            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transform: translateX(-100%);
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar.open {
+            transform: translateX(0);
+        }
+
+        .sidebar-content {
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+        
+        .nav-link {
+            transition: all 0.2s ease;
+            transform: scale(1);
+        }
+        .nav-link:hover, .nav-link.active {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.05);
+            box-shadow: 0 0 15px var(--glow-primary);
+        }
+
+        .submenu {
+            display: none;
+            transition: all 0.3s ease;
+        }
+
+        .menu-item.open > .submenu {
+            display: block;
+        }
+        
+        .submenu-link:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 99;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease;
+        }
+        .overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .page-content {
+            display: none;
+            animation: fadeIn 0.5s ease-forwards;
+        }
+        .page-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Menu item animation */
+        .sidebar nav ul .menu-item {
+            animation: slideInFromLeft 0.5s ease-out forwards;
+            opacity: 0;
+        }
+        .sidebar nav ul .menu-item:nth-child(1) { animation-delay: 0.1s; }
+        .sidebar nav ul .menu-item:nth-child(2) { animation-delay: 0.2s; }
+        .sidebar nav ul .menu-item:nth-child(3) { animation-delay: 0.3s; }
+        .sidebar nav ul .menu-item:nth-child(4) { animation-delay: 0.4s; }
+        .sidebar nav ul .menu-item:nth-child(5) { animation-delay: 0.5s; }
+        .sidebar nav ul .menu-item:nth-child(6) { animation-delay: 0.6s; }
+        .sidebar nav ul .menu-item:nth-child(7) { animation-delay: 0.7s; }
+        .sidebar nav ul .menu-item:nth-child(8) { animation-delay: 0.8s; }
+
+
+        @keyframes slideInFromLeft {
+            from { transform: translateX(-20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        /* Custom Button Style & Glow */
+        .btn-gradient {
+            background-image: linear-gradient(to right, var(--primary), var(--accent));
+            transition: all 0.3s ease;
+            transform: translateY(0);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .btn-gradient:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px var(--glow-primary), 0 0 25px var(--glow-accent);
+        }
+
+        .menu-shortcut-btn {
+            background-color: rgba(22, 33, 62, 0.7);
+            border: 2px solid var(--accent);
+            color: var(--text-light);
+            padding: 1rem;
+            border-radius: 0.75rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start; /* Changed from center to flex-start */
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.3s ease;
+            transform: translateY(0);
+        }
+        .menu-shortcut-btn:hover {
+            background-color: var(--accent);
+            color: white;
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px var(--glow-accent), 0 0 20px var(--glow-accent);
+        }
+
+        /* Glowing text */
+        .text-glow {
+            text-shadow: 0 0 8px var(--glow-primary);
+        }
+
+        /* Material card glow */
+        .material-card:hover {
+            box-shadow: 0 0 25px rgba(155, 89, 182, 0.3);
+            transform: translateY(-5px);
+        }
+        .material-card {
+            transition: all 0.3s ease;
+        }
+        
+        .slider-container .slide {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        .slider-container .slide.active {
+            display: block;
+        }
+
+        /* Kuis Styles */
+        .quiz-option {
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+        }
+        .quiz-option:hover {
+            border-color: var(--accent);
+        }
+        .quiz-option.selected {
+            background-color: var(--secondary) !important;
+            color: var(--text-dark);
+            border-color: var(--secondary);
+        }
+        
+        /* Papan Peringkat Podium */
+        .podium-item {
+            transition: transform 0.3s ease;
+        }
+        .podium-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px gold;
+        }
+        .podium-1 { border-color: #FFD700; box-shadow: 0 0 15px #ffd900a8; }
+        .podium-2 { border-color: #C0C0C0; box-shadow: 0 0 15px #c0c0c0a8; }
+        .podium-3 { border-color: #CD7F32; box-shadow: 0 0 15px #cd7f32a8; }
+
+        .content-embed {
+            position: relative;
+            overflow: hidden;
+        }
+        .content-embed iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .main-wrapper {
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        /* Game 4 Styles */
+        #game4-grid {
+            display: grid;
+            border: 2px solid var(--accent);
+        }
+        .grid-cell {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            border: 1px solid #4a5568;
+        }
+        .robot-container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.3s ease-in-out;
+            font-size: 1.2em;
+        }
+        .robot-container::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 8px solid var(--secondary);
+            animation: pulse-indicator 1.5s infinite;
+        }
+        @keyframes pulse-indicator {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+         /* Materi Page */
+        .materi-container, .game-container {
+            padding: 2rem;
+        }
+        
+        .materi-title, .game-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            font-weight: 700;
+        }
+
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 */
+            height: 0;
+            overflow: hidden;
+            border-radius: 15px;
+            margin-top: 1.5rem;
+            box-shadow: 0 0 20px var(--glow-color-1);
+        }
+
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .materi-slide {
+            margin-bottom: 2rem;
+        }
+        
+        .materi-slide p {
+            line-height: 1.8;
+            color: var(--text-dark);
+            text-align: justify;
+        }
+        
+        .materi-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1.5rem;
+        }
+
+        .materi-navigation button {
+            padding: 0.8rem 1.5rem;
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar">
+        <div class="p-6 text-center border-b border-gray-700/50">
+            <h1 class="text-2xl font-bold text-white tracking-wider">Informatika K8</h1>
+            <p class="text-sm text-gray-400">Sistem Komputer</p>
+        </div>
+        <div class="sidebar-content">
+            <nav class="mt-4">
+                <ul>
+                    <li class="menu-item px-4 mb-2">
+                        <a href="#beranda" class="nav-link flex items-center p-3 rounded-lg">
+                            <i class="fas fa-home w-6 text-center"></i><span class="ml-4">Beranda</span>
+                        </a>
+                    </li>
+                    <li class="menu-item px-4 mb-2">
+                        <a href="#kompetensi" class="nav-link flex items-center p-3 rounded-lg">
+                            <i class="fas fa-bullseye w-6 text-center"></i><span class="ml-4">Kompetensi</span>
+                        </a>
+                    </li>
+                    <li class="menu-item px-4 mb-2">
+                        <a href="#tebak-teknologi" class="nav-link flex items-center p-3 rounded-lg">
+                            <i class="fas fa-lightbulb w-6 text-center"></i><span class="ml-4">Aktivitas Pembuka</span>
+                        </a>
+                    </li>
+                    <li class="menu-item px-4 mb-2">
+                        <a href="#materi" class="nav-link flex items-center p-3 rounded-lg dropdown-toggle">
+                            <i class="fas fa-book w-6 text-center"></i><span class="ml-4">Materi</span><i class="fas fa-chevron-down ml-auto"></i>
+                        </a>
+                        <ul class="submenu ml-8 mt-2 space-y-2">
+                            <li><a href="#materi5" class="submenu-link flex items-center p-2 rounded-md"><i class="fas fa-file-powerpoint w-6 text-center mr-2"></i>Slides PPT Materi</a></li>
+                            <li><a href="#materi1" class="submenu-link flex items-center p-2 rounded-md"><i class="fas fa-sitemap w-6 text-center mr-2"></i>Sistem Komputer</a></li>
+                            <li><a href="#materi2" class="submenu-link flex items-center p-2 rounded-md"><i class="fas fa-microchip w-6 text-center mr-2"></i>Hardware</a></li>
+                            <li><a href="#materi3" class="submenu-link flex items-center p-2 rounded-md"><i class="fas fa-code w-6 text-center mr-2"></i>Software</a></li>
+                            <li><a href="#materi4" class="submenu-link flex items-center p-2 rounded-md"><i class="fas fa-brain w-6 text-center mr-2"></i>Brainware</a></li>
+                        </ul>
+                    </li>
+                    <li class="menu-item px-4 mb-2">
+                        <a href="#kuis" class="nav-link flex items-center p-3 rounded-lg">
+                            <i class="fas fa-question-circle w-6 text-center"></i><span class="ml-4">Kuis</span>
+                        </a>
+                    </li>
+                     <li class="menu-item px-4 mb-2">
+                        <a href="#games" class="nav-link flex items-center p-3 rounded-lg dropdown-toggle">
+                            <i class="fas fa-gamepad w-6 text-center"></i><span class="ml-4">Games</span><i class="fas fa-chevron-down ml-auto"></i>
+                        </a>
+                        <ul class="submenu ml-8 mt-2 space-y-2">
+                            <li><a href="#game1" class="submenu-link flex items-center p-2 rounded-md"><i class="fas fa-puzzle-piece w-6 text-center mr-2"></i>Tebak Hardware</a></li>
+                            <li><a href="#game2" class="submenu-link flex items-center p-2 rounded-md"><i class="fas fa-tasks w-6 text-center mr-2"></i>Klasifikasi Software</a></li>
+                            <li><a href="#game3" class="submenu-link flex items-center p-2 rounded-md"><i class="fas fa-user-cog w-6 text-center mr-2"></i>Peran Brainware</a></li>
+                        </ul>
+                    </li>
+                    <li class="menu-item px-4 mb-2">
+                        <a href="#peringkat" class="nav-link flex items-center p-3 rounded-lg">
+                            <i class="fas fa-trophy w-6 text-center"></i><span class="ml-4">Papan Peringkat</span>
+                        </a>
+                    </li>
+                     <li class="menu-item px-4 mb-2">
+                        <a href="#icebreaking" class="nav-link flex items-center p-3 rounded-lg">
+                            <i class="fas fa-dice w-6 text-center"></i><span class="ml-4">Ice Breaking</span>
+                        </a>
+                    </li>
+                    <li class="menu-item px-4 mb-2">
+                        <a href="https://xiroro-ab.github.io/smp58dataguru/" target="_blank" class="nav-link flex items-center p-3 rounded-lg">
+                            <i class="fas fa-chalkboard-teacher w-6 text-center"></i><span class="ml-4">Perangkat Guru</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <div class="p-4 text-center text-xs text-gray-500 border-t border-gray-700/50">
+            © 2025 Aris Bermansyah, S.Kom
+        </div>
+    </aside>
+
+    <!-- Overlay for mobile -->
+    <div id="overlay" class="overlay"></div>
+
+    <!-- Main Content Wrapper -->
+    <div class="main-wrapper transition-all duration-300">
+        <!-- Sticky Header -->
+        <header class="sticky-header flex items-center justify-between p-4 shadow-lg">
+            <button id="menu-toggle" class="menu-toggle text-xl p-2 rounded-md hover:bg-gray-700">
+                <i class="fas fa-bars"></i>
+            </button>
+            <h2 id="page-title" class="text-xl font-semibold text-white">Beranda</h2>
+            <div><!-- Extra space --></div>
+        </header>
+
+        <!-- Page Content -->
+        <main class="p-6">
+            
+            <!-- Beranda -->
+            <section id="beranda" class="page-content active">
+                <div class="text-center p-8 bg-gray-800 rounded-xl shadow-2xl">
+                    <img src="https://raw.githubusercontent.com/xiroro-ab/bab3-sk-kelas8v2-aris/refs/heads/main/1752495560972.jpg" alt="Foto Profil" class="w-32 h-32 rounded-full mx-auto mb-4 border-4 border-purple-500 shadow-lg">
+                    <p class="text-xs text-gray-500">Aris Bermansyah, S.Kom</p>
+                    <h1 class="text-4xl font-bold mt-2 mb-2 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600 text-glow">Selamat Datang!</h1>
+                    <p class="text-lg text-gray-300 my-6">Website Pembelajaran Interaktif Informatika Kelas 8</p>
+                    <p class="max-w-2xl mx-auto text-gray-400 mb-10">Jelajahi materi, uji kemampuanmu dengan kuis, dan raih posisi teratas di papan peringkat. Selamat belajar dan bersenang-senang!</p>
+                    
+                    <div class="mt-12 grid grid-cols-2 lg:grid-cols-5 gap-5 max-w-5xl mx-auto">
+                        <a href="#kompetensi" class="menu-shortcut-btn">
+                            <i class="fas fa-bullseye text-2xl mb-2"></i>
+                            <span>Kompetensi</span>
+                        </a>
+                        <a href="#materi" class="menu-shortcut-btn">
+                            <i class="fas fa-book-open text-2xl mb-2"></i>
+                            <span>Materi Belajar</span>
+                        </a>
+                        <a href="#kuis" class="menu-shortcut-btn">
+                            <i class="fas fa-question-circle text-2xl mb-2"></i>
+                            <span>Kerjakan Kuis</span>
+                        </a>
+                        <a href="#peringkat" class="menu-shortcut-btn">
+                            <i class="fas fa-trophy text-2xl mb-2"></i>
+                            <span>Lihat Peringkat</span>
+                        </a>
+                        <a href="#games" class="menu-shortcut-btn">
+                            <i class="fas fa-gamepad text-2xl mb-2"></i>
+                            <span>Mainkan Game</span>
+                        </a>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Materi Hub Page -->
+            <section id="materi" class="page-content">
+                <h2 class="text-3xl font-bold mb-6 text-purple-400 text-glow">Materi Pembelajaran</h2>
+                <p class="text-lg text-gray-300 mb-10">Pilih salah satu topik di bawah ini untuk mulai belajar.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <a href="#materi1" class="menu-shortcut-btn p-6">
+                        <i class="fas fa-sitemap text-3xl mb-3"></i>
+                        <span class="text-xl">Sistem Komputer</span>
+                    </a>
+                    <a href="#materi2" class="menu-shortcut-btn p-6">
+                        <i class="fas fa-microchip text-3xl mb-3"></i>
+                        <span class="text-xl">Hardware</span>
+                    </a>
+                    <a href="#materi3" class="menu-shortcut-btn p-6">
+                        <i class="fas fa-code text-3xl mb-3"></i>
+                        <span class="text-xl">Software</span>
+                    </a>
+                    <a href="#materi4" class="menu-shortcut-btn p-6">
+                        <i class="fas fa-brain text-3xl mb-3"></i>
+                        <span class="text-xl">Brainware</span>
+                    </a>
+                    <a href="#materi5" class="menu-shortcut-btn p-6 md:col-span-2 lg:col-span-1">
+                        <i class="fas fa-file-powerpoint text-3xl mb-3"></i>
+                        <span class="text-xl">Slides PPT Materi</span>
+                    </a>
+                </div>
+            </section>
+
+            <!-- Games Hub Page -->
+            <section id="games" class="page-content">
+                <h2 class="text-3xl font-bold mb-6 text-purple-400 text-glow">Game Edukasi</h2>
+                <p class="text-lg text-gray-300 mb-10">Uji pemahamanmu dengan memainkan game-game seru di bawah ini!</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <a href="#game1" class="menu-shortcut-btn p-6">
+                        <i class="fas fa-puzzle-piece text-3xl mb-3"></i>
+                        <span class="text-xl">Tebak Hardware</span>
+                    </a>
+                    <a href="#game2" class="menu-shortcut-btn p-6">
+                        <i class="fas fa-tasks text-3xl mb-3"></i>
+                        <span class="text-xl">Klasifikasi Software</span>
+                    </a>
+                    <a href="#game3" class="menu-shortcut-btn p-6">
+                        <i class="fas fa-user-cog text-3xl mb-3"></i>
+                        <span class="text-xl">Peran Brainware</span>
+                    </a>
+                </div>
+            </section>
+
+            <!-- Materi 1 -->
+            <section id="materi1" class="page-content">
+                <h2 class="text-3xl font-bold mb-6 text-purple-400 text-glow">1. Sistem Komputer</h2>
+                <div id="sistem-komputer-slider" class="slider-container bg-gray-800 p-6 rounded-lg shadow-lg">
+                     <div class="slides-wrapper relative min-h-[400px]">
+                        <div class="slide">
+                            <h3 class="text-2xl font-bold text-sky-400 mb-4">Pengertian Sistem Komputer</h3>
+                            <p class="text-slate-400 leading-relaxed mb-4"><strong>Sistem Komputer</strong> adalah kumpulan dari tiga komponen utama yang saling terhubung dan bekerja sama untuk mencapai tujuan tertentu, yaitu mengolah data menjadi informasi.</p>
+                            <p class="text-slate-400 leading-relaxed mb-4">Tiga komponen tersebut adalah <strong>Hardware (Perangkat Keras)</strong>, <strong>Software (Perangkat Lunak)</strong>, dan <strong>Brainware (Pengguna)</strong>.</p>
+                             <p class="text-slate-400 leading-relaxed">Cara kerja komputer secara sederhana mengikuti siklus <strong>Input -> Proses -> Output</strong>:</p>
+                            <ul class="list-disc list-inside space-y-2 pl-4 mt-4 text-slate-300">
+                                <li><strong>Input:</strong> Pengguna memberikan data atau perintah melalui perangkat input (seperti keyboard atau mouse).</li>
+                                <li><strong>Proses:</strong> CPU (Central Processing Unit) memproses data tersebut sesuai dengan instruksi dari software yang sedang berjalan.</li>
+                                <li><strong>Output:</strong> Hasil dari pemrosesan data ditampilkan kepada pengguna melalui perangkat output (seperti monitor atau printer).</li>
+                            </ul>
+                        </div>
+                        <div class="slide">
+                            <h3 class="text-2xl font-bold text-sky-400 mb-4">Video Penjelasan Cara Kerja Komputer</h3>
+                            <div class="aspect-w-16 aspect-h-9 mt-4 rounded-lg overflow-hidden relative pb-[48%] h-0">
+                               <iframe class="absolute top-0 left-0 w-full h-full" src="https://www.youtube.com/embed/A4A8bLzqJc4?si=IRkYIPAsLoxfOv3Z" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                            </div>
+                        </div> 
+                    </div>
+                    <div class="slider-navigation flex justify-between items-center mt-4">
+                        <button data-action="prev" class="slider-btn bg-purple-600 hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-2 px-4 rounded-lg">&lt; Sebelumnya</button>
+                        <span class="slide-counter text-gray-400"></span>
+                        <button data-action="next" class="slider-btn bg-purple-600 hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-2 px-4 rounded-lg">Selanjutnya &gt;</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Materi 2: Hardware -->
+            <section id="materi2" class="page-content">
+                <h2 class="text-3xl font-bold mb-6 text-purple-400 text-glow">2. Hardware (Perangkat Keras)</h2>
+                <div id="hardware-slider" class="slider-container bg-gray-800 p-6 rounded-lg shadow-lg">
+                    <div class="slides-wrapper relative min-h-[400px]">
+                        <!-- Slides will be injected by JavaScript -->
+                    </div>
+                    <div class="slider-navigation flex justify-between items-center mt-4">
+                        <button data-action="prev" class="slider-btn bg-purple-600 hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-2 px-4 rounded-lg">&lt; Sebelumnya</button>
+                        <span class="slide-counter text-gray-400"></span>
+                        <button data-action="next" class="slider-btn bg-purple-600 hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-2 px-4 rounded-lg">Selanjutnya &gt;</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Materi 3: Software -->
+            <section id="materi3" class="page-content">
+                 <h2 class="text-3xl font-bold mb-6 text-purple-400 text-glow">3. Software (Perangkat Lunak)</h2>
+                <div id="software-slider" class="slider-container bg-gray-800 p-6 rounded-lg shadow-lg">
+                    <div class="slides-wrapper relative min-h-[400px]">
+                        
+                        <div class="slide">
+                            <h3 class="text-2xl font-bold text-sky-400 mb-4">Apa itu Software?</h3>
+                            <p class="text-slate-400 leading-relaxed mb-4"><strong>Software (Perangkat Lunak)</strong> adalah kumpulan data elektronik yang disimpan dan diatur oleh komputer, berupa program atau instruksi untuk menjalankan suatu perintah. Tanpa software, sebuah komputer hanyalah mesin mati yang tidak bisa melakukan apa-apa.</p>
+                            <p class="text-slate-400 leading-relaxed">Secara garis besar, software terbagi menjadi dua jenis utama:</p>
+                            <ul class="list-disc list-inside space-y-2 pl-4 mt-4 text-slate-300">
+                                <li><strong>Perangkat Lunak Sistem (System Software):</strong> Bertugas mengelola dan mengontrol seluruh sumber daya pada komputer. Ini adalah fondasi yang memungkinkan perangkat lunak lain berjalan.</li>
+                                <li><strong>Perangkat Lunak Aplikasi (Application Software):</strong> Program yang dirancang untuk kebutuhan spesifik pengguna, seperti mengedit dokumen, menjelajah internet, atau bermain game.</li>
+                            </ul>
+                        </div>
+
+                        <div class="slide">
+                             <h3 class="text-2xl font-bold text-sky-400 mb-4">1. Perangkat Lunak Sistem (Sistem Operasi)</h3>
+                             <p class="text-slate-400 leading-relaxed mb-6">Sistem Operasi (Operating System/OS) adalah software yang paling penting. Ia menjembatani komunikasi antara pengguna, aplikasi, dan perangkat keras. Berikut beberapa contoh OS yang populer:</p>
+                             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                                <div class="bg-gray-900 p-4 rounded-lg">
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Android_robot.svg/512px-Android_robot.svg.png" alt="Logo Android" class="mx-auto mb-2 h-24 object-contain">
+                                    <h4 class="font-bold">Android</h4>
+                                </div>
+                                <div class="bg-gray-900 p-4 rounded-lg">
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Windows_logo_and_wordmark_-_2021.svg/800px-Windows_logo_and_wordmark_-_2021.svg.png" alt="Logo Windows" class="mx-auto mb-2 h-24 object-contain">
+                                    <h4 class="font-bold">Windows</h4>
+                                </div>
+                                <div class="bg-gray-900 p-4 rounded-lg">
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Apple_logo_black.svg/1024px-Apple_logo_black.svg.png" alt="Logo iOS" class="mx-auto mb-2 h-24 object-contain filter invert">
+                                    <h4 class="font-bold">iOS</h4>
+                                </div>
+                                <div class="bg-gray-900 p-4 rounded-lg">
+                                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Tux.svg/1200px-Tux.svg.png" alt="Logo Linux" class="mx-auto mb-2 h-24 object-contain">
+                                    <h4 class="font-bold">Linux</h4>
+                                </div>
+                             </div>
+                        </div>
+
+                        <div class="slide">
+                             <h3 class="text-2xl font-bold text-sky-400 mb-4">2. Perangkat Lunak Aplikasi</h3>
+                             <p class="text-slate-400 leading-relaxed mb-6">Ini adalah program yang kita gunakan sehari-hari untuk menyelesaikan tugas. Contohnya sangat beragam, antara lain:</p>
+                              <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                                <div class="bg-gray-900 p-4 rounded-lg">
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Google_Chrome_icon_%28February_2022%29.svg/800px-Google_Chrome_icon_%28February_2022%29.svg.png" alt="Logo Chrome" class="mx-auto mb-2 h-24 object-contain">
+                                    <h4 class="font-bold">Browser Web</h4>
+                                </div>
+                                <div class="bg-gray-900 p-4 rounded-lg">
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Microsoft_Office_Word_%282019%E2%80%93present%29.svg/1024px-Microsoft_Office_Word_%282019%E2%80%93present%29.svg.png" alt="Logo Word" class="mx-auto mb-2 h-24 object-contain">
+                                    <h4 class="font-bold">Pengolah Kata</h4>
+                                </div>
+                                <div class="bg-gray-900 p-4 rounded-lg">
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Microsoft_Office_Excel_%282019%E2%80%93present%29.svg/1024px-Microsoft_Office_Excel_%282019%E2%80%93present%29.svg.png" alt="Logo Excel" class="mx-auto mb-2 h-24 object-contain">
+                                    <h4 class="font-bold">Pengolah Angka</h4>
+                                </div>
+                                <div class="bg-gray-900 p-4 rounded-lg">
+                                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/Microsoft_Office_PowerPoint_%282019%E2%80%93present%29.svg/1024px-Microsoft_Office_PowerPoint_%282019%E2%80%93present%29.svg.png" alt="Logo PowerPoint" class="mx-auto mb-2 h-24 object-contain">
+                                    <h4 class="font-bold">Presentasi</h4>
+                                </div>
+                             </div>
+                        </div>
+
+                        <div class="slide">
+                            <h3 class="text-2xl font-bold text-sky-400 mb-4">Video Penjelasan Software</h3>
+                            <div class="aspect-w-16 aspect-h-9 mt-4 rounded-lg overflow-hidden relative pb-[48%] h-0">
+                               <iframe class="absolute top-0 left-0 w-full h-full" src="https://www.youtube.com/embed/2LZbbEtrqoo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="slider-navigation flex justify-between items-center mt-4">
+                        <button data-action="prev" class="slider-btn bg-purple-600 hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-2 px-4 rounded-lg">&lt; Sebelumnya</button>
+                        <span class="slide-counter text-gray-400"></span>
+                        <button data-action="next" class="slider-btn bg-purple-600 hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-2 px-4 rounded-lg">Selanjutnya &gt;</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Materi 4: Brainware -->
+            <section id="materi4" class="page-content">
+                 <h2 class="text-3xl font-bold mb-6 text-purple-400 text-glow">4. Brainware (Pengguna)</h2>
+                <div id="brainware-slider" class="slider-container bg-gray-800 p-6 rounded-lg shadow-lg">
+                    <div class="slides-wrapper relative min-h-[400px]">
+                        
+                        <div class="slide">
+                            <h3 class="text-2xl font-bold text-sky-400 mb-4">Apa itu Brainware?</h3>
+                            <p class="text-slate-400 leading-relaxed mb-4"><strong>Brainware</strong> adalah istilah untuk manusia yang menggunakan, mengoperasikan, atau mengelola sistem komputer. Secanggih apapun hardware dan software, tanpa brainware, komputer tidak akan bisa berfungsi. Manusialah yang menjadi otak di balik semua operasi komputer.</p>
+                            <p class="text-slate-400 leading-relaxed">Peran brainware sangat beragam, mulai dari pengguna biasa hingga para ahli yang merancang dan membangun sistem yang kompleks.</p>
+                        </div>
+
+                        <div class="slide">
+                            <h3 class="text-2xl font-bold text-sky-400 mb-4">Peran-Peran Brainware</h3>
+                            <p class="text-slate-400 leading-relaxed mb-6">Berikut adalah beberapa peran utama brainware dalam dunia komputer:</p>
+                            <div class="space-y-4">
+                                <div class="flex items-center gap-4 bg-gray-900 p-3 rounded-lg">
+                                    <img src="https://images.unsplash.com/photo-1526925539332-aa3b66e35444?q=80&w=400" alt="Programmer" class="w-16 h-16 rounded-lg object-cover">
+                                    <div>
+                                        <h4 class="font-bold">Programmer</h4>
+                                        <p class="text-sm text-slate-400">Orang yang menulis kode untuk membuat program dan aplikasi.</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-4 bg-gray-900 p-3 rounded-lg">
+                                    <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=400" alt="Analis Sistem" class="w-16 h-16 rounded-lg object-cover">
+                                    <div>
+                                        <h4 class="font-bold">Analis Sistem</h4>
+                                        <p class="text-sm text-slate-400">Merancang solusi dan alur kerja sistem komputer sesuai kebutuhan.</p>
+                                    </div>
+                                </div>
+                                 <div class="flex items-center gap-4 bg-gray-900 p-3 rounded-lg">
+                                    <img src="https://images.unsplash.com/photo-1521791136064-7986c2920216?q=80&w=400" alt="Administrator" class="w-16 h-16 rounded-lg object-cover">
+                                    <div>
+                                        <h4 class="font-bold">Administrator</h4>
+                                        <p class="text-sm text-slate-400">Mengelola dan memelihara jaringan atau database komputer.</p>
+                                    </div>
+                                </div>
+                                 <div class="flex items-center gap-4 bg-gray-900 p-3 rounded-lg">
+                                    <img src="https://images.unsplash.com/photo-1544717297-fa95b6ee9643?q=80&w=400" alt="Pengguna Akhir" class="w-16 h-16 rounded-lg object-cover">
+                                    <div>
+                                        <h4 class="font-bold">Pengguna Akhir (User)</h4>
+                                        <p class="text-sm text-slate-400">Siapa saja yang menggunakan aplikasi atau sistem komputer.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="slide">
+                            <h3 class="text-2xl font-bold text-sky-400 mb-4">Video Penjelasan Brainware</h3>
+                            <div class="aspect-w-16 aspect-h-9 mt-4 rounded-lg overflow-hidden relative pb-[48%] h-0">
+                                <iframe class="absolute top-0 left-0 w-full h-full" src="https://www.youtube.com/embed/Kqv5V1vpfHw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="slider-navigation flex justify-between items-center mt-4">
+                        <button data-action="prev" class="slider-btn bg-purple-600 hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-2 px-4 rounded-lg">&lt; Sebelumnya</button>
+                        <span class="slide-counter text-gray-400"></span>
+                        <button data-action="next" class="slider-btn bg-purple-600 hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-2 px-4 rounded-lg">Selanjutnya &gt;</button>
+                    </div>
+                </div>
+            </section>
+            
+             <!-- Materi 5: Slides -->
+            <section id="materi5" class="page-content">
+                <h2 class="text-3xl font-bold mb-6 text-purple-400 text-glow">Slides Materi Komponen Sistem Komputer</h2>
+                <div class="bg-gray-800 rounded-lg shadow-lg">
+                    <div class="relative w-full" style="padding-top: 42.00%;"> <!-- 16:9 Aspect Ratio -->
+                        <iframe class="absolute top-0 left-0 w-full h-full" src="https://docs.google.com/presentation/d/e/2PACX-1vTvPLRZvTG8POfIIxCNHAHw5khWbzx3n6byiUj0oXcygUb0C9S_-3rE6Ikxqaoyey_svG3xTOITyDt9/pubembed?start=false&loop=true&delayms=3000" frameborder="0" width="2304" height="1325" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Kuis -->
+<section id="kuis" class="page-content">
+    <div class="max-w-4xl mx-auto">
+        
+        <div id="quiz-login" class="bg-gray-800 p-8 rounded-xl shadow-2xl text-center">
+            <h2 class="text-3xl font-bold mb-2 text-purple-400 text-glow">Kuis Multiplayer</h2>
+            <p class="text-gray-400 mb-6">Bergabunglah dengan teman sekelas secara real-time!</p>
+            
+            <form id="multiplayer-form" class="space-y-4 max-w-md mx-auto">
+                <input type="text" id="player-name" placeholder="Nama Lengkap / Nama Panggilan" class="w-full bg-gray-700 border-2 border-gray-600 rounded-lg p-3 text-white focus:border-purple-500 transition" required>
+                <select id="player-class" class="w-full bg-gray-700 border-2 border-gray-600 rounded-lg p-3 text-white focus:border-purple-500 transition" required>
+                    <option value="">Pilih Kelas (Siswa)</option>
+                    <option value="8.1">8.1</option>
+                    <option value="8.2">8.2</option>
+                    <option value="8.3">8.3</option>
+                    <option value="8.4">8.4</option>
+                    <option value="TEACHER">GURU (Mode Host)</option>
+                </select>
+                <input type="password" id="admin-pass" placeholder="Password Admin" class="w-full bg-gray-700 border-2 border-red-600 rounded-lg p-3 text-white hidden">
+                
+                <button type="submit" class="btn-gradient text-white font-bold py-3 px-8 rounded-full w-full">Masuk Arena</button>
+            </form>
+        </div>
+
+        <div id="quiz-lobby" class="hidden text-center bg-gray-800 p-8 rounded-xl">
+            <h2 class="text-3xl font-bold text-yellow-400 animate-pulse">Menunggu Host Memulai...</h2>
+            <div class="mt-8">
+                <p class="text-gray-400">Pemain yang bergabung:</p>
+                <div id="player-list" class="flex flex-wrap gap-3 justify-center mt-4">
+                    </div>
+            </div>
+            
+            <div id="admin-controls" class="hidden mt-10 p-4 border-t border-gray-600">
+                <h3 class="text-xl text-red-400 font-bold mb-4">Panel Guru</h3>
+                <div class="flex justify-center gap-4">
+                    <button id="btn-start-game" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg">Mulai Game</button>
+                    <button id="btn-reset-game" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-lg">Reset Server</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="quiz-arena" class="hidden">
+            <div class="flex justify-between items-center mb-4">
+                <div class="text-lg font-semibold text-purple-300" id="live-status">Soal 1</div>
+                <div id="live-timer" class="text-2xl font-bold bg-red-600 px-4 py-2 rounded-full shadow-lg">00</div>
+            </div>
+
+            <div class="bg-gray-800 p-6 rounded-xl shadow-lg text-center mb-6">
+                <div id="arena-image-container" class="bg-black/20 rounded-lg mb-4 flex justify-center items-center h-48 hidden">
+                    <img id="arena-image" src="" class="max-h-full rounded-lg">
+                </div>
+                <h3 id="arena-question" class="text-xl md:text-2xl font-bold mb-2">Bersiap...</h3>
+            </div>
+
+            <div id="arena-options" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <button class="arena-opt bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl transition transform hover:scale-105" data-idx="0">A</button>
+                <button class="arena-opt bg-green-600 hover:bg-green-500 text-white font-bold py-4 rounded-xl transition transform hover:scale-105" data-idx="1">B</button>
+                <button class="arena-opt bg-yellow-600 hover:bg-yellow-500 text-white font-bold py-4 rounded-xl transition transform hover:scale-105" data-idx="2">C</button>
+                <button class="arena-opt bg-red-600 hover:bg-red-500 text-white font-bold py-4 rounded-xl transition transform hover:scale-105" data-idx="3">D</button>
+            </div>
+
+            <div id="admin-nav" class="hidden mt-6 flex justify-center gap-4">
+                <button id="btn-next-question" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-8 rounded-full shadow-lg border-2 border-white">Pertanyaan Selanjutnya ➡️</button>
+                <button id="btn-show-leaderboard" class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-3 px-8 rounded-full shadow-lg border-2 border-white">Akhiri & Lihat Peringkat 🏆</button>
+            </div>
+             
+             <div id="player-feedback" class="hidden mt-4 text-center p-4 rounded-lg font-bold text-xl"></div>
+        </div>
+    </div>
+</section>
+
+            <!-- Papan Peringkat -->
+            <section id="peringkat" class="page-content">
+                 <h2 class="text-3xl font-bold mb-6 text-purple-400 text-glow">🏆 Papan Peringkat</h2>
+                 <div id="leaderboard-loading" class="text-center">
+                    <i class="fas fa-spinner fa-spin text-4xl"></i>
+                    <p class="mt-2">Memuat data peringkat...</p>
+                 </div>
+                 <div id="leaderboard-content" class="hidden">
+                    <!-- Podium -->
+                    <div class="grid grid-cols-3 gap-2 sm:gap-4 text-center items-end mb-8">
+                        <div class="podium-item">
+                            <div class="p-2 sm:p-4 bg-gray-800 rounded-t-lg border-4 podium-2 h-full flex flex-col justify-end">
+                                <i class="fas fa-medal text-3xl sm:text-4xl text-gray-400"></i>
+                                <h3 id="rank2-name" class="font-bold text-sm sm:text-lg truncate">...</h3>
+                                <p id="rank2-score" class="text-xl sm:text-2xl font-bold text-gray-300">...</p>
+                            </div>
+                        </div>
+                        <div class="podium-item">
+                             <div class="p-4 sm:p-6 bg-gray-800 rounded-t-lg border-4 podium-1">
+                                <i class="fas fa-crown text-4xl sm:text-5xl text-yellow-400"></i>
+                                <h3 id="rank1-name" class="font-bold text-base sm:text-xl truncate">...</h3>
+                                <p id="rank1-score" class="text-2xl sm:text-3xl font-bold text-yellow-300">...</p>
+                            </div>
+                        </div>
+                        <div class="podium-item">
+                            <div class="p-2 sm:p-4 bg-gray-800 rounded-t-lg border-4 podium-3 h-full flex flex-col justify-end">
+                                <i class="fas fa-medal text-3xl sm:text-4xl text-orange-400"></i>
+                                <h3 id="rank3-name" class="font-bold text-sm sm:text-lg truncate">...</h3>
+                                <p id="rank3-score" class="text-xl sm:text-2xl font-bold text-orange-300">...</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Daftar Peringkat -->
+                    <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full min-w-[500px] text-left">
+                                <thead class="bg-gray-700">
+                                    <tr>
+                                        <th class="p-4">Peringkat</th>
+                                        <th class="p-4">Nama</th>
+                                        <th class="p-4">Kelas</th>
+                                        <th class="p-4 text-right">Skor</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="leaderboard-table">
+                                    <!-- Data akan diisi oleh JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                 </div>
+            </section>
+
+             <!-- Game 1: Tebak Hardware -->
+            <section id="game1" class="page-content">
+                <h2 class="text-3xl font-bold mb-6 text-purple-400 text-glow">Game 1: Pasangkan Hardware</h2>
+                <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+                    <p class="mb-4">Seret nama komponen hardware ke kotak yang sesuai dengan gambarnya!</p>
+                    <div id="game1-feedback" class="mb-4 text-center font-bold"></div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div id="draggable-items" class="flex flex-wrap gap-3 justify-center items-center bg-gray-900 p-4 rounded-lg min-h-[100px]">
+                            <!-- Draggable items will be generated by JS -->
+                        </div>
+                        <div id="drop-zones" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <!-- Drop zones will be generated by JS -->
+                        </div>
+                    </div>
+                    <div class="text-center mt-6">
+                        <button id="reset-game1-btn" class="btn-gradient text-white font-bold py-2 px-6 rounded-full">Reset Game</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Game 2: Klasifikasi Software -->
+            <section id="game2" class="page-content">
+                <h2 class="text-3xl font-bold mb-6 text-purple-400 text-glow">Game 2: Klasifikasi Software</h2>
+                <div class="bg-gray-800 p-6 rounded-lg shadow-lg max-w-2xl mx-auto">
+                    <p class="mb-4 text-center">Tentukan apakah software berikut termasuk <strong>Sistem Operasi</strong> atau <strong>Aplikasi</strong>!</p>
+                    <div id="game2-container">
+                        <div class="bg-gray-900 p-4 rounded-lg mb-4 flex justify-center items-center h-40">
+                            <img id="game2-image" src="" alt="Gambar Software" class="max-w-full max-h-full object-contain">
+                        </div>
+                        <h3 id="game2-software-name" class="text-2xl font-bold text-center mb-4 text-yellow-400"></h3>
+                        <div id="game2-feedback" class="text-center font-bold mb-4 h-6"></div>
+                        <div class="flex justify-center gap-4">
+                            <button class="game2-choice-btn bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-8 rounded-lg transition-transform hover:scale-105" data-type="os">Sistem Operasi</button>
+                            <button class="game2-choice-btn bg-pink-600 hover:bg-pink-700 text-white font-bold py-3 px-8 rounded-lg transition-transform hover:scale-105" data-type="app">Aplikasi</button>
+                        </div>
+                    </div>
+                    <div id="game2-result" class="hidden text-center">
+                        <h3 class="text-2xl font-bold mb-2">Game Selesai!</h3>
+                        <p class="text-lg">Skor Anda: <span id="game2-score" class="font-bold text-yellow-400"></span></p>
+                        <button id="reset-game2-btn" class="btn-gradient text-white font-bold py-2 px-6 rounded-full mt-4">Main Lagi</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Game 3: Peran Brainware -->
+            <section id="game3" class="page-content">
+                <h2 class="text-3xl font-bold mb-6 text-purple-400 text-glow">Game 3: Siapakah Aku?</h2>
+                <div class="bg-gray-800 p-6 rounded-lg shadow-lg max-w-2xl mx-auto">
+                     <p class="mb-4 text-center">Baca deskripsi tugasnya dan tebak peran Brainware yang dimaksud!</p>
+                     <div id="game3-container">
+                        <div class="bg-gray-900 p-6 rounded-lg mb-6">
+                            <p id="game3-description" class="text-center text-lg italic">...</p>
+                        </div>
+                        <div id="game3-feedback" class="text-center font-bold mb-4 h-6"></div>
+                        <div id="game3-options" class="grid grid-cols-2 gap-4">
+                            <!-- Options generated by JS -->
+                        </div>
+                     </div>
+                     <div id="game3-result" class="hidden text-center">
+                        <h3 class="text-2xl font-bold mb-2">Game Selesai!</h3>
+                        <p class="text-lg">Skor Anda: <span id="game3-score" class="font-bold text-yellow-400"></span></p>
+                        <button id="reset-game3-btn" class="btn-gradient text-white font-bold py-2 px-6 rounded-full mt-4">Main Lagi</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Game 4: Icebreaking -->
+            <section id="icebreaking" class="page-content">
+                <h2 class="text-3xl font-bold mb-6 text-purple-400 text-glow">Ice Breaking</h2>
+                <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+                    <div class="relative w-full" style="padding-top: 42.00%;"> <!-- 16:9 Aspect Ratio -->
+                        <iframe class="absolute top-0 left-0 w-full h-full" src="https://www.youtube.com/embed/DbOdpT9fFa4?si=C9bduk4bBYLV6x21" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Tebak Teknologi Game -->
+            <section id="tebak-teknologi" class="page-content">
+                <h2 class="text-3xl font-bold mb-6 text-purple-400 text-glow">Aktivitas Pembuka: Fisik atau Program?</h2>
+                <div class="bg-gray-800 p-6 rounded-lg shadow-lg max-w-2xl mx-auto">
+                    <p class="mb-4 text-center">Perhatikan gambar di bawah ini. Tentukan apakah gambar tersebut mewakili <strong>Benda Fisik</strong> (Hardware/Brainware) atau sebuah <strong>Program</strong> (Software)!</p>
+                    <div id="tebak-container">
+                        <div class="bg-gray-900 p-4 rounded-lg mb-6 flex justify-center items-center h-64">
+                            <img id="tebak-image" src="" alt="Gambar Teknologi" class="max-w-full max-h-full object-contain rounded-lg">
+                        </div>
+                        <h3 id="tebak-item-name" class="text-3xl font-bold text-center mb-6 text-yellow-400"></h3>
+                        <div id="tebak-feedback" class="text-center font-bold mb-4 h-12"></div>
+                        <div class="flex justify-center gap-4">
+                            <button class="tebak-choice-btn bg-sky-600 hover:bg-sky-700 text-white font-bold py-3 px-8 rounded-lg transition-transform hover:scale-105" data-type="fisik">Benda Fisik</button>
+                            <button class="tebak-choice-btn bg-pink-600 hover:bg-pink-700 text-white font-bold py-3 px-8 rounded-lg transition-transform hover:scale-105" data-type="program">Program</button>
+                        </div>
+                    </div>
+                    <div id="tebak-result" class="hidden text-center">
+                        <h3 class="text-2xl font-bold mb-4 text-green-400">Terima kasih sudah menjawab pertanyaannya. Kalian semua hebat!</h3>
+                        <button id="reset-tebak-btn" class="btn-gradient text-white font-bold py-2 px-6 rounded-full mt-4">Mau menjawab lagi?</button>
+                    </div>
+                </div>
+            </section>
+
+       <!-- Konten Kompetensi -->
+        <section id="kompetensi" class="page-content">
+            <div class="materi-container glass-effect">
+                <h2 class="materi-title">Kompetensi Pembelajaran</h2>
+                <div id="kompetensi-slider">
+                    <!-- Slide Pertama -->
+                    <div class="materi-slide" data-slide="1">
+                        <h2>Capaian Pembelajaran</h2><br>
+                        <p><h3>Capaian Pembelajaran Elemen Literasi Digital:</h3>
+                        Pada akhir fase D, Peserta didik mampu memahami cara kerja dan penggunaan mesin pencari di internet; mengetahui kredibilitas sumber informasi digital dan mengenal ekosistem media pers digital; membedakan fakta dan opini; memahami pemanfaatan perkakas teknologi digital untuk membuat laporan, presentasi, serta analisis dan interpretasi data; mampu mendeskripsikan komponen, fungsi, dan cara kerja komputer; memahami konsep dan penerapan konektivitas jaringan lokal dan internet baik kabel maupun nirkabel; dan mengetahui jenis ruang publik virtual; memahami pemanfaatan media digital untuk produksi dan diseminasi konten.</p>
+                    </div>
+                    <!-- Slide Kedua -->
+                    <div class="materi-slide hidden" data-slide="2">
+                        <h3>Tujuan Pembelajaran</h3>
+                        <ol style="line-height: 2; padding-left: 20px; color: var(--text-light);">
+                            <li>1. Peserta Didik mampu mengidentifikasi tiga komponen utama sistem komputer (perangkat keras, perangkat lunak, pengguna) dengan benar. </li>
+                            <li>2. Peserta Didik mampu menjelaskan fungsi dari masing-masing komponen utama sistem komputer dengan kalimat sendiri. </li>
+                            <li>3. Peserta didik mampu mengklasifikasikan komponen utama sistem komputer perangkat keras, perangkat lunak, atau pengguna secara tepat. </li>
+                            <li>4. Peserta Didik mampu menganalisis keterkaitan sederhana antara ketiga komponen dalam pengoperasian komputer. </li>
+                        </ol>
+                    </div>
+                </div>
+                <!-- Tombol Navigasi -->
+                <div class="slider-navigation flex justify-between items-center mt-4">
+                    <button class="slider-btn bg-purple-600 hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-2 px-4 rounded-lg" id="prev-kompetensi" disabled>Sebelumnya</button>
+                    <button class="slider-btn bg-purple-600 hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-2 px-4 rounded-lg" id="next-kompetensi">Selanjutnya</button>
+                </div>
+            </div>
+        </section>
+
+
+        </main>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            //--- Navigation and UI Elements ---//
+            const menuToggle = document.getElementById('menu-toggle');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            const pageContents = document.querySelectorAll('.page-content');
+            const pageTitle = document.getElementById('page-title');
+            const mainWrapper = document.querySelector('.main-wrapper');
+            const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
+
+            const closeSidebar = () => {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('show');
+            };
+
+            menuToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                sidebar.classList.toggle('open');
+                overlay.classList.toggle('show');
+            });
+
+            overlay.addEventListener('click', closeSidebar);
+            
+            // Handle dropdown toggles to only toggle, not navigate
+            dropdownToggles.forEach(toggle => {
+                toggle.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const parent = toggle.closest('.menu-item');
+                    document.querySelectorAll('.menu-item.open').forEach(openItem => {
+                        if (openItem !== parent) {
+                            openItem.classList.remove('open');
+                        }
+                    });
+                    parent.classList.toggle('open');
+                });
+            });
+            
+            // Router function to handle page changes based on URL hash
+            const router = () => {
+                const hash = window.location.hash || '#beranda';
+                const targetId = hash.substring(1);
+
+                pageContents.forEach(content => content.classList.remove('active'));
+                let targetPage = document.getElementById(targetId);
+                
+                if (targetPage) {
+                    targetPage.classList.add('active');
+                } else {
+                    document.getElementById('beranda').classList.add('active'); // Fallback to beranda
+                }
+                mainWrapper.scrollTop = 0;
+
+                const navLinks = document.querySelectorAll('a.nav-link, a.submenu-link');
+                navLinks.forEach(nav => nav.classList.remove('active'));
+                
+                const activeLink = document.querySelector(`a[href="${hash}"]`);
+                if (activeLink) {
+                    activeLink.classList.add('active');
+                    const parentMenuItem = activeLink.closest('.menu-item');
+
+                    if (parentMenuItem) {
+                        const mainNavLink = parentMenuItem.querySelector('.nav-link');
+                        mainNavLink.classList.add('active'); 
+                        
+                        if (mainNavLink.classList.contains('dropdown-toggle')) {
+                            if (activeLink.href !== mainNavLink.href) {
+                                parentMenuItem.classList.add('open');
+                            }
+                        }
+                    }
+                }
+
+                let titleText = document.querySelector(`a[href="${hash}"]`)?.querySelector('span')?.textContent.trim() || document.querySelector(`a[href="${hash}"]`)?.textContent.trim() || "Beranda";
+                pageTitle.textContent = titleText;
+                
+                closeSidebar();
+                
+                // Initialize components for the active page
+                if (targetId === 'materi1') initSlider('sistem-komputer-slider');
+                if (targetId === 'materi2') initHardwareSlider();
+                if (targetId === 'materi3') initSlider('software-slider');
+                if (targetId === 'materi4') initSlider('brainware-slider');
+                if (targetId === 'peringkat') fetchLeaderboard();
+                if (targetId === 'tebak-teknologi') initTebakTeknologi();
+                if (targetId.startsWith('game')) {
+                    const gameNumber = targetId.charAt(4);
+                    const initFunc = window[`initGame${gameNumber}`];
+                    if (typeof initFunc === 'function') initFunc();
+                }
+            };
+
+            window.addEventListener('hashchange', router);
+            window.addEventListener('load', router); 
+
+            // Kompetensi Slider
+        const kompetensiSlides = document.querySelectorAll('#kompetensi-slider .materi-slide');
+        const prevKompetensiBtn = document.getElementById('prev-kompetensi');
+        const nextKompetensiBtn = document.getElementById('next-kompetensi');
+        let currentKompetensiSlide = 0;
+
+        function updateKompetensiSlider() {
+            kompetensiSlides.forEach((slide, index) => {
+                slide.classList.toggle('hidden', index !== currentKompetensiSlide);
+            });
+            prevKompetensiBtn.disabled = currentKompetensiSlide === 0;
+            nextKompetensiBtn.disabled = currentKompetensiSlide === kompetensiSlides.length - 1;
+        }
+
+        nextKompetensiBtn.addEventListener('click', () => {
+            if (currentKompetensiSlide < kompetensiSlides.length - 1) {
+                currentKompetensiSlide++;
+                updateKompetensiSlider();
+            }
+        });
+
+        prevKompetensiBtn.addEventListener('click', () => {
+            if (currentKompetensiSlide > 0) {
+                currentKompetensiSlide--;
+                updateKompetensiSlider();
+            }
+        });
+        if(kompetensiSlides.length > 0) updateKompetensiSlider();
+
+            // --- Sliders Logic --- //
+            function initSlider(sliderId) {
+                const slider = document.getElementById(sliderId);
+                if (!slider) return;
+
+                const slides = slider.querySelectorAll('.slide');
+                const prevBtn = slider.querySelector('[data-action="prev"]');
+                const nextBtn = slider.querySelector('[data-action="next"]');
+                const counter = slider.querySelector('.slide-counter');
+                let currentSlide = 0;
+
+                function showSlide(index) {
+                    slides.forEach((slide, i) => {
+                        slide.classList.toggle('active', i === index);
+                    });
+                    if(counter) counter.textContent = `Halaman ${index + 1} dari ${slides.length}`;
+                    if(prevBtn) prevBtn.disabled = index === 0;
+                    if(nextBtn) nextBtn.disabled = index === slides.length - 1;
+                }
+
+                prevBtn.addEventListener('click', () => {
+                    if (currentSlide > 0) {
+                        currentSlide--;
+                        showSlide(currentSlide);
+                    }
+                });
+
+                nextBtn.addEventListener('click', () => {
+                    if (currentSlide < slides.length - 1) {
+                        currentSlide++;
+                        showSlide(currentSlide);
+                    }
+                });
+
+                showSlide(currentSlide);
+            }
+
+            //--- Hardware Slider Specific Logic ---//
+            const hardwareData = [
+                 { name: 'Mouse', desc: 'Mouse adalah perangkat input yang berfungsi untuk menggerakan kursor kelayar komputer, memungkinkan pengguna memilih, membuka, dan menjalankan program atau file dan fitur klik kiri, klik kanan, double klik, dan scroll, mouse mempermudah navigasi dan interaksi dengan berbagai aplikasi atau object didalam komputer.', embed: 'ed74385debca426f83545edc41ad0eb9' },
+                { name: 'Keyboard', desc: 'Keyboard adalah perangkat input yang berfungsi untuk memasukkan data ke komputer melalui penekanan tombol. fungsinya mencakup mengetik teks, memasukan perintah, dan mengontrol prgrogram. keyboard juga memiliki tombol khusus seperti enter, shift, ctrl, dan alt yang memungkinkan pengguna melakukan operasi tertentu, serta tombol fungsi (F1-F12) untuk akses cepat ke fitur atau perintah dalam aplikasi.', embed: '26f060f2b0f142d8b602afc461dc2c53' },
+                { name: 'Joystick', desc: 'Joystick adalah perangkat input yang digunakan untuk mengendalikan gerakan permainan video atau aplikasi simulasi. dengan menggerakan tuasnya ke berbagai arah, pengguna dapat mengontrol objek atau karakter di layar. Joystick sering dilengkapi dengan tombol tambahan yang memberikan fungsi-fungsi khusus, seperti menembak, melompat, atau menjalankan aksi tertentu dalam game atau simulasi.', embed: 'e68fb57f08664533aa3de15188f2baa8' },
+                { name: 'Microphone', desc: 'Microphone adalah perangkat input yang berfungsi untuk menangkap suara dan mengubahnya menjadi sinyal listrik yang dapat diproses oleh perangkat lain, seperti komputer atau ponsel. mic digunakan untuk berbagai keperluan, termasuk merekam audio, berkomunikasi dalam panggilan atau konferensi video, serta memberikan perintah suara pada aplikasi atau asisten virtual.', embed: '090d9988db994aa2b4fe699b0fce7c60' },
+                { name: 'CPU (Central Processing Unit)', desc: 'CPU adalah otak dari sebuah perangkat komputer. CPU bertugas untuk mengeksekusi perintah, memahami dan melaksanakan perintah dan data dari perangkat lunak sebuah komputer.', embed: 'a872fc9e704248969064fe79dbf82917' },
+                { name: 'GPU (Graphics Processing Unit)', desc: 'GPU memiliki tugas utama untuk memproses data grafis atau gambar dengan melakukan penghitungan matematika. GPU secara khusus memiliki peran untuk melakukan pemrosesan instruksi rendering grafis.', embed: '0124232c57f047b98a0afeb7f0ac1a26' },
+                { name: 'RAM (Random Access Memory)', desc: 'RAM berfungsi untuk menyimpan data sementara yang akan dipakai atau diproses langsung oleh CPU. Dengan adanya RAM, CPU bisa terus memproses data, sehingga pengguna bisa menjalankan beberapa aplikasi sekaligus.', embed: '6f37195ac2b84b21a901471485351b37' },
+                { name: 'Motherboard', desc: 'Motherboard adalah papan sirkuit utama yang menghubungkan semua komponen penting komputer seperti CPU, RAM, GPU, dan perangkat penyimpanan, memungkinkan mereka untuk berkomunikasi satu sama lain.', embed: '3bc94057328243d4b341a55f59160f8a' },
+                { name: 'Monitor', desc: 'Monitor adalah perangkat output yang menampilkan informasi visual dari komputer dalam bentuk teks, gambar, atau video, memungkinkan pengguna melihat hasil dari proses komputasi.', embed: 'f84d24b6df3648d884fd9be9c8007dd4' },
+                { name: 'Speaker', desc: 'Speaker adalah perangkat output yang berfungsi untuk mengubah sinyal audio dari komputer menjadi suara yang dapat didengar, digunakan untuk mendengarkan musik, suara dalam video, game, atau panggilan.', embed: 'f3209a6a45b844df92560099f982a508' },
+                { name: 'Printer', desc: 'Printer adalah perangkat output yang berfungsi untuk mencetak dokumen, gambar, atau teks dari komputer ke media fisik seperti kertas, menghasilkan salinan fisik dari file digital.', embed: '6757a9bb399140fdb7e1061e124aacb0' },
+                { name: 'Proyektor', desc: 'Proyektor adalah perangkat output yang berfungsi untuk menampilkan gambar atau video ke permukaan besar seperti layar atau dinding, sering digunakan dalam presentasi atau hiburan.', embed: '2fc7bd0739ca4a039b1925c2331fd462' }
+            ];
+
+            function initHardwareSlider() {
+                const sliderWrapper = document.querySelector('#hardware-slider .slides-wrapper');
+                sliderWrapper.innerHTML = ''; 
+
+                const introSlide = document.createElement('div');
+                introSlide.className = 'slide';
+                introSlide.innerHTML = `
+                    <h3 class="text-2xl font-bold text-sky-400 mb-4">Apa itu Hardware?</h3>
+                    <div>
+                        <p class="text-slate-400 leading-relaxed mb-4"><strong>Hardware (Perangkat Keras)</strong> adalah semua komponen fisik dari sebuah sistem komputer. Singkatnya, ini adalah semua bagian yang bisa kita lihat dan sentuh secara langsung.</p>
+                        <p class="text-slate-400 leading-relaxed">Hardware dikelompokkan berdasarkan fungsinya:</p>
+                        <ul class="list-disc list-inside space-y-2 pl-4 mt-4 text-slate-300">
+                            <li><strong>Perangkat Input:</strong> Untuk memasukkan data (Contoh: Mouse, Keyboard).</li>
+                            <li><strong>Perangkat Proses:</strong> Otak yang memproses data (Contoh: CPU, RAM).</li>
+                            <li><strong>Perangkat Output:</strong> Untuk menampilkan hasil (Contoh: Monitor, Speaker).</li>
+                        </ul>
+                    </div>
+                `;
+                sliderWrapper.appendChild(introSlide);
+
+                hardwareData.forEach(item => {
+                    const slide = document.createElement('div');
+                    slide.className = 'slide';
+                    slide.innerHTML = `
+                        <div class="grid md:grid-cols-2 gap-8 items-start">
+                            <div class="content-embed rounded-xl h-80 md:h-96">
+                                <iframe title="${item.name}" loading="lazy" src="https://sketchfab.com/models/${item.embed}/embed?autostart=0&transparent=1&ui_theme=dark"></iframe>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl font-bold text-sky-400 mb-3">${item.name}</h3>
+                                <p class="text-slate-400 leading-relaxed">${item.desc}</p>
+                            </div>
+                        </div>
+                    `;
+                    sliderWrapper.appendChild(slide);
+                });
+
+                initSlider('hardware-slider');
+            }
+
+            //--- Kuis Logic ---//
+//--- KUIS MULTIPLAYER (KAHOOT STYLE - FIREBASE) ---//
+
+            // 1. CONFIG: Ganti bagian ini dengan data dari Firebase Console Anda
+            const firebaseConfig = {
+            apiKey: "AIzaSyDzKKAx1dc1FeVWd9EFGsHJl3WYdrdS7_8",
+            authDomain: "kuis-informatika-k8.firebaseapp.com",
+            databaseURL: "https://kuis-informatika-k8-default-rtdb.firebaseio.com",
+            projectId: "kuis-informatika-k8",
+            storageBucket: "kuis-informatika-k8.firebasestorage.app",
+            messagingSenderId: "26150311392",
+            appId: "1:26150311392:web:aea5a5915baa1bed44c785",
+            measurementId: "G-EHSFMC5SCK"
+            };
+
+            // URL Google Script Anda (Untuk kirim nilai ke Spreadsheet)
+            const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby9z2P5_SxcywHITuomEtLatvde-U_cpBTpDw5m-7lCuFoCR1uXJtuCtZJ7dtlO300T_A/exec';
+
+            // Inisialisasi Firebase
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+            }
+            const db = firebase.database();
+
+            // Variabel Global
+            let myPlayerId = localStorage.getItem('playerId') || 'player_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('playerId', myPlayerId);
+            let myName = '';
+            let myClass = '';
+            let myScore = 0;
+            let isAdmin = false;
+            let currentQIndex = 0;
+
+            // Data Soal (Pastikan index jawaban 'a' sesuai urutan opts: 0,1,2,3)
+            const questionsData = [
+                { q: "Komponen fisik komputer yang bisa disentuh disebut...", img: "https://images.unsplash.com/photo-1731834452405-a472facfae95?q=80&w=687", opts: ["Software", "Brainware", "Hardware", "Freeware"], a: 2 }, 
+                { q: "Otak dari komputer yang memproses data adalah...", img: "https://images.unsplash.com/photo-1600348712270-5af9e3590f66?q=80&w=1170", opts: ["Mouse", "CPU", "Monitor", "Speaker"], a: 1 },
+                { q: "Aplikasi untuk menjelajah internet disebut...", img: "https://images.unsplash.com/photo-1655196601100-8bfb26cf99e9?q=80&w=1331", opts: ["Browser", "Explorer", "Manager", "Driver"], a: 0 },
+                { q: "Manusia yang mengoperasikan komputer disebut...", img: "https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=800", opts: ["Robot", "Admin", "User", "Brainware"], a: 3 },
+                { q: "Windows dan Android termasuk jenis software...", img: "https://images.unsplash.com/photo-1694878982147-e52097b660ec?q=80&w=1171", opts: ["Aplikasi", "Sistem Operasi", "Malware", "Antivirus"], a: 1 }
+            ];
+
+            // Referensi Element HTML (Sesuai HTML baru di Langkah 2)
+            const quizLogin = document.getElementById('quiz-login');
+            const quizLobby = document.getElementById('quiz-lobby');
+            const quizArena = document.getElementById('quiz-arena');
+            const playerListEl = document.getElementById('player-list');
+            const adminControls = document.getElementById('admin-controls');
+            const adminNav = document.getElementById('admin-nav');
+            const adminPassInput = document.getElementById('admin-pass');
+            const classSelect = document.getElementById('player-class');
+            const feedbackEl = document.getElementById('player-feedback');
+
+            // --- EVENT LISTENER UTAMA --- //
+
+            // Tampilkan input password jika pilih Guru
+            if(classSelect) {
+                classSelect.addEventListener('change', (e) => {
+                    if(e.target.value === 'TEACHER') {
+                        adminPassInput.classList.remove('hidden');
+                    } else {
+                        adminPassInput.classList.add('hidden');
+                    }
+                });
+            }
+
+            // Login / Join Game
+            const multiplayerForm = document.getElementById('multiplayer-form');
+            if(multiplayerForm) {
+                multiplayerForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    myName = document.getElementById('player-name').value;
+                    myClass = document.getElementById('player-class').value;
+                    const pass = adminPassInput.value;
+
+                    // Cek apakah Login sebagai Admin (Guru)
+                    if (myClass === 'TEACHER') {
+                        if (pass === 'admin123') { // Password Guru
+                            isAdmin = true;
+                            setupAdmin();
+                        } else {
+                            alert("Password Guru Salah!");
+                            return;
+                        }
+                    } else {
+                        // Login sebagai Siswa
+                        setupPlayer();
+                    }
+
+                    quizLogin.classList.add('hidden');
+                    quizLobby.classList.remove('hidden');
+                });
+            }
+
+            // --- LOGIKA SISWA (PLAYER) --- //
+            function setupPlayer() {
+                // Simpan data diri ke Firebase
+                db.ref('players/' + myPlayerId).set({
+                    name: myName,
+                    kelas: myClass,
+                    score: 0,
+                    online: true
+                });
+
+                // Hapus data diri saat disconnect
+                db.ref('players/' + myPlayerId).onDisconnect().remove();
+
+                // Dengarkan Perubahan Status Game (State)
+                db.ref('gameState').on('value', (snapshot) => {
+                    const state = snapshot.val();
+                    handleGameState(state);
+                });
+            }
+
+            // --- LOGIKA GURU (ADMIN) --- //
+            function setupAdmin() {
+                adminControls.classList.remove('hidden');
+                adminNav.classList.remove('hidden');
+                
+                // Reset Game State awal
+                db.ref('gameState').set({ step: 'lobby', qIndex: 0 });
+
+                // Tombol Mulai Game
+                document.getElementById('btn-start-game').addEventListener('click', () => {
+                    db.ref('gameState').set({ step: 'question', qIndex: 0, startTime: Date.now() });
+                });
+
+                // Tombol Reset Server
+                document.getElementById('btn-reset-game').addEventListener('click', () => {
+                    db.ref('players').remove();
+                    db.ref('gameState').set({ step: 'lobby', qIndex: 0 });
+                    location.reload();
+                });
+
+                // Tombol Next Question
+                document.getElementById('btn-next-question').addEventListener('click', () => {
+                    currentQIndex++;
+                    if (currentQIndex < questionsData.length) {
+                        db.ref('gameState').set({ step: 'question', qIndex: currentQIndex, startTime: Date.now() });
+                    } else {
+                        alert("Soal habis! Silakan akhiri game.");
+                    }
+                });
+
+                // Tombol Akhiri & Kirim Nilai
+                document.getElementById('btn-show-leaderboard').addEventListener('click', () => {
+                    finishGame();
+                });
+            }
+
+            function finishGame() {
+                db.ref('gameState').set({ step: 'finished' });
+            }
+
+            // --- SINKRONISASI GAME (UPDATE UI) --- //
+            function handleGameState(state) {
+                if (!state) return;
+
+                // Reset UI tampilan per step
+                feedbackEl.classList.add('hidden');
+                const optionsBtns = document.querySelectorAll('.arena-opt');
+                optionsBtns.forEach(btn => {
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-50', 'ring-4', 'ring-white');
+                });
+
+                if (state.step === 'lobby') {
+                    quizLobby.classList.remove('hidden');
+                    quizArena.classList.add('hidden');
+                    
+                    // Listen daftar pemain di lobi
+                    db.ref('players').on('value', (snap) => {
+                        const players = snap.val() || {};
+                        playerListEl.innerHTML = '';
+                        Object.values(players).forEach(p => {
+                            const badge = document.createElement('div');
+                            badge.className = 'bg-purple-600 px-4 py-2 rounded-full text-white font-bold shadow animate-bounce';
+                            badge.textContent = p.name;
+                            playerListEl.appendChild(badge);
+                        });
+                    });
+
+                } else if (state.step === 'question') {
+                    // Tampilkan Layar Soal
+                    quizLobby.classList.add('hidden');
+                    quizArena.classList.remove('hidden');
+                    
+                    currentQIndex = state.qIndex;
+                    const qData = questionsData[currentQIndex];
+
+                    // Update Teks Soal & Gambar
+                    document.getElementById('arena-question').textContent = qData.q;
+                    document.getElementById('live-status').textContent = `Soal ${currentQIndex + 1} / ${questionsData.length}`;
+                    
+                    const imgCont = document.getElementById('arena-image-container');
+                    if (qData.img) {
+                        imgCont.classList.remove('hidden');
+                        document.getElementById('arena-image').src = qData.img;
+                    } else {
+                        imgCont.classList.add('hidden');
+                    }
+                    
+                    // Update Opsi Jawaban
+                    optionsBtns.forEach((btn, idx) => {
+                        btn.textContent = qData.opts[idx];
+                        // Reset Event Click agar tidak numpuk
+                        const newBtn = btn.cloneNode(true);
+                        btn.parentNode.replaceChild(newBtn, btn);
+                        
+                        // Tambah Event Click Baru
+                        newBtn.addEventListener('click', () => submitAnswer(idx, state.startTime));
+                    });
+
+                    startCountdown(15); // Waktu per soal
+
+                } else if (state.step === 'finished') {
+                    alert("Game Selesai! Mengirim nilai Anda ke Papan Peringkat...");
+                    
+                    // Jika BUKAN admin (berarti siswa), kirim nilai ke Spreadsheet
+                    if (!isAdmin) {
+                         submitScore(myName, myClass, myScore);
+                    }
+                    
+                    // Pindah halaman ke Papan Peringkat
+                    setTimeout(() => {
+                        window.location.hash = "#peringkat";
+                        // Panggil router untuk refresh halaman ke section peringkat
+                        window.dispatchEvent(new HashChangeEvent("hashchange")); 
+                    }, 2000);
+                }
+            }
+
+            // --- LOGIKA JAWAB SOAL --- //
+            function submitAnswer(idx, startTime) {
+                // Matikan tombol
+                const optionsBtns = document.querySelectorAll('.arena-opt');
+                optionsBtns.forEach(b => b.disabled = true);
+                optionsBtns[idx].classList.add('ring-4', 'ring-white'); 
+
+                // Cek Jawaban
+                const correctIdx = questionsData[currentQIndex].a;
+                const isCorrect = (idx === correctIdx);
+                
+                feedbackEl.classList.remove('hidden', 'bg-red-500', 'bg-green-500');
+
+                if (isCorrect) {
+                    // Hitung Skor (Cepat = Lebih Tinggi)
+                    const timeTaken = (Date.now() - startTime) / 1000;
+                    const points = Math.max(10, Math.floor(100 - (timeTaken * 3))); // Rumus poin
+                    myScore += points;
+                    
+                    // Update Skor di Firebase
+                    db.ref('players/' + myPlayerId + '/score').set(myScore);
+                    
+                    feedbackEl.textContent = `BENAR! +${points} Poin`;
+                    feedbackEl.classList.add('bg-green-500');
+                } else {
+                    feedbackEl.textContent = "SALAH!";
+                    feedbackEl.classList.add('bg-red-500');
+                }
+            }
+
+            // Timer Visual
+            let timerInterval;
+            function startCountdown(seconds) {
+                clearInterval(timerInterval);
+                const timerEl = document.getElementById('live-timer');
+                let left = seconds;
+                timerEl.textContent = left;
+                
+                timerInterval = setInterval(() => {
+                    left--;
+                    timerEl.textContent = left;
+                    if (left <= 0) {
+                        clearInterval(timerInterval);
+                        const optionsBtns = document.querySelectorAll('.arena-opt');
+                        optionsBtns.forEach(b => b.disabled = true);
+                    }
+                }, 1000);
+            }
+
+            // Fungsi Kirim ke Spreadsheet (Sama seperti sebelumnya)
+            async function submitScore(nama, kelas, skor) {
+                // Kita gunakan toast/alert kecil untuk info
+                const saveMsg = document.createElement('div');
+                saveMsg.className = "fixed top-4 right-4 bg-yellow-500 text-white p-4 rounded shadow-lg z-50";
+                saveMsg.textContent = "Menyimpan ke Spreadsheet...";
+                document.body.appendChild(saveMsg);
+
+                try {
+                    await fetch(WEB_APP_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        body: new URLSearchParams({nama, kelas, skor})
+                    });
+                    saveMsg.textContent = "Data berhasil disimpan!";
+                    saveMsg.className = "fixed top-4 right-4 bg-green-500 text-white p-4 rounded shadow-lg z-50";
+                } catch (error) {
+                    console.error('Error saving score:', error);
+                    saveMsg.textContent = "Gagal menyimpan data.";
+                    saveMsg.className = "fixed top-4 right-4 bg-red-500 text-white p-4 rounded shadow-lg z-50";
+                } finally {
+                    setTimeout(() => saveMsg.remove(), 3000);
+                }
+            }
+
+            //--- END KUIS MULTIPLAYER ---//
+            
+            //--- Papan Peringkat Logic ---//
+            const leaderboardLoading = document.getElementById('leaderboard-loading');
+            const leaderboardContent = document.getElementById('leaderboard-content');
+            const leaderboardTable = document.getElementById('leaderboard-table');
+
+            async function fetchLeaderboard() {
+                leaderboardLoading.style.display = 'block';
+                leaderboardContent.classList.add('hidden');
+                try {
+                    const response = await fetch(WEB_APP_URL);
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    const data = await response.json();
+                    if (!Array.isArray(data)) throw new Error("Format data tidak valid");
+                    data.sort((a, b) => {
+                        if (b.Skor !== a.Skor) return b.Skor - a.Skor;
+                        return new Date(a.Timestamp) - new Date(b.Timestamp);
+                    });
+                    displayLeaderboard(data);
+                } catch (error) {
+                    console.error('Error fetching leaderboard:', error);
+                    leaderboardLoading.innerHTML = `<p class="text-red-500">Gagal memuat data peringkat. Silakan coba lagi nanti.</p>`;
+                }
+            }
+
+            function displayLeaderboard(data) {
+                ['1', '2', '3'].forEach((rank, index) => {
+                    const nameEl = document.getElementById(`rank${rank}-name`);
+                    const scoreEl = document.getElementById(`rank${rank}-score`);
+                    const playerData = data[index];
+                    nameEl.textContent = playerData ? playerData.Nama : "-";
+                    scoreEl.textContent = playerData ? playerData.Skor : "-";
+                });
+                leaderboardTable.innerHTML = '';
+                const otherPlayers = data.slice(3);
+                if(data.length === 0) {
+                     leaderboardTable.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-gray-500">Belum ada data peringkat. Jadilah yang pertama!</td></tr>`;
+                } else if (otherPlayers.length === 0){
+                    leaderboardTable.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-gray-500">Belum ada data peringkat lainnya.</td></tr>`;
+                } else {
+                    otherPlayers.forEach((player, index) => {
+                        const rank = index + 4;
+                        const row = document.createElement('tr');
+                        row.className = 'border-b border-gray-700 hover:bg-gray-700';
+                        row.innerHTML = `<td class="p-4">${rank}</td><td class="p-4 font-semibold whitespace-nowrap">${player.Nama}</td><td class="p-4">${player.Kelas}</td><td class="p-4 text-right font-bold text-yellow-400">${player.Skor}</td>`;
+                        leaderboardTable.appendChild(row);
+                    });
+                }
+                leaderboardLoading.style.display = 'none';
+                leaderboardContent.classList.remove('hidden');
+            }
+            
+            // --- GAMES LOGIC --- //
+            window.initGame1 = function() {
+                let correctMatches = 0;
+                const draggableItemsContainer = document.getElementById('draggable-items');
+                const dropZonesContainer = document.getElementById('drop-zones');
+                const game1Feedback = document.getElementById('game1-feedback');
+                const resetGame1Btn = document.getElementById('reset-game1-btn');
+                const hardwareItems = [ { name: 'CPU', img: '🧠' }, { name: 'RAM', img: '💾' }, { name: 'Monitor', img: '🖥️' }, { name: 'Keyboard', img: '⌨️' }, { name: 'Speaker', img: '🔊' }, { name: 'Microphone', img: '🎤' }, { name: 'Printer', img: '🖨️' }, { name: 'GPU', img: '🎮' }  ];
+                
+                draggableItemsContainer.innerHTML = '';
+                dropZonesContainer.innerHTML = '';
+                game1Feedback.textContent = '';
+                const shuffledHardware = [...hardwareItems].sort(() => Math.random() - 0.5);
+                const shuffledDropZones = [...hardwareItems].sort(() => Math.random() - 0.5);
+                shuffledHardware.forEach(item => {
+                    const el = document.createElement('div');
+                    el.id = `drag-${item.name}`;
+                    el.textContent = item.name;
+                    el.draggable = true;
+                    el.className = 'p-3 bg-purple-600 rounded-lg cursor-grab active:cursor-grabbing transition-opacity duration-300';
+                    el.addEventListener('dragstart', e => e.dataTransfer.setData('text/plain', item.name));
+                    draggableItemsContainer.appendChild(el);
+                });
+                shuffledDropZones.forEach(item => {
+                    const zone = document.createElement('div');
+                    zone.dataset.item = item.name;
+                    zone.className = 'w-full h-24 bg-gray-700 rounded-lg flex justify-center items-center text-4xl border-2 border-dashed border-gray-500 transition-colors duration-300';
+                    zone.innerHTML = `<span>${item.img}</span>`;
+                    zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('bg-gray-600'); });
+                    zone.addEventListener('dragleave', () => zone.classList.remove('bg-gray-600'));
+                    zone.addEventListener('drop', e => {
+                        e.preventDefault();
+                        zone.classList.remove('bg-gray-600');
+                        const droppedItemName = e.dataTransfer.getData('text/plain');
+                        if (zone.dataset.item === droppedItemName && !zone.classList.contains('matched')) {
+                            zone.innerHTML = `<span class="text-green-400 text-xl font-bold">${item.name}</span>`;
+                            zone.classList.add('matched', 'border-green-500');
+                            const draggedEl = document.getElementById(`drag-${droppedItemName}`);
+                            if(draggedEl) draggedEl.classList.add('opacity-0');
+                            correctMatches++;
+                            if (correctMatches === hardwareItems.length) {
+                                game1Feedback.textContent = 'Selamat! Kamu berhasil memasangkan semuanya!';
+                                game1Feedback.className = 'mb-4 text-center font-bold text-green-400';
+                            }
+                        }
+                    });
+                    dropZonesContainer.appendChild(zone);
+                });
+                resetGame1Btn.onclick = initGame1;
+            }
+
+            window.initGame2 = function() {
+                const game2Image = document.getElementById('game2-image');
+                const game2SoftwareName = document.getElementById('game2-software-name');
+                const game2Feedback = document.getElementById('game2-feedback');
+                const game2ChoiceBtns = document.querySelectorAll('.game2-choice-btn');
+                const game2Result = document.getElementById('game2-result');
+                const game2Container = document.getElementById('game2-container');
+                const game2ScoreEl = document.getElementById('game2-score');
+                const resetGame2Btn = document.getElementById('reset-game2-btn');
+                const softwareList = [ 
+                    { name: 'Windows 12', image: 'https://images.unsplash.com/photo-1680128371866-da0e32829a03?q=80&w=1228&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', type: 'os' }, 
+                    { name: 'Google Chrome', image: 'https://images.unsplash.com/photo-1649006865574-8d077cefec17?q=80&w=1161&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', type: 'app' }, 
+                    { name: 'Microsoft Word', image: 'https://images.unsplash.com/photo-1658203897415-3cad6cfad5c0?q=80&w=2062&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', type: 'app' }, 
+                    { name: 'Android', image: 'https://images.unsplash.com/photo-1607252650355-f7fd0460ccdb?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', type: 'os' }, 
+                    { name: 'Photoshop', image: 'https://images.unsplash.com/photo-1740174459726-8c57d8366061?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', type: 'app' }, 
+                    { name: 'iOS', image: 'https://images.unsplash.com/photo-1618242556516-6858a8f34cb0?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', type: 'os' } 
+                ];
+                let currentGame2Index, game2Score;
+
+                const start = () => {
+                    currentGame2Index = 0; game2Score = 0;
+                    game2Result.classList.add('hidden');
+                    game2Container.style.display = 'block';
+                    loadGame2Question();
+                }
+
+                function loadGame2Question() {
+                    if (currentGame2Index < softwareList.length) {
+                        const item = softwareList[currentGame2Index];
+                        game2Image.src = item.image;
+                        game2SoftwareName.textContent = item.name;
+                        game2Feedback.textContent = '';
+                    } else {
+                        endGame2();
+                    }
+                }
+                
+                game2ChoiceBtns.forEach(btn => {
+                    btn.onclick = () => {
+                        const choice = btn.dataset.type;
+                        const correctType = softwareList[currentGame2Index].type;
+                        if (choice === correctType) {
+                            game2Feedback.textContent = 'Benar!';
+                            game2Feedback.className = 'text-center font-bold mb-4 h-6 text-green-400';
+                            game2Score++;
+                        } else {
+                            game2Feedback.textContent = `Salah! Itu adalah ${correctType === 'os' ? 'Sistem Operasi' : 'Aplikasi'}.`;
+                            game2Feedback.className = 'text-center font-bold mb-4 h-6 text-red-400';
+                        }
+                        currentGame2Index++;
+                        setTimeout(loadGame2Question, 1500);
+                    };
+                });
+
+                function endGame2() {
+                    game2Container.style.display = 'none';
+                    game2Result.classList.remove('hidden');
+                    game2ScoreEl.textContent = `${game2Score} / ${softwareList.length}`;
+                }
+                resetGame2Btn.onclick = start;
+                start();
+            }
+
+            window.initGame3 = function() {
+                const game3Description = document.getElementById('game3-description');
+                const game3Feedback = document.getElementById('game3-feedback');
+                const game3OptionsContainer = document.getElementById('game3-options');
+                const game3Result = document.getElementById('game3-result');
+                const game3Container = document.getElementById('game3-container');
+                const game3ScoreEl = document.getElementById('game3-score');
+                const resetGame3Btn = document.getElementById('reset-game3-btn');
+                const brainwareRoles = [ { role: 'Programmer', desc: 'Saya menulis instruksi untuk membuat aplikasi game.', options: ['Programmer', 'Operator'] }, { role: 'Administrator', desc: 'Saya memastikan jaringan komputer sekolah berjalan lancar.', options: ['Administrator', 'System Analyst'] }, { role: 'End User', desc: 'Saya menggunakan komputer untuk mengerjakan tugas.', options: ['End User', 'Programmer'] }, { role: 'System Analyst', desc: 'Saya merancang sistem informasi perpustakaan.', options: ['System Analyst', 'Administrator'] } ];
+                let currentGame3Index, game3Score;
+
+                const start = () => {
+                    currentGame3Index = 0; game3Score = 0;
+                    game3Result.classList.add('hidden');
+                    game3Container.style.display = 'block';
+                    loadGame3Question();
+                }
+
+                function loadGame3Question() {
+                     game3Feedback.textContent = '';
+                    if (currentGame3Index < brainwareRoles.length) {
+                        const currentRole = brainwareRoles[currentGame3Index];
+                        game3Description.textContent = `"${currentRole.desc}"`;
+                        game3OptionsContainer.innerHTML = '';
+                        const shuffledOptions = [...currentRole.options].sort(() => Math.random() - 0.5);
+                        shuffledOptions.forEach(option => {
+                            const btn = document.createElement('button');
+                            btn.textContent = option;
+                            btn.className = 'w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-transform hover:scale-105';
+                            btn.onclick = () => checkGame3Answer(option);
+                            game3OptionsContainer.appendChild(btn);
+                        });
+                    } else {
+                        endGame3();
+                    }
+                }
+                
+                function checkGame3Answer(selectedRole) {
+                    const correctRole = brainwareRoles[currentGame3Index].role;
+                    if(selectedRole === correctRole) {
+                        game3Feedback.textContent = 'Tepat Sekali!';
+                        game3Feedback.className = 'text-center font-bold mb-4 h-6 text-green-400';
+                        game3Score++;
+                    } else {
+                        game3Feedback.textContent = `Kurang Tepat. Jawaban benar: ${correctRole}.`;
+                        game3Feedback.className = 'text-center font-bold mb-4 h-6 text-red-400';
+                    }
+                    currentGame3Index++;
+                    setTimeout(loadGame3Question, 1500);
+                }
+
+                function endGame3() {
+                    game3Container.style.display = 'none';
+                    game3Result.classList.remove('hidden');
+                    game3ScoreEl.textContent = `${game3Score} / ${brainwareRoles.length}`;
+                }
+                resetGame3Btn.onclick = start;
+                start();
+            }
+
+            window.initGame4 = function() {
+                const game4Grid = document.getElementById('game4-grid');
+                const commandSequenceEl = document.getElementById('command-sequence');
+                const game4FeedbackEl = document.getElementById('game4-feedback');
+                const runBtn = document.getElementById('run-btn');
+                const clearBtn = document.getElementById('clear-btn');
+                const resetGame4Btn = document.getElementById('reset-game4-btn');
+
+                const gameMap = [ ['R', '0', '0', '1', '0'], ['0', '1', '0', '1', '0'], ['0', '1', '0', '0', '0'], ['0', '0', '0', '1', 'G'], ['1', '1', '0', '0', '0'], ];
+                const gridSize = gameMap.length;
+                let robot = { x: 0, y: 0, dir: 1 }; // 0:up, 1:right, 2:down, 3:left
+                let commands = [];
+
+                const start = () => {
+                    commands = [];
+                    updateCommandDisplay();
+                    game4FeedbackEl.textContent = '';
+                    let startPosFound = false;
+                    for (let y = 0; y < gridSize; y++) {
+                        for (let x = 0; x < gridSize; x++) {
+                            if (gameMap[y][x] === 'R') {
+                                robot = { x: x, y: y, dir: 1 }; // Start facing right
+                                startPosFound = true;
+                                break;
+                            }
+                        }
+                        if(startPosFound) break;
+                    }
+                    drawGrid();
+                    toggleGame4Buttons(false);
+                }
+
+                function drawGrid() {
+                    game4Grid.innerHTML = '';
+                    game4Grid.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
+                    game4Grid.style.gridTemplateRows = `repeat(${gridSize}, 1fr)`;
+                    const rotation = robot.dir * 90;
+
+                    for (let y = 0; y < gridSize; y++) {
+                        for (let x = 0; x < gridSize; x++) {
+                            const cell = document.createElement('div');
+                            cell.className = 'grid-cell';
+                            const type = gameMap[y][x];
+                            if (type === '1') cell.textContent = '🧱';
+                            else if (type === 'G') cell.textContent = '🔋';
+                            if (x === robot.x && y === robot.y) {
+                               const robotEl = document.createElement('div');
+                               robotEl.className = 'robot-container';
+                               robotEl.style.transform = `rotate(${rotation}deg)`;
+                               robotEl.innerHTML = `🤖`;
+                               cell.appendChild(robotEl);
+                            }
+                            game4Grid.appendChild(cell);
+                        }
+                    }
+                }
+                
+                function updateCommandDisplay() {
+                    commandSequenceEl.innerHTML = commands.map(cmd => {
+                        if (cmd === 'F') return '<i class="fas fa-rocket"></i>';
+                        if (cmd === 'L') return '<i class="fas fa-undo-alt"></i>';
+                        if (cmd === 'R') return '<i class="fas fa-redo-alt"></i>';
+                    }).join(' ');
+                }
+                
+                document.getElementById('cmd-forward').onclick = () => { commands.push('F'); updateCommandDisplay(); };
+                document.getElementById('cmd-left').onclick = () => { commands.push('L'); updateCommandDisplay(); };
+                document.getElementById('cmd-right').onclick = () => { commands.push('R'); updateCommandDisplay(); };
+                clearBtn.onclick = () => { commands = []; updateCommandDisplay(); };
+                resetGame4Btn.onclick = start;
+
+                runBtn.onclick = () => {
+                    let initialRobotState = { ...robot };
+                    let tempRobot = { ...robot };
+                    let sequenceIndex = 0;
+                    toggleGame4Buttons(true);
+                    game4FeedbackEl.textContent = '';
+                    
+                    function executeNextCommand() {
+                        if (sequenceIndex >= commands.length) {
+                            if (gameMap[tempRobot.y][tempRobot.x] === 'G') {
+                                game4FeedbackEl.textContent = 'Berhasil! Robot mencapai tujuan!';
+                                game4FeedbackEl.className = 'text-center font-bold mb-4 h-6 text-green-400';
+                            } else {
+                                game4FeedbackEl.textContent = 'Gagal! Robot belum sampai tujuan.';
+                                game4FeedbackEl.className = 'text-center font-bold mb-4 h-6 text-yellow-400';
+                            }
+                            robot = initialRobotState;
+                            toggleGame4Buttons(false);
+                            return;
+                        }
+                        const command = commands[sequenceIndex];
+                        let moveOk = true;
+                        if (command === 'L') {
+                            tempRobot.dir = (tempRobot.dir - 1 + 4) % 4;
+                        } else if (command === 'R') {
+                             tempRobot.dir = (tempRobot.dir + 1) % 4;
+                        } else if (command === 'F') {
+                            let newX = tempRobot.x, newY = tempRobot.y;
+                            if(tempRobot.dir === 0) newY--;
+                            else if(tempRobot.dir === 1) newX++;
+                            else if(tempRobot.dir === 2) newY++;
+                            else if(tempRobot.dir === 3) newX--;
+                            if (newX < 0 || newX >= gridSize || newY < 0 || newY >= gridSize || gameMap[newY][newX] === '1') {
+                                moveOk = false;
+                            } else {
+                                tempRobot.x = newX;
+                                tempRobot.y = newY;
+                            }
+                        }
+                        drawGridWithTempRobot(tempRobot);
+                        if (!moveOk) {
+                            game4FeedbackEl.textContent = 'Gagal! Robot menabrak dinding!';
+                            game4FeedbackEl.className = 'text-center font-bold mb-4 h-6 text-red-400';
+                            robot = initialRobotState;
+                            toggleGame4Buttons(false);
+                            setTimeout(() => drawGridWithTempRobot(initialRobotState), 1000);
+                            return;
+                        }
+                        sequenceIndex++;
+                        setTimeout(executeNextCommand, 400);
+                    }
+                    executeNextCommand();
+                };
+
+                function drawGridWithTempRobot(tempRobotState) {
+                    game4Grid.innerHTML = '';
+                    const rotation = tempRobotState.dir * 90;
+                    for (let y = 0; y < gridSize; y++) {
+                        for (let x = 0; x < gridSize; x++) {
+                            const cell = document.createElement('div');
+                            cell.className = 'grid-cell';
+                            const type = gameMap[y][x];
+                            if (type === '1') cell.textContent = '🧱';
+                            else if (type === 'G') cell.textContent = '🔋';
+                            if (x === tempRobotState.x && y === tempRobotState.y) {
+                               const robotEl = document.createElement('div');
+                               robotEl.className = 'robot-container';
+                               robotEl.style.transform = `rotate(${rotation}deg)`;
+                               robotEl.innerHTML = `🤖`;
+                               cell.appendChild(robotEl);
+                            }
+                            game4Grid.appendChild(cell);
+                        }
+                    }
+                }
+
+                function toggleGame4Buttons(disabled) {
+                    document.querySelectorAll('.game4-cmd-btn, #run-btn, #clear-btn, #reset-game4-btn').forEach(btn => {
+                        btn.disabled = disabled;
+                        btn.classList.toggle('opacity-50', disabled);
+                        btn.classList.toggle('cursor-not-allowed', disabled);
+                    });
+                }
+                start();
+            }
+
+            window.initTebakTeknologi = function() {
+                const tebakContainer = document.getElementById('tebak-container');
+                const tebakResult = document.getElementById('tebak-result');
+                const tebakImage = document.getElementById('tebak-image');
+                const tebakItemName = document.getElementById('tebak-item-name');
+                const tebakFeedback = document.getElementById('tebak-feedback');
+                const choiceBtns = document.querySelectorAll('.tebak-choice-btn');
+                const tebakScoreEl = document.getElementById('tebak-score');
+                const resetBtn = document.getElementById('reset-tebak-btn');
+
+                const tebakItems = [
+                    { name: "Mouse Komputer", image: "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?q=80&w=1167&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", type: "fisik", explanation: "Mouse adalah perangkat keras (Hardware) yang bisa disentuh." },
+                    { name: "Earphone", image: "https://images.unsplash.com/photo-1484704849700-f032a568e944?q=80&w=800", type: "fisik", explanation: "Earphone adalah perangkat keras (Hardware) untuk mendengarkan suara." },
+                    { name: "WhatsApp", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/800px-WhatsApp.svg.png", type: "program", explanation: "Ikon ini mewakili aplikasi (Software) untuk berkomunikasi." },
+                    { name: "OS Windows", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Windows_logo_and_wordmark_-_2021.svg/800px-Windows_logo_and_wordmark_-_2021.svg.png", type: "program", explanation: "Logo ini mewakili Sistem Operasi Windows, sebuah perangkat lunak (Software)." },
+                    { name: "Seseorang yang Mengetik", image: "https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=800", type: "fisik", explanation: "Orang adalah pengguna (Brainware), yang merupakan entitas fisik." }
+                ];
+
+                let currentItemIndex, score, shuffledItems;
+
+                const start = () => {
+                    currentItemIndex = 0;
+                    score = 0;
+                    shuffledItems = [...tebakItems].sort(() => Math.random() - 0.5);
+                    tebakResult.classList.add('hidden');
+                    tebakContainer.style.display = 'block';
+                    loadNextItem();
+                };
+
+                function loadNextItem() {
+                    if (currentItemIndex < shuffledItems.length) {
+                        const item = shuffledItems[currentItemIndex];
+                        tebakImage.src = item.image;
+                        tebakItemName.textContent = item.name;
+                        tebakFeedback.textContent = '';
+                        choiceBtns.forEach(btn => btn.disabled = false);
+                    } else {
+                        endGame();
+                    }
+                }
+
+                function handleChoice(chosenType) {
+                    choiceBtns.forEach(btn => btn.disabled = true);
+                    const correctType = shuffledItems[currentItemIndex].type;
+                    const explanation = shuffledItems[currentItemIndex].explanation;
+
+                    if (chosenType === correctType) {
+                        score++;
+                        tebakFeedback.textContent = 'Benar! ' + explanation;
+                        tebakFeedback.className = 'text-center font-bold mb-4 h-12 flex items-center justify-center text-green-400';
+                    } else {
+                        tebakFeedback.textContent = 'Kurang Tepat. ' + explanation;
+                        tebakFeedback.className = 'text-center font-bold mb-4 h-12 flex items-center justify-center text-red-400';
+                    }
+
+                    currentItemIndex++;
+                    setTimeout(loadNextItem, 2500); // Wait a bit before showing the next item
+                }
+
+                function endGame() {
+                    tebakContainer.style.display = 'none';
+                    tebakResult.classList.remove('hidden');
+                }
+
+                choiceBtns.forEach(btn => {
+                    btn.addEventListener('click', () => handleChoice(btn.dataset.type));
+                });
+
+                resetBtn.addEventListener('click', start);
+
+                start();
+            };
+
+        });
+    </script>
+</body>
+</html>
