@@ -721,72 +721,72 @@
 
             <!-- Kuis -->
 <section id="kuis" class="page-content">
-    <div class="max-w-4xl mx-auto">
+    <div class="max-w-4xl mx-auto mt-10">
         
         <div id="quiz-login" class="bg-gray-800 p-8 rounded-xl shadow-2xl text-center">
-            <h2 class="text-3xl font-bold mb-2 text-purple-400 text-glow">Kuis Multiplayer</h2>
-            <p class="text-gray-400 mb-6">Bergabunglah dengan teman sekelas secara real-time!</p>
+            <h1 class="text-4xl font-bold mb-4 text-purple-400">Kuis Multiplayer</h1>
+            <p class="text-gray-400 mb-8">Masukkan nama untuk bergabung.</p>
             
             <form id="multiplayer-form" class="space-y-4 max-w-md mx-auto">
-                <input type="text" id="player-name" placeholder="Nama Lengkap / Nama Panggilan" class="w-full bg-gray-700 border-2 border-gray-600 rounded-lg p-3 text-white focus:border-purple-500 transition" required>
-                <select id="player-class" class="w-full bg-gray-700 border-2 border-gray-600 rounded-lg p-3 text-white focus:border-purple-500 transition" required>
-                    <option value="">Pilih Kelas (Siswa)</option>
+                <input type="text" id="player-name" placeholder="Nama Lengkap" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3 text-white" required>
+                <select id="player-class" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3 text-white" required>
+                    <option value="">-- Pilih Kelas --</option>
                     <option value="8.1">8.1</option>
                     <option value="8.2">8.2</option>
                     <option value="8.3">8.3</option>
-                    <option value="8.4">8.4</option>
-                    <option value="TEACHER">GURU (Mode Host)</option>
+                    <option value="TEACHER">GURU (Host)</option>
                 </select>
-                <input type="password" id="admin-pass" placeholder="Password Admin" class="w-full bg-gray-700 border-2 border-red-600 rounded-lg p-3 text-white hidden">
-                
-                <button type="submit" class="btn-gradient text-white font-bold py-3 px-8 rounded-full w-full">Masuk Arena</button>
+                <input type="password" id="admin-pass" placeholder="Password Admin" class="w-full bg-gray-900 border border-red-500 rounded-lg p-3 text-white hidden">
+                <button type="submit" class="bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-3 px-8 rounded-full w-full hover:scale-105 transition">MASUK</button>
             </form>
         </div>
 
-        <div id="quiz-lobby" class="hidden text-center bg-gray-800 p-8 rounded-xl">
-            <h2 class="text-3xl font-bold text-yellow-400 animate-pulse">Menunggu Host Memulai...</h2>
-            <div class="mt-8">
-                <p class="text-gray-400">Pemain yang bergabung:</p>
-                <div id="player-list" class="flex flex-wrap gap-3 justify-center mt-4">
-                    </div>
+        <div id="quiz-lobby" class="hidden text-center bg-gray-800 p-8 rounded-xl border border-purple-500">
+            <h2 class="text-3xl font-bold text-yellow-400 animate-pulse mb-6">Menunggu Host Memulai...</h2>
+            
+            <div class="bg-gray-900 p-4 rounded-lg min-h-[100px]">
+                <p class="text-gray-400 mb-4">Pemain yang bergabung:</p>
+                <div id="player-list" class="flex flex-wrap gap-2 justify-center"></div>
             </div>
             
-            <div id="admin-controls" class="hidden mt-10 p-4 border-t border-gray-600">
+            <div id="admin-controls" class="hidden mt-8 pt-6 border-t border-gray-600">
                 <h3 class="text-xl text-red-400 font-bold mb-4">Panel Guru</h3>
-                <div class="flex justify-center gap-4">
-                    <button id="btn-start-game" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg">Mulai Game</button>
-                    <button id="btn-reset-game" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-lg">Reset Server</button>
-                </div>
+                <button id="btn-start-game" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg transform hover:scale-105 transition text-xl">
+                    ▶️ MULAI GAME
+                </button>
+                <button id="btn-reset-game" class="ml-4 bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg">
+                    🔄 RESET
+                </button>
             </div>
         </div>
 
         <div id="quiz-arena" class="hidden">
-            <div class="flex justify-between items-center mb-4">
-                <div class="text-lg font-semibold text-purple-300" id="live-status">Soal 1</div>
-                <div id="live-timer" class="text-2xl font-bold bg-red-600 px-4 py-2 rounded-full shadow-lg">00</div>
+            <div class="flex justify-between items-center mb-6">
+                <div class="text-xl font-bold text-purple-400" id="live-status">Soal 1</div>
+                <div id="live-timer" class="text-3xl font-bold bg-red-600 px-6 py-2 rounded-full shadow-lg">15</div>
             </div>
 
             <div class="bg-gray-800 p-6 rounded-xl shadow-lg text-center mb-6">
-                <div id="arena-image-container" class="bg-black/20 rounded-lg mb-4 flex justify-center items-center h-48 hidden">
-                    <img id="arena-image" src="" class="max-h-full rounded-lg">
-                </div>
-                <h3 id="arena-question" class="text-xl md:text-2xl font-bold mb-2">Bersiap...</h3>
+                <img id="arena-image" src="" class="max-h-64 mx-auto rounded-lg mb-4 hidden object-contain">
+                <h3 id="arena-question" class="text-2xl font-bold text-white leading-relaxed">Memuat Pertanyaan...</h3>
             </div>
 
             <div id="arena-options" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <button class="arena-opt bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl transition transform hover:scale-105" data-idx="0">A</button>
-                <button class="arena-opt bg-green-600 hover:bg-green-500 text-white font-bold py-4 rounded-xl transition transform hover:scale-105" data-idx="1">B</button>
-                <button class="arena-opt bg-yellow-600 hover:bg-yellow-500 text-white font-bold py-4 rounded-xl transition transform hover:scale-105" data-idx="2">C</button>
-                <button class="arena-opt bg-red-600 hover:bg-red-500 text-white font-bold py-4 rounded-xl transition transform hover:scale-105" data-idx="3">D</button>
+                <button class="arena-opt bg-blue-600 p-6 rounded-xl font-bold text-xl hover:bg-blue-500 transition shadow-lg" data-idx="0">A</button>
+                <button class="arena-opt bg-green-600 p-6 rounded-xl font-bold text-xl hover:bg-green-500 transition shadow-lg" data-idx="1">B</button>
+                <button class="arena-opt bg-yellow-600 p-6 rounded-xl font-bold text-xl hover:bg-yellow-500 transition shadow-lg" data-idx="2">C</button>
+                <button class="arena-opt bg-red-600 p-6 rounded-xl font-bold text-xl hover:bg-red-500 transition shadow-lg" data-idx="3">D</button>
             </div>
 
-            <div id="admin-nav" class="hidden mt-6 flex justify-center gap-4">
-                <button id="btn-next-question" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-8 rounded-full shadow-lg border-2 border-white">Pertanyaan Selanjutnya ➡️</button>
-                <button id="btn-show-leaderboard" class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-3 px-8 rounded-full shadow-lg border-2 border-white">Akhiri & Lihat Peringkat 🏆</button>
+            <div id="player-feedback" class="hidden mt-4 text-center p-4 rounded-lg font-bold text-2xl animate-bounce"></div>
+
+            <div id="admin-nav" class="hidden mt-8 text-center">
+                <button id="btn-next-question" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-10 rounded-full text-lg shadow-xl border-2 border-white">
+                    PERTANYAAN SELANJUTNYA ➡️
+                </button>
             </div>
-             
-             <div id="player-feedback" class="hidden mt-4 text-center p-4 rounded-lg font-bold text-xl"></div>
         </div>
+
     </div>
 </section>
 
@@ -1194,312 +1194,345 @@
             }
 
             //--- Kuis Logic ---//
-//--- KUIS MULTIPLAYER (KAHOOT STYLE - FIREBASE) ---//
+// ================================================================
+    // LOGIKA KUIS MULTIPLAYER (FINAL UPDATE - SOAL BARU & FIX AUTO-SAVE)
+    // ================================================================
 
-            // 1. CONFIG: Ganti bagian ini dengan data dari Firebase Console Anda
-            const firebaseConfig = {
-            apiKey: "AIzaSyDzKKAx1dc1FeVWd9EFGsHJl3WYdrdS7_8",
-            authDomain: "kuis-informatika-k8.firebaseapp.com",
-            databaseURL: "https://kuis-informatika-k8-default-rtdb.firebaseio.com",
-            projectId: "kuis-informatika-k8",
-            storageBucket: "kuis-informatika-k8.firebasestorage.app",
-            messagingSenderId: "26150311392",
-            appId: "1:26150311392:web:aea5a5915baa1bed44c785",
-            measurementId: "G-EHSFMC5SCK"
-            };
+    // --- 1. CONFIG FIREBASE ---
+    const firebaseConfig = {
+        apiKey: "AIzaSyDzKKAx1dc1FeVWd9EFGsHJl3WYdrdS7_8",
+        authDomain: "kuis-informatika-k8.firebaseapp.com",
+        databaseURL: "https://kuis-informatika-k8-default-rtdb.firebaseio.com",
+        projectId: "kuis-informatika-k8",
+        storageBucket: "kuis-informatika-k8.firebasestorage.app",
+        messagingSenderId: "26150311392",
+        appId: "1:26150311392:web:aea5a5915baa1bed44c785",
+        measurementId: "G-EHSFMC5SCK"
+    };
 
-            // URL Google Script Anda (Untuk kirim nilai ke Spreadsheet)
-            const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby9z2P5_SxcywHITuomEtLatvde-U_cpBTpDw5m-7lCuFoCR1uXJtuCtZJ7dtlO300T_A/exec';
+    // URL Google Script
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby9z2P5_SxcywHITuomEtLatvde-U_cpBTpDw5m-7lCuFoCR1uXJtuCtZJ7dtlO300T_A/exec';
 
-            // Inisialisasi Firebase
-            if (!firebase.apps.length) {
-                firebase.initializeApp(firebaseConfig);
-            }
-            const db = firebase.database();
+    // Inisialisasi Firebase
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-            // Variabel Global
-            let myPlayerId = localStorage.getItem('playerId') || 'player_' + Math.random().toString(36).substr(2, 9);
-            localStorage.setItem('playerId', myPlayerId);
-            let myName = '';
-            let myClass = '';
-            let myScore = 0;
-            let isAdmin = false;
-            let currentQIndex = 0;
+    // ID Pemain Acak (Agar bisa tes banyak tab)
+    let myPlayerId = 'user_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+    
+    let myName = '', myClass = '', myScore = 0, isAdmin = false;
+    
+    // [BARU] Flag untuk mencegah auto-save saat refresh
+    let hasParticipated = false;
 
-            // Data Soal (Pastikan index jawaban 'a' sesuai urutan opts: 0,1,2,3)
-            const questionsData = [
-                { q: "Komponen fisik komputer yang bisa disentuh disebut...", img: "https://images.unsplash.com/photo-1731834452405-a472facfae95?q=80&w=687", opts: ["Software", "Brainware", "Hardware", "Freeware"], a: 2 }, 
-                { q: "Otak dari komputer yang memproses data adalah...", img: "https://images.unsplash.com/photo-1600348712270-5af9e3590f66?q=80&w=1170", opts: ["Mouse", "CPU", "Monitor", "Speaker"], a: 1 },
-                { q: "Aplikasi untuk menjelajah internet disebut...", img: "https://images.unsplash.com/photo-1655196601100-8bfb26cf99e9?q=80&w=1331", opts: ["Browser", "Explorer", "Manager", "Driver"], a: 0 },
-                { q: "Manusia yang mengoperasikan komputer disebut...", img: "https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=800", opts: ["Robot", "Admin", "User", "Brainware"], a: 3 },
-                { q: "Windows dan Android termasuk jenis software...", img: "https://images.unsplash.com/photo-1694878982147-e52097b660ec?q=80&w=1171", opts: ["Aplikasi", "Sistem Operasi", "Malware", "Antivirus"], a: 1 }
-            ];
+    // --- DATA SOAL LENGKAP (10 SOAL) ---
+    const questions = [
+        { 
+            q: "Sebuah perusahaan baru saja membeli komputer tercanggih. Namun, komputer tersebut tidak bisa menghasilkan laporan keuangan karena tidak ada staf yang memiliki keahlian. Komponen sistem komputer manakah yang menjadi kendala utama?", 
+            img: "https://images.unsplash.com/photo-1731834452405-a472facfae95?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", 
+            opts: ["Kegagalan pada Hardware", "Ketidakcocokan Software", "Keterbatasan Brainware", "Kerusakan pada Sistem Operasi"], 
+            a: 2 
+        },
+        { 
+            q: "Seorang desainer grafis mengeluhkan komputernya lambat saat rendering video, padahal membuka file lancar. Masalah utamanya adalah waktu kalkulasi yang lama. Perangkat keras manakah yang paling mungkin menjadi penyebabnya?", 
+            img: "https://images.unsplash.com/photo-1600348712270-5af9e3590f66?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", 
+            opts: ["RAM (Random Access Memory)", "Hardisk (Penyimpanan)", "CPU (Central Processing Unit)", "GPU (Graphics Processing Unit)"], 
+            a: 2 
+        },
+        { 
+            q: "Microsoft Windows, Android, dan iOS adalah contoh dari...", 
+            img: "https://images.unsplash.com/photo-1694878982147-e52097b660ec?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", 
+            opts: ["Aplikasi", "Sistem Operasi", "Utility", "Programming Language"], 
+            a: 1 
+        },
+        { 
+            q: "Manusia yang mengoperasikan komputer disebut...", 
+            img: "https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=800", 
+            opts: ["Software", "Driver", "User Interface", "Brainware"], 
+            a: 3 
+        },
+        { 
+            q: "Perangkat yang menampilkan hasil pemrosesan data secara visual adalah...", 
+            img: "https://images.unsplash.com/photo-1669023414162-5bb06bbff0ec?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", 
+            opts: ["Printer", "Speaker", "Monitor", "Scanner"], 
+            a: 2 
+        },
+        { 
+            q: "Fungsi utama dari perangkat ini (RAM) adalah...", 
+            img: "https://images.unsplash.com/photo-1676554565685-3aeb5d7ad1b7?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", 
+            opts: ["Menyimpan data permanen", "Menyimpan data sementara saat nyala", "Memproses grafis", "Menghubungkan komponen"], 
+            a: 1 
+        },
+        { 
+            q: "Chrome, Word, dan Photoshop adalah contoh perangkat lunak...", 
+            img: "https://images.unsplash.com/photo-1655196601100-8bfb26cf99e9?q=80&w=1331&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", 
+            opts: ["Sistem", "Aplikasi", "Driver", "Firmware"], 
+            a: 1 
+        },
+        { 
+            q: "Seseorang dengan peran seperti ini disebut...", 
+            img: "https://images.unsplash.com/photo-1526925539332-aa3b66e35444?q=80&w=400", 
+            opts: ["Operator", "Administrator", "Programmer", "System Analyst"], 
+            a: 2 
+        },
+        { 
+            q: "Perangkat input untuk memasukkan teks dan angka adalah...", 
+            img: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?q=80&w=800", 
+            opts: ["Mouse", "Scanner", "Joystick", "Keyboard"], 
+            a: 3 
+        },
+        { 
+            q: "Siklus dasar cara kerja komputer adalah...", 
+            img: "https://images.unsplash.com/photo-1731834453355-df041245e7d7?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", 
+            opts: ["Proses -> Input -> Output", "Output -> Proses -> Input", "Input -> Proses -> Output", "Input -> Output -> Proses"], 
+            a: 2 
+        }
+    ];
 
-            // Referensi Element HTML (Sesuai HTML baru di Langkah 2)
-            const quizLogin = document.getElementById('quiz-login');
-            const quizLobby = document.getElementById('quiz-lobby');
-            const quizArena = document.getElementById('quiz-arena');
-            const playerListEl = document.getElementById('player-list');
-            const adminControls = document.getElementById('admin-controls');
-            const adminNav = document.getElementById('admin-nav');
-            const adminPassInput = document.getElementById('admin-pass');
-            const classSelect = document.getElementById('player-class');
-            const feedbackEl = document.getElementById('player-feedback');
+    // --- A. LOGIKA LOGIN ---
+    const form = document.getElementById('multiplayer-form');
+    const classSelect = document.getElementById('player-class');
+    const passInput = document.getElementById('admin-pass');
+    
+    const playerListEl = document.getElementById('player-list');
+    const adminControls = document.getElementById('admin-controls');
+    const adminNav = document.getElementById('admin-nav');
 
-            // --- EVENT LISTENER UTAMA --- //
+    if(classSelect) {
+        classSelect.addEventListener('change', (e) => {
+            if(e.target.value === 'TEACHER') passInput.classList.remove('hidden');
+            else passInput.classList.add('hidden');
+        });
+    }
 
-            // Tampilkan input password jika pilih Guru
-            if(classSelect) {
-                classSelect.addEventListener('change', (e) => {
-                    if(e.target.value === 'TEACHER') {
-                        adminPassInput.classList.remove('hidden');
-                    } else {
-                        adminPassInput.classList.add('hidden');
-                    }
-                });
-            }
+    if(form) {
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
 
-            // Login / Join Game
-            const multiplayerForm = document.getElementById('multiplayer-form');
-            if(multiplayerForm) {
-                multiplayerForm.addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    myName = document.getElementById('player-name').value;
-                    myClass = document.getElementById('player-class').value;
-                    const pass = adminPassInput.value;
+            myName = document.getElementById('player-name').value;
+            myClass = classSelect.value;
 
-                    // Cek apakah Login sebagai Admin (Guru)
-                    if (myClass === 'TEACHER') {
-                        if (pass === 'admin123') { // Password Guru
-                            isAdmin = true;
-                            setupAdmin();
-                        } else {
-                            alert("Password Guru Salah!");
-                            return;
-                        }
-                    } else {
-                        // Login sebagai Siswa
-                        setupPlayer();
-                    }
-
-                    quizLogin.classList.add('hidden');
-                    quizLobby.classList.remove('hidden');
-                });
-            }
-
-            // --- LOGIKA SISWA (PLAYER) --- //
-            function setupPlayer() {
-                // Simpan data diri ke Firebase
+            if (myClass === 'TEACHER') {
+                if (passInput.value === 'admin123') { 
+                    isAdmin = true;
+                    setupAdminPanel();
+                    showScreen('quiz-lobby');
+                    // Guru mereset status game agar bersih saat masuk
+                    db.ref('gameState').set({ step: 'lobby' });
+                } else {
+                    alert("Password Guru Salah!");
+                }
+            } else {
+                // SISWA JOIN
                 db.ref('players/' + myPlayerId).set({
                     name: myName,
                     kelas: myClass,
                     score: 0,
                     online: true
-                });
-
-                // Hapus data diri saat disconnect
+                }).then(() => {
+                    showScreen('quiz-lobby');
+                    listenToGameLoop(); 
+                }).catch(err => alert("Gagal Konek: " + err.message));
+                
                 db.ref('players/' + myPlayerId).onDisconnect().remove();
-
-                // Dengarkan Perubahan Status Game (State)
-                db.ref('gameState').on('value', (snapshot) => {
-                    const state = snapshot.val();
-                    handleGameState(state);
-                });
             }
+        });
+    }
 
-            // --- LOGIKA GURU (ADMIN) --- //
-            function setupAdmin() {
-                adminControls.classList.remove('hidden');
-                adminNav.classList.remove('hidden');
-                
-                // Reset Game State awal
-                db.ref('gameState').set({ step: 'lobby', qIndex: 0 });
+    // --- B. PANEL GURU ---
+    function setupAdminPanel() {
+        adminControls.classList.remove('hidden');
+        adminNav.classList.remove('hidden');
+        listenToGameLoop(); 
 
-                // Tombol Mulai Game
-                document.getElementById('btn-start-game').addEventListener('click', () => {
-                    db.ref('gameState').set({ step: 'question', qIndex: 0, startTime: Date.now() });
-                });
+        document.getElementById('btn-start-game').addEventListener('click', () => {
+            db.ref('gameState').set({ step: 'question', index: 0, time: Date.now() });
+        });
 
-                // Tombol Reset Server
-                document.getElementById('btn-reset-game').addEventListener('click', () => {
-                    db.ref('players').remove();
-                    db.ref('gameState').set({ step: 'lobby', qIndex: 0 });
-                    location.reload();
-                });
-
-                // Tombol Next Question
-                document.getElementById('btn-next-question').addEventListener('click', () => {
-                    currentQIndex++;
-                    if (currentQIndex < questionsData.length) {
-                        db.ref('gameState').set({ step: 'question', qIndex: currentQIndex, startTime: Date.now() });
-                    } else {
-                        alert("Soal habis! Silakan akhiri game.");
-                    }
-                });
-
-                // Tombol Akhiri & Kirim Nilai
-                document.getElementById('btn-show-leaderboard').addEventListener('click', () => {
-                    finishGame();
-                });
-            }
-
-            function finishGame() {
-                db.ref('gameState').set({ step: 'finished' });
-            }
-
-            // --- SINKRONISASI GAME (UPDATE UI) --- //
-            function handleGameState(state) {
-                if (!state) return;
-
-                // Reset UI tampilan per step
-                feedbackEl.classList.add('hidden');
-                const optionsBtns = document.querySelectorAll('.arena-opt');
-                optionsBtns.forEach(btn => {
-                    btn.disabled = false;
-                    btn.classList.remove('opacity-50', 'ring-4', 'ring-white');
-                });
-
-                if (state.step === 'lobby') {
-                    quizLobby.classList.remove('hidden');
-                    quizArena.classList.add('hidden');
-                    
-                    // Listen daftar pemain di lobi
-                    db.ref('players').on('value', (snap) => {
-                        const players = snap.val() || {};
-                        playerListEl.innerHTML = '';
-                        Object.values(players).forEach(p => {
-                            const badge = document.createElement('div');
-                            badge.className = 'bg-purple-600 px-4 py-2 rounded-full text-white font-bold shadow animate-bounce';
-                            badge.textContent = p.name;
-                            playerListEl.appendChild(badge);
-                        });
-                    });
-
-                } else if (state.step === 'question') {
-                    // Tampilkan Layar Soal
-                    quizLobby.classList.add('hidden');
-                    quizArena.classList.remove('hidden');
-                    
-                    currentQIndex = state.qIndex;
-                    const qData = questionsData[currentQIndex];
-
-                    // Update Teks Soal & Gambar
-                    document.getElementById('arena-question').textContent = qData.q;
-                    document.getElementById('live-status').textContent = `Soal ${currentQIndex + 1} / ${questionsData.length}`;
-                    
-                    const imgCont = document.getElementById('arena-image-container');
-                    if (qData.img) {
-                        imgCont.classList.remove('hidden');
-                        document.getElementById('arena-image').src = qData.img;
-                    } else {
-                        imgCont.classList.add('hidden');
-                    }
-                    
-                    // Update Opsi Jawaban
-                    optionsBtns.forEach((btn, idx) => {
-                        btn.textContent = qData.opts[idx];
-                        // Reset Event Click agar tidak numpuk
-                        const newBtn = btn.cloneNode(true);
-                        btn.parentNode.replaceChild(newBtn, btn);
-                        
-                        // Tambah Event Click Baru
-                        newBtn.addEventListener('click', () => submitAnswer(idx, state.startTime));
-                    });
-
-                    startCountdown(15); // Waktu per soal
-
-                } else if (state.step === 'finished') {
-                    alert("Game Selesai! Mengirim nilai Anda ke Papan Peringkat...");
-                    
-                    // Jika BUKAN admin (berarti siswa), kirim nilai ke Spreadsheet
-                    if (!isAdmin) {
-                         submitScore(myName, myClass, myScore);
-                    }
-                    
-                    // Pindah halaman ke Papan Peringkat
-                    setTimeout(() => {
-                        window.location.hash = "#peringkat";
-                        // Panggil router untuk refresh halaman ke section peringkat
-                        window.dispatchEvent(new HashChangeEvent("hashchange")); 
-                    }, 2000);
-                }
-            }
-
-            // --- LOGIKA JAWAB SOAL --- //
-            function submitAnswer(idx, startTime) {
-                // Matikan tombol
-                const optionsBtns = document.querySelectorAll('.arena-opt');
-                optionsBtns.forEach(b => b.disabled = true);
-                optionsBtns[idx].classList.add('ring-4', 'ring-white'); 
-
-                // Cek Jawaban
-                const correctIdx = questionsData[currentQIndex].a;
-                const isCorrect = (idx === correctIdx);
-                
-                feedbackEl.classList.remove('hidden', 'bg-red-500', 'bg-green-500');
-
-                if (isCorrect) {
-                    // Hitung Skor (Cepat = Lebih Tinggi)
-                    const timeTaken = (Date.now() - startTime) / 1000;
-                    const points = Math.max(10, Math.floor(100 - (timeTaken * 3))); // Rumus poin
-                    myScore += points;
-                    
-                    // Update Skor di Firebase
-                    db.ref('players/' + myPlayerId + '/score').set(myScore);
-                    
-                    feedbackEl.textContent = `BENAR! +${points} Poin`;
-                    feedbackEl.classList.add('bg-green-500');
+        document.getElementById('btn-next-question').addEventListener('click', () => {
+            db.ref('gameState/index').once('value', (snap) => {
+                let currentIdx = snap.val() || 0;
+                if(currentIdx < questions.length - 1) {
+                    db.ref('gameState').update({ index: currentIdx + 1, time: Date.now() });
                 } else {
-                    feedbackEl.textContent = "SALAH!";
-                    feedbackEl.classList.add('bg-red-500');
+                    db.ref('gameState').update({ step: 'finished' });
                 }
+            });
+            const nextBtn = document.getElementById('btn-next-question');
+            nextBtn.classList.remove('animate-bounce', 'bg-yellow-500');
+            nextBtn.innerText = "PERTANYAAN SELANJUTNYA ➡️";
+        });
+
+        document.getElementById('btn-reset-game').addEventListener('click', () => {
+            if(confirm("Reset semua pemain?")) {
+                db.ref('gameState').set({ step: 'lobby' });
+                db.ref('players').remove();
+                location.reload();
+            }
+        });
+    }
+
+    // --- C. GAME LOOP ---
+    function listenToGameLoop() {
+        // 1. UPDATE DAFTAR PEMAIN
+        db.ref('players').on('value', (snap) => {
+            playerListEl.innerHTML = ''; 
+            if(snap.val()) {
+                Object.values(snap.val()).forEach(p => {
+                    const badge = document.createElement('div');
+                    badge.className = 'bg-purple-600 px-4 py-2 rounded-full text-white font-bold shadow animate-bounce m-1 border border-purple-400';
+                    badge.textContent = p.name;
+                    playerListEl.appendChild(badge);
+                });
+            }
+        });
+
+        // 2. STATUS GAME
+        db.ref('gameState').on('value', (snap) => {
+            const state = snap.val();
+            if(!state) return;
+
+            if(state.step === 'lobby') {
+                showScreen('quiz-lobby');
+                // Reset tanda partisipasi
+                hasParticipated = false;
+            } 
+            else if(state.step === 'question') {
+                showScreen('quiz-arena');
+                // [PENTING] Tandai bahwa siswa ini sudah ikut main
+                hasParticipated = true; 
+                renderQuestion(state.index);
+            }
+            else if(state.step === 'finished') {
+                handleGameFinished();
+            }
+        });
+    }
+
+    // --- D. LOGIKA FINISH [PERBAIKAN UTAMA] ---
+    async function handleGameFinished() {
+        if (isAdmin) {
+            alert("Game Selesai! Klik OK untuk melihat Papan Peringkat.");
+            window.location.hash = "#peringkat";
+            window.location.reload(); 
+        } else {
+            // SISWA: Cek dulu apakah dia sudah bermain?
+            if (!hasParticipated) {
+                alert("Game saat ini sudah selesai. Silakan tunggu Guru memulai sesi baru.");
+                // Jangan kirim nilai 0, jangan pindah halaman
+                showScreen('quiz-lobby');
+                document.querySelector('#quiz-lobby h2').innerText = "Game Selesai - Menunggu Sesi Baru...";
+                return;
             }
 
-            // Timer Visual
-            let timerInterval;
-            function startCountdown(seconds) {
-                clearInterval(timerInterval);
-                const timerEl = document.getElementById('live-timer');
-                let left = seconds;
-                timerEl.textContent = left;
+            // Jika sudah bermain, baru kirim nilai
+            alert("Game Selesai! Skor Akhir Kamu: " + myScore + "\nKlik OK untuk mengirim nilai.");
+            await submitScore(myName, myClass, myScore);
+            window.location.hash = "#peringkat";
+            window.location.reload();
+        }
+    }
+
+    // --- E. RENDER SOAL ---
+    function renderQuestion(idx) {
+        const q = questions[idx];
+        
+        document.getElementById('live-status').innerText = `Soal ${idx+1} / ${questions.length}`;
+        document.getElementById('arena-question').innerText = q.q;
+        
+        const imgEl = document.getElementById('arena-image');
+        if(q.img) { imgEl.src = q.img; imgEl.classList.remove('hidden'); } 
+        else { imgEl.classList.add('hidden'); }
+        
+        document.getElementById('player-feedback').classList.add('hidden');
+        const opts = document.querySelectorAll('.arena-opt');
+        
+        opts.forEach((btn, i) => {
+            btn.innerText = q.opts[i];
+            
+            let newBtn = btn.cloneNode(true);
+            btn.parentNode.replaceChild(newBtn, btn);
+            
+            newBtn.disabled = false;
+            newBtn.className = "arena-opt bg-blue-600 p-6 rounded-xl font-bold text-xl hover:bg-blue-500 transition shadow-lg w-full text-white";
+            
+            if(isAdmin) {
+                newBtn.classList.add('opacity-70', 'cursor-default');
+            }
+
+            newBtn.addEventListener('click', () => {
+                if(isAdmin) return; 
+
+                document.querySelectorAll('.arena-opt').forEach(b => {
+                    b.disabled = true;
+                    b.classList.add('opacity-50');
+                });
+                newBtn.classList.remove('opacity-50');
+                newBtn.classList.add('ring-4', 'ring-white');
+
+                const isCorrect = (i === q.a);
+                const feedback = document.getElementById('player-feedback');
+                feedback.classList.remove('hidden', 'bg-red-600', 'bg-green-600');
                 
-                timerInterval = setInterval(() => {
-                    left--;
-                    timerEl.textContent = left;
-                    if (left <= 0) {
-                        clearInterval(timerInterval);
-                        const optionsBtns = document.querySelectorAll('.arena-opt');
-                        optionsBtns.forEach(b => b.disabled = true);
-                    }
-                }, 1000);
-            }
+                if(isCorrect) {
+                    feedback.innerText = "BENAR! 🥳";
+                    feedback.classList.add('bg-green-600');
+                    myScore += 100;
+                    db.ref('players/'+myPlayerId+'/score').set(myScore);
+                } else {
+                    feedback.innerText = "SALAH 😢";
+                    feedback.classList.add('bg-red-600');
+                }
+            });
+        });
 
-            // Fungsi Kirim ke Spreadsheet (Sama seperti sebelumnya)
-            async function submitScore(nama, kelas, skor) {
-                // Kita gunakan toast/alert kecil untuk info
-                const saveMsg = document.createElement('div');
-                saveMsg.className = "fixed top-4 right-4 bg-yellow-500 text-white p-4 rounded shadow-lg z-50";
-                saveMsg.textContent = "Menyimpan ke Spreadsheet...";
-                document.body.appendChild(saveMsg);
-
-                try {
-                    await fetch(WEB_APP_URL, {
-                        method: 'POST',
-                        mode: 'no-cors',
-                        body: new URLSearchParams({nama, kelas, skor})
-                    });
-                    saveMsg.textContent = "Data berhasil disimpan!";
-                    saveMsg.className = "fixed top-4 right-4 bg-green-500 text-white p-4 rounded shadow-lg z-50";
-                } catch (error) {
-                    console.error('Error saving score:', error);
-                    saveMsg.textContent = "Gagal menyimpan data.";
-                    saveMsg.className = "fixed top-4 right-4 bg-red-500 text-white p-4 rounded shadow-lg z-50";
-                } finally {
-                    setTimeout(() => saveMsg.remove(), 3000);
+        let sec = 20; // Waktu per soal (diperpanjang dikit karena soal panjang)
+        const timerEl = document.getElementById('live-timer');
+        if(window.gameTimer) clearInterval(window.gameTimer);
+        
+        window.gameTimer = setInterval(() => {
+            sec--;
+            timerEl.innerText = sec;
+            
+            if(sec <= 0) {
+                clearInterval(window.gameTimer);
+                document.querySelectorAll('.arena-opt').forEach(b => b.disabled = true);
+                
+                if(isAdmin) {
+                    const nextBtn = document.getElementById('btn-next-question');
+                    nextBtn.classList.add('animate-bounce', 'bg-yellow-500'); 
+                    nextBtn.innerText = "WAKTU HABIS! LANJUT? ➡️";
                 }
             }
+        }, 1000);
+    }
 
-            //--- END KUIS MULTIPLAYER ---//
+    function showScreen(id) {
+        ['quiz-login', 'quiz-lobby', 'quiz-arena'].forEach(s => document.getElementById(s).classList.add('hidden'));
+        document.getElementById(id).classList.remove('hidden');
+    }
+
+    async function submitScore(nama, kelas, skor) {
+        const loadingDiv = document.createElement('div');
+        loadingDiv.className = "fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50";
+        loadingDiv.innerHTML = `<div class="text-white text-2xl font-bold animate-pulse">Menyimpan Skor...</div>`;
+        document.body.appendChild(loadingDiv);
+
+        try {
+            await fetch(WEB_APP_URL, {
+                method: 'POST',
+                mode: 'no-cors', 
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({ 'nama': nama, 'kelas': kelas, 'skor': skor })
+            });
+            await new Promise(r => setTimeout(r, 1500));
+        } catch (error) {
+            console.error("Gagal kirim:", error);
+            alert("Gagal menyimpan nilai.");
+        } finally {
+            loadingDiv.remove();
+        }
+    }
             
             //--- Papan Peringkat Logic ---//
             const leaderboardLoading = document.getElementById('leaderboard-loading');
