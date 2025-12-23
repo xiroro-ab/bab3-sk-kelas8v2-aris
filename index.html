@@ -734,7 +734,6 @@
                     <option value="8.1">8.1</option>
                     <option value="8.2">8.2</option>
                     <option value="8.3">8.3</option>
-                    <option value="8.4">8.4</option>
                     <option value="TEACHER">GURU (Host)</option>
                 </select>
                 <input type="password" id="admin-pass" placeholder="Password Admin" class="w-full bg-gray-900 border border-red-500 rounded-lg p-3 text-white hidden">
@@ -1196,344 +1195,398 @@
 
             //--- Kuis Logic ---//
 // ================================================================
-    // LOGIKA KUIS MULTIPLAYER (FINAL UPDATE - SOAL BARU & FIX AUTO-SAVE)
-    // ================================================================
+            // LOGIKA KUIS MULTIPLAYER (KAHOOT MODE: HIDE & REVEAL)
+            // ================================================================
 
-    // --- 1. CONFIG FIREBASE ---
-    const firebaseConfig = {
-        apiKey: "AIzaSyDzKKAx1dc1FeVWd9EFGsHJl3WYdrdS7_8",
-        authDomain: "kuis-informatika-k8.firebaseapp.com",
-        databaseURL: "https://kuis-informatika-k8-default-rtdb.firebaseio.com",
-        projectId: "kuis-informatika-k8",
-        storageBucket: "kuis-informatika-k8.firebasestorage.app",
-        messagingSenderId: "26150311392",
-        appId: "1:26150311392:web:aea5a5915baa1bed44c785",
-        measurementId: "G-EHSFMC5SCK"
-    };
+            // --- 1. CONFIG FIREBASE ---
+            const firebaseConfig = {
+                apiKey: "AIzaSyDzKKAx1dc1FeVWd9EFGsHJl3WYdrdS7_8",
+                authDomain: "kuis-informatika-k8.firebaseapp.com",
+                databaseURL: "https://kuis-informatika-k8-default-rtdb.firebaseio.com",
+                projectId: "kuis-informatika-k8",
+                storageBucket: "kuis-informatika-k8.firebasestorage.app",
+                messagingSenderId: "26150311392",
+                appId: "1:26150311392:web:aea5a5915baa1bed44c785",
+                measurementId: "G-EHSFMC5SCK"
+            };
 
-    // URL Google Script
-    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby9z2P5_SxcywHITuomEtLatvde-U_cpBTpDw5m-7lCuFoCR1uXJtuCtZJ7dtlO300T_A/exec';
+            // URL Google Script
+            const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby9z2P5_SxcywHITuomEtLatvde-U_cpBTpDw5m-7lCuFoCR1uXJtuCtZJ7dtlO300T_A/exec';
 
-    // Inisialisasi Firebase
-    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+            if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+            const db = firebase.database();
 
-    // ID Pemain Acak (Agar bisa tes banyak tab)
-    let myPlayerId = 'user_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
-    
-    let myName = '', myClass = '', myScore = 0, isAdmin = false;
-    
-    // [BARU] Flag untuk mencegah auto-save saat refresh
-    let hasParticipated = false;
+            // ID Pemain & Variabel Global
+            let myPlayerId = 'user_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+            let myName = '', myClass = '', myScore = 0, isAdmin = false;
+            
+            // Variabel Logika Game
+            let hasParticipated = false;
+            let currentSelection = -1; // Menyimpan jawaban sementara siswa
 
-    // --- DATA SOAL LENGKAP (10 SOAL) ---
-    const questions = [
-        { 
-            q: "Sebuah perusahaan baru saja membeli komputer tercanggih. Namun, komputer tersebut tidak bisa menghasilkan laporan keuangan karena tidak ada staf yang memiliki keahlian. Komponen sistem komputer manakah yang menjadi kendala utama?", 
-            img: "https://images.unsplash.com/photo-1731834452405-a472facfae95?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", 
-            opts: ["Kegagalan pada Hardware", "Ketidakcocokan Software", "Keterbatasan Brainware", "Kerusakan pada Sistem Operasi"], 
-            a: 2 
-        },
-        { 
-            q: "Seorang desainer grafis mengeluhkan komputernya lambat saat rendering video, padahal membuka file lancar. Masalah utamanya adalah waktu kalkulasi yang lama. Perangkat keras manakah yang paling mungkin menjadi penyebabnya?", 
-            img: "https://images.unsplash.com/photo-1600348712270-5af9e3590f66?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", 
-            opts: ["RAM (Random Access Memory)", "Hardisk (Penyimpanan)", "CPU (Central Processing Unit)", "GPU (Graphics Processing Unit)"], 
-            a: 2 
-        },
-        { 
-            q: "Microsoft Windows, Android, dan iOS adalah contoh dari...", 
-            img: "https://images.unsplash.com/photo-1694878982147-e52097b660ec?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", 
-            opts: ["Aplikasi", "Sistem Operasi", "Utility", "Programming Language"], 
-            a: 1 
-        },
-        { 
-            q: "Manusia yang mengoperasikan komputer disebut...", 
-            img: "https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=800", 
-            opts: ["Software", "Driver", "User Interface", "Brainware"], 
-            a: 3 
-        },
-        { 
-            q: "Perangkat yang menampilkan hasil pemrosesan data secara visual adalah...", 
-            img: "https://images.unsplash.com/photo-1669023414162-5bb06bbff0ec?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", 
-            opts: ["Printer", "Speaker", "Monitor", "Scanner"], 
-            a: 2 
-        },
-        { 
-            q: "Fungsi utama dari perangkat ini (RAM) adalah...", 
-            img: "https://images.unsplash.com/photo-1676554565685-3aeb5d7ad1b7?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", 
-            opts: ["Menyimpan data permanen", "Menyimpan data sementara saat nyala", "Memproses grafis", "Menghubungkan komponen"], 
-            a: 1 
-        },
-        { 
-            q: "Chrome, Word, dan Photoshop adalah contoh perangkat lunak...", 
-            img: "https://images.unsplash.com/photo-1655196601100-8bfb26cf99e9?q=80&w=1331&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", 
-            opts: ["Sistem", "Aplikasi", "Driver", "Firmware"], 
-            a: 1 
-        },
-        { 
-            q: "Seseorang dengan peran seperti ini disebut...", 
-            img: "https://images.unsplash.com/photo-1526925539332-aa3b66e35444?q=80&w=400", 
-            opts: ["Operator", "Administrator", "Programmer", "System Analyst"], 
-            a: 2 
-        },
-        { 
-            q: "Perangkat input untuk memasukkan teks dan angka adalah...", 
-            img: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?q=80&w=800", 
-            opts: ["Mouse", "Scanner", "Joystick", "Keyboard"], 
-            a: 3 
-        },
-        { 
-            q: "Siklus dasar cara kerja komputer adalah...", 
-            img: "https://images.unsplash.com/photo-1731834453355-df041245e7d7?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", 
-            opts: ["Proses -> Input -> Output", "Output -> Proses -> Input", "Input -> Proses -> Output", "Input -> Output -> Proses"], 
-            a: 2 
-        }
-    ];
+            // --- DATA 10 SOAL ---
+            const questions = [
+                { q: "Sebuah perusahaan membeli komputer canggih tapi tidak ada staf yang bisa mengoperasikannya. Apa kendala utamanya?", img: "https://images.unsplash.com/photo-1731834452405-a472facfae95?q=80&w=687", opts: ["Hardware Rusak", "Software Tidak Cocok", "Keterbatasan Brainware", "OS Error"], a: 2 },
+                { q: "Komputer lambat saat rendering video tapi lancar buka file. Masalahnya di waktu kalkulasi. Apa penyebabnya?", img: "https://images.unsplash.com/photo-1600348712270-5af9e3590f66?q=80&w=1170", opts: ["RAM", "Hardisk", "CPU", "GPU"], a: 2 },
+                { q: "Microsoft Windows, Android, dan iOS adalah contoh...", img: "https://images.unsplash.com/photo-1694878982147-e52097b660ec?q=80&w=1171", opts: ["Aplikasi", "Sistem Operasi", "Utility", "Bahasa Pemrograman"], a: 1 },
+                { q: "Manusia yang mengoperasikan komputer disebut...", img: "https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=800", opts: ["Software", "Driver", "User Interface", "Brainware"], a: 3 },
+                { q: "Perangkat yang menampilkan hasil visual adalah...", img: "https://images.unsplash.com/photo-1669023414162-5bb06bbff0ec?q=80&w=1332", opts: ["Printer", "Speaker", "Monitor", "Scanner"], a: 2 },
+                { q: "Fungsi utama RAM adalah...", img: "https://images.unsplash.com/photo-1676554565685-3aeb5d7ad1b7?q=80&w=1074", opts: ["Simpan Permanen", "Simpan Sementara (Saat Nyala)", "Proses Grafis", "Konektor"], a: 1 },
+                { q: "Chrome, Word, dan Photoshop adalah contoh...", img: "https://images.unsplash.com/photo-1655196601100-8bfb26cf99e9?q=80&w=1331", opts: ["Sistem", "Aplikasi", "Driver", "Firmware"], a: 1 },
+                { q: "Orang yang menulis kode program disebut...", img: "https://images.unsplash.com/photo-1526925539332-aa3b66e35444?q=80&w=400", opts: ["Operator", "Administrator", "Programmer", "Analyst"], a: 2 },
+                { q: "Input device untuk mengetik teks adalah...", img: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?q=80&w=800", opts: ["Mouse", "Scanner", "Joystick", "Keyboard"], a: 3 },
+                { q: "Siklus kerja komputer yang benar adalah...", img: "https://images.unsplash.com/photo-1731834453355-df041245e7d7?q=80&w=1170", opts: ["Proses-Input-Output", "Output-Proses-Input", "Input-Proses-Output", "Input-Output-Proses"], a: 2 }
+            ];
 
-    // --- A. LOGIKA LOGIN ---
-    const form = document.getElementById('multiplayer-form');
-    const classSelect = document.getElementById('player-class');
-    const passInput = document.getElementById('admin-pass');
-    
-    const playerListEl = document.getElementById('player-list');
-    const adminControls = document.getElementById('admin-controls');
-    const adminNav = document.getElementById('admin-nav');
+            // --- A. LOGIN & INIT ---
+            const form = document.getElementById('multiplayer-form');
+            const classSelect = document.getElementById('player-class');
+            const passInput = document.getElementById('admin-pass');
+            
+            // UI References
+            const playerListEl = document.getElementById('player-list');
+            const adminControls = document.getElementById('admin-controls');
+            
+            // Kita butuh tombol Reveal baru di HTML lewat JS
+            // (Akan digenerate otomatis di setupAdminPanel)
 
-    if(classSelect) {
-        classSelect.addEventListener('change', (e) => {
-            if(e.target.value === 'TEACHER') passInput.classList.remove('hidden');
-            else passInput.classList.add('hidden');
-        });
-    }
+            if(classSelect) {
+                classSelect.addEventListener('change', (e) => {
+                    if(e.target.value === 'TEACHER') passInput.classList.remove('hidden');
+                    else passInput.classList.add('hidden');
+                });
+            }
 
-    if(form) {
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
+            if(form) {
+                form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    myName = document.getElementById('player-name').value;
+                    myClass = classSelect.value;
 
-            myName = document.getElementById('player-name').value;
-            myClass = classSelect.value;
+                    if (myClass === 'TEACHER') {
+                        if (passInput.value === 'admin123') { 
+                            isAdmin = true;
+                            setupAdminPanel();
+                            showScreen('quiz-lobby');
+                            // Guru mereset status game ke Loby
+                            db.ref('gameState').set({ step: 'lobby' });
+                        } else {
+                            alert("Password Guru Salah!");
+                        }
+                    } else {
+                        // SISWA JOIN
+                        db.ref('players/' + myPlayerId).set({
+                            name: myName,
+                            kelas: myClass,
+                            score: 0,
+                            online: true
+                        }).then(() => {
+                            showScreen('quiz-lobby');
+                            listenToGameLoop(); 
+                        });
+                        db.ref('players/' + myPlayerId).onDisconnect().remove();
+                    }
+                });
+            }
 
-            if (myClass === 'TEACHER') {
-                if (passInput.value === 'admin123') { 
-                    isAdmin = true;
-                    setupAdminPanel();
-                    showScreen('quiz-lobby');
-                    // Guru mereset status game agar bersih saat masuk
-                    db.ref('gameState').set({ step: 'lobby' });
-                } else {
-                    alert("Password Guru Salah!");
-                }
-            } else {
-                // SISWA JOIN
-                db.ref('players/' + myPlayerId).set({
-                    name: myName,
-                    kelas: myClass,
-                    score: 0,
-                    online: true
-                }).then(() => {
-                    showScreen('quiz-lobby');
-                    listenToGameLoop(); 
-                }).catch(err => alert("Gagal Konek: " + err.message));
+            // --- B. PANEL GURU (DENGAN TOMBOL BARU) ---
+            function setupAdminPanel() {
+                adminControls.classList.remove('hidden');
+                document.getElementById('admin-nav').classList.remove('hidden');
+                listenToGameLoop(); 
+
+                // Inject Tombol "Tampilkan Jawaban" di sebelah Next
+                const navContainer = document.getElementById('admin-nav');
+                navContainer.innerHTML = `
+                    <button id="btn-reveal-answer" class="hidden bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-3 px-8 rounded-full text-lg shadow-xl border-2 border-white transform hover:scale-105 transition">
+                        👁️ TAMPILKAN JAWABAN
+                    </button>
+                    <button id="btn-next-question" class="hidden bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-8 rounded-full text-lg shadow-xl border-2 border-white transform hover:scale-105 transition">
+                        PERTANYAAN SELANJUTNYA ➡️
+                    </button>
+                    <button id="btn-finish-game" class="hidden bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-full text-lg shadow-xl">
+                        🏁 AKHIRI GAME
+                    </button>
+                `;
+
+                // Logic Tombol Mulai (di Lobi)
+                document.getElementById('btn-start-game').addEventListener('click', () => {
+                    // Mulai Soal 1, Mode: ANSWERING (Menjawab)
+                    db.ref('gameState').set({ step: 'answering', index: 0, time: Date.now() });
+                });
+
+                // Logic Tombol Reveal (Buka Jawaban)
+                document.getElementById('btn-reveal-answer').addEventListener('click', () => {
+                    // Ubah step jadi REVEAL, index tetap
+                    db.ref('gameState/index').once('value', (snap) => {
+                        const idx = snap.val() || 0;
+                        db.ref('gameState').update({ step: 'reveal', index: idx });
+                    });
+                });
+
+                // Logic Tombol Next (Soal Selanjutnya)
+                document.getElementById('btn-next-question').addEventListener('click', () => {
+                    db.ref('gameState/index').once('value', (snap) => {
+                        let currentIdx = snap.val() || 0;
+                        if(currentIdx < questions.length - 1) {
+                            // Pindah ke soal baru, Mode: ANSWERING
+                            db.ref('gameState').set({ step: 'answering', index: currentIdx + 1, time: Date.now() });
+                        } else {
+                            db.ref('gameState').set({ step: 'finished' });
+                        }
+                    });
+                });
                 
-                db.ref('players/' + myPlayerId).onDisconnect().remove();
-            }
-        });
-    }
+                // Logic Finish Manual
+                document.getElementById('btn-finish-game').addEventListener('click', () => {
+                     db.ref('gameState').set({ step: 'finished' });
+                });
 
-    // --- B. PANEL GURU ---
-    function setupAdminPanel() {
-        adminControls.classList.remove('hidden');
-        adminNav.classList.remove('hidden');
-        listenToGameLoop(); 
-
-        document.getElementById('btn-start-game').addEventListener('click', () => {
-            db.ref('gameState').set({ step: 'question', index: 0, time: Date.now() });
-        });
-
-        document.getElementById('btn-next-question').addEventListener('click', () => {
-            db.ref('gameState/index').once('value', (snap) => {
-                let currentIdx = snap.val() || 0;
-                if(currentIdx < questions.length - 1) {
-                    db.ref('gameState').update({ index: currentIdx + 1, time: Date.now() });
-                } else {
-                    db.ref('gameState').update({ step: 'finished' });
-                }
-            });
-            const nextBtn = document.getElementById('btn-next-question');
-            nextBtn.classList.remove('animate-bounce', 'bg-yellow-500');
-            nextBtn.innerText = "PERTANYAAN SELANJUTNYA ➡️";
-        });
-
-        document.getElementById('btn-reset-game').addEventListener('click', () => {
-            if(confirm("Reset semua pemain?")) {
-                db.ref('gameState').set({ step: 'lobby' });
-                db.ref('players').remove();
-                location.reload();
-            }
-        });
-    }
-
-    // --- C. GAME LOOP ---
-    function listenToGameLoop() {
-        // 1. UPDATE DAFTAR PEMAIN
-        db.ref('players').on('value', (snap) => {
-            playerListEl.innerHTML = ''; 
-            if(snap.val()) {
-                Object.values(snap.val()).forEach(p => {
-                    const badge = document.createElement('div');
-                    badge.className = 'bg-purple-600 px-4 py-2 rounded-full text-white font-bold shadow animate-bounce m-1 border border-purple-400';
-                    badge.textContent = p.name;
-                    playerListEl.appendChild(badge);
+                // Logic Reset Lobi
+                document.getElementById('btn-reset-game').addEventListener('click', () => {
+                    if(confirm("Reset semua pemain?")) {
+                        db.ref('gameState').set({ step: 'lobby' });
+                        db.ref('players').remove();
+                        location.reload();
+                    }
                 });
             }
-        });
 
-        // 2. STATUS GAME
-        db.ref('gameState').on('value', (snap) => {
-            const state = snap.val();
-            if(!state) return;
-
-            if(state.step === 'lobby') {
-                showScreen('quiz-lobby');
-                // Reset tanda partisipasi
-                hasParticipated = false;
-            } 
-            else if(state.step === 'question') {
-                showScreen('quiz-arena');
-                // [PENTING] Tandai bahwa siswa ini sudah ikut main
-                hasParticipated = true; 
-                renderQuestion(state.index);
-            }
-            else if(state.step === 'finished') {
-                handleGameFinished();
-            }
-        });
-    }
-
-    // --- D. LOGIKA FINISH [PERBAIKAN UTAMA] ---
-    async function handleGameFinished() {
-        if (isAdmin) {
-            alert("Game Selesai! Klik OK untuk melihat Papan Peringkat.");
-            window.location.hash = "#peringkat";
-            window.location.reload(); 
-        } else {
-            // SISWA: Cek dulu apakah dia sudah bermain?
-            if (!hasParticipated) {
-                alert("Game saat ini sudah selesai. Silakan tunggu Guru memulai sesi baru.");
-                // Jangan kirim nilai 0, jangan pindah halaman
-                showScreen('quiz-lobby');
-                document.querySelector('#quiz-lobby h2').innerText = "Game Selesai - Menunggu Sesi Baru...";
-                return;
-            }
-
-            // Jika sudah bermain, baru kirim nilai
-            alert("Game Selesai! Skor Akhir Kamu: " + myScore + "\nKlik OK untuk mengirim nilai.");
-            await submitScore(myName, myClass, myScore);
-            window.location.hash = "#peringkat";
-            window.location.reload();
-        }
-    }
-
-    // --- E. RENDER SOAL ---
-    function renderQuestion(idx) {
-        const q = questions[idx];
-        
-        document.getElementById('live-status').innerText = `Soal ${idx+1} / ${questions.length}`;
-        document.getElementById('arena-question').innerText = q.q;
-        
-        const imgEl = document.getElementById('arena-image');
-        if(q.img) { imgEl.src = q.img; imgEl.classList.remove('hidden'); } 
-        else { imgEl.classList.add('hidden'); }
-        
-        document.getElementById('player-feedback').classList.add('hidden');
-        const opts = document.querySelectorAll('.arena-opt');
-        
-        opts.forEach((btn, i) => {
-            btn.innerText = q.opts[i];
-            
-            let newBtn = btn.cloneNode(true);
-            btn.parentNode.replaceChild(newBtn, btn);
-            
-            newBtn.disabled = false;
-            newBtn.className = "arena-opt bg-blue-600 p-6 rounded-xl font-bold text-xl hover:bg-blue-500 transition shadow-lg w-full text-white";
-            
-            if(isAdmin) {
-                newBtn.classList.add('opacity-70', 'cursor-default');
-            }
-
-            newBtn.addEventListener('click', () => {
-                if(isAdmin) return; 
-
-                document.querySelectorAll('.arena-opt').forEach(b => {
-                    b.disabled = true;
-                    b.classList.add('opacity-50');
+            // --- C. GAME LOOP (SINYAL DARI SERVER) ---
+            function listenToGameLoop() {
+                // 1. Update List Pemain
+                db.ref('players').on('value', (snap) => {
+                    playerListEl.innerHTML = ''; 
+                    if(snap.val()) {
+                        Object.values(snap.val()).forEach(p => {
+                            const badge = document.createElement('div');
+                            badge.className = 'bg-purple-600 px-4 py-2 rounded-full text-white font-bold shadow animate-bounce m-1 border border-purple-400';
+                            badge.textContent = p.name; // + " (" + p.score + ")"; // Debug score
+                            playerListEl.appendChild(badge);
+                        });
+                    }
                 });
-                newBtn.classList.remove('opacity-50');
-                newBtn.classList.add('ring-4', 'ring-white');
 
-                const isCorrect = (i === q.a);
+                // 2. Status Game
+                db.ref('gameState').on('value', (snap) => {
+                    const state = snap.val();
+                    if(!state) return;
+
+                    // Update Tombol Guru (Tampilkan/Sembunyikan sesuai Step)
+                    if(isAdmin) updateAdminButtons(state);
+
+                    if(state.step === 'lobby') {
+                        showScreen('quiz-lobby');
+                        hasParticipated = false;
+                        currentSelection = -1;
+                    } 
+                    else if(state.step === 'answering') {
+                        showScreen('quiz-arena');
+                        hasParticipated = true; // Menandai siswa ikut main
+                        renderQuestionInput(state.index); // Tampilkan Soal (Mode Input)
+                    }
+                    else if(state.step === 'reveal') {
+                        showScreen('quiz-arena');
+                        renderQuestionResult(state.index); // Tampilkan Hasil (Mode Result)
+                    }
+                    else if(state.step === 'finished') {
+                        handleGameFinished();
+                    }
+                });
+            }
+
+            // --- D. LOGIKA RENDER (TAMPILAN SISWA) ---
+            
+            // Mode 1: SAAT MENJAWAB (Belum tahu benar/salah)
+            function renderQuestionInput(idx) {
+                const q = questions[idx];
+                
+                // Reset UI
+                document.getElementById('live-status').innerText = `Soal ${idx+1} / ${questions.length}`;
+                document.getElementById('arena-question').innerText = q.q;
+                const imgEl = document.getElementById('arena-image');
+                if(q.img) { imgEl.src = q.img; imgEl.classList.remove('hidden'); } else { imgEl.classList.add('hidden'); }
+                document.getElementById('player-feedback').classList.add('hidden');
+                
+                // Reset pilihan siswa sebelumnya
+                currentSelection = -1;
+
+                const opts = document.querySelectorAll('.arena-opt');
+                opts.forEach((btn, i) => {
+                    btn.innerText = q.opts[i];
+                    
+                    // Reset Style
+                    let newBtn = btn.cloneNode(true);
+                    btn.parentNode.replaceChild(newBtn, btn);
+                    
+                    newBtn.disabled = false;
+                    newBtn.className = "arena-opt bg-blue-600 p-6 rounded-xl font-bold text-xl hover:bg-blue-500 transition shadow-lg w-full text-white transform hover:scale-105";
+                    
+                    if(isAdmin) {
+                        newBtn.classList.add('opacity-70', 'cursor-default'); // Guru disable visual
+                    }
+
+                    // KLIK JAWABAN (Hanya Simpan, Jangan kasih tahu benar/salah)
+                    newBtn.addEventListener('click', () => {
+                        if(isAdmin) return; 
+
+                        // 1. Simpan Pilihan
+                        currentSelection = i;
+
+                        // 2. Visual: Tandai Terpilih (Kuning/Border)
+                        document.querySelectorAll('.arena-opt').forEach(b => {
+                            b.disabled = true; // Kunci semua tombol
+                            b.classList.add('opacity-50');
+                        });
+                        newBtn.classList.remove('opacity-50');
+                        newBtn.classList.add('ring-4', 'ring-yellow-400', 'bg-purple-600'); // Warna "Menunggu"
+
+                        // 3. Pesan Menunggu
+                        const feedback = document.getElementById('player-feedback');
+                        feedback.innerText = "Jawaban Tersimpan. Menunggu Guru membuka hasil...";
+                        feedback.className = "mt-4 text-center p-4 rounded-lg font-bold text-xl bg-yellow-600 text-white animate-pulse";
+                        feedback.classList.remove('hidden');
+                    });
+                });
+
+                // Timer (Hanya visual countdown)
+                startTimer(20, false); 
+            }
+
+            // Mode 2: SAAT GURU BUKA JAWABAN (Hitung Skor & Warna)
+            function renderQuestionResult(idx) {
+                const q = questions[idx];
                 const feedback = document.getElementById('player-feedback');
-                feedback.classList.remove('hidden', 'bg-red-600', 'bg-green-600');
                 
-                if(isCorrect) {
-                    feedback.innerText = "BENAR! 🥳";
+                // Matikan Timer
+                if(window.gameTimer) clearInterval(window.gameTimer);
+                document.getElementById('live-timer').innerText = "0";
+
+                // Jika Guru, tidak perlu hitung skor
+                if(isAdmin) {
+                    feedback.innerText = "JAWABAN DITAMPILKAN";
+                    feedback.className = "mt-4 text-center p-4 rounded-lg font-bold text-xl bg-blue-600 text-white";
+                    feedback.classList.remove('hidden');
+                    // Highlight jawaban benar untuk guru
+                    document.querySelectorAll('.arena-opt')[q.a].classList.add('ring-4', 'ring-green-400', 'bg-green-600');
+                    return;
+                }
+
+                // LOGIKA SISWA: Cek Benar/Salah
+                const isCorrect = (currentSelection === q.a);
+                const opts = document.querySelectorAll('.arena-opt');
+                
+                // Tampilkan Warna Jawaban Benar
+                opts[q.a].classList.remove('bg-blue-600', 'opacity-50');
+                opts[q.a].classList.add('bg-green-600', 'ring-4', 'ring-white'); // Kunci Jawaban selalu hijau
+                
+                feedback.classList.remove('hidden', 'bg-yellow-600', 'animate-pulse');
+
+                if (currentSelection === -1) {
+                    // Tidak menjawab
+                    feedback.innerText = "WAKTU HABIS / TIDAK MENJAWAB 😴";
+                    feedback.classList.add('bg-gray-600');
+                }
+                else if (isCorrect) {
+                    // Benar
+                    feedback.innerText = "BENAR! +10 Poin 🥳";
                     feedback.classList.add('bg-green-600');
-                    myScore += 100;
+                    myScore += 10;
                     db.ref('players/'+myPlayerId+'/score').set(myScore);
                 } else {
+                    // Salah
                     feedback.innerText = "SALAH 😢";
                     feedback.classList.add('bg-red-600');
-                }
-            });
-        });
-
-        let sec = 20; // Waktu per soal (diperpanjang dikit karena soal panjang)
-        const timerEl = document.getElementById('live-timer');
-        if(window.gameTimer) clearInterval(window.gameTimer);
-        
-        window.gameTimer = setInterval(() => {
-            sec--;
-            timerEl.innerText = sec;
-            
-            if(sec <= 0) {
-                clearInterval(window.gameTimer);
-                document.querySelectorAll('.arena-opt').forEach(b => b.disabled = true);
-                
-                if(isAdmin) {
-                    const nextBtn = document.getElementById('btn-next-question');
-                    nextBtn.classList.add('animate-bounce', 'bg-yellow-500'); 
-                    nextBtn.innerText = "WAKTU HABIS! LANJUT? ➡️";
+                    // Tombol yang dipilih siswa jadi merah
+                    opts[currentSelection].classList.remove('bg-purple-600', 'ring-yellow-400');
+                    opts[currentSelection].classList.add('bg-red-600');
                 }
             }
-        }, 1000);
-    }
 
-    function showScreen(id) {
-        ['quiz-login', 'quiz-lobby', 'quiz-arena'].forEach(s => document.getElementById(s).classList.add('hidden'));
-        document.getElementById(id).classList.remove('hidden');
-    }
+            // Helper: Mengatur Tombol Guru
+            function updateAdminButtons(state) {
+                const btnReveal = document.getElementById('btn-reveal-answer');
+                const btnNext = document.getElementById('btn-next-question');
+                const btnFinish = document.getElementById('btn-finish-game');
+                
+                if(state.step === 'answering') {
+                    btnReveal.classList.remove('hidden');
+                    btnNext.classList.add('hidden'); // Sembunyikan Next
+                    btnFinish.classList.add('hidden');
+                } 
+                else if (state.step === 'reveal') {
+                    btnReveal.classList.add('hidden'); // Sembunyikan Reveal
+                    if(state.index < questions.length - 1) {
+                         btnNext.classList.remove('hidden'); // Munculkan Next
+                    } else {
+                         btnFinish.classList.remove('hidden'); // Munculkan Finish di akhir
+                    }
+                }
+            }
 
-    async function submitScore(nama, kelas, skor) {
-        const loadingDiv = document.createElement('div');
-        loadingDiv.className = "fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50";
-        loadingDiv.innerHTML = `<div class="text-white text-2xl font-bold animate-pulse">Menyimpan Skor...</div>`;
-        document.body.appendChild(loadingDiv);
+            // Helper: Timer
+            function startTimer(seconds, isRevealMode) {
+                let sec = seconds;
+                const timerEl = document.getElementById('live-timer');
+                if(window.gameTimer) clearInterval(window.gameTimer);
+                
+                window.gameTimer = setInterval(() => {
+                    sec--;
+                    timerEl.innerText = sec;
+                    
+                    if(sec <= 0) {
+                        clearInterval(window.gameTimer);
+                        // Waktu habis: Disable tombol siswa (jika belum klik)
+                        if(!isRevealMode) {
+                            document.querySelectorAll('.arena-opt').forEach(b => b.disabled = true);
+                            if(isAdmin) { 
+                                // Beri sinyal visual ke guru
+                                document.getElementById('btn-reveal-answer').classList.add('animate-bounce');
+                            }
+                        }
+                    }
+                }, 1000);
+            }
 
-        try {
-            await fetch(WEB_APP_URL, {
-                method: 'POST',
-                mode: 'no-cors', 
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: new URLSearchParams({ 'nama': nama, 'kelas': kelas, 'skor': skor })
-            });
-            await new Promise(r => setTimeout(r, 1500));
-        } catch (error) {
-            console.error("Gagal kirim:", error);
-            alert("Gagal menyimpan nilai.");
-        } finally {
-            loadingDiv.remove();
-        }
-    }
+            // --- E. FINISH GAME ---
+            async function handleGameFinished() {
+                if (isAdmin) {
+                    alert("Kuis Selesai! Menuju Papan Peringkat...");
+                    window.location.hash = "#peringkat";
+                    window.location.reload(); 
+                } else {
+                    if (!hasParticipated) {
+                        alert("Sesi Kuis telah berakhir.");
+                        showScreen('quiz-lobby');
+                        return;
+                    }
+                    alert("Kuis Selesai! Skor Kamu: " + myScore);
+                    await submitScore(myName, myClass, myScore);
+                    window.location.hash = "#peringkat";
+                    window.location.reload();
+                }
+            }
+
+            function showScreen(id) {
+                ['quiz-login', 'quiz-lobby', 'quiz-arena'].forEach(s => document.getElementById(s).classList.add('hidden'));
+                document.getElementById(id).classList.remove('hidden');
+            }
+
+            async function submitScore(nama, kelas, skor) {
+                const loadingDiv = document.createElement('div');
+                loadingDiv.className = "fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50";
+                loadingDiv.innerHTML = `<div class="text-white text-2xl font-bold animate-pulse">Menyimpan Skor...</div>`;
+                document.body.appendChild(loadingDiv);
+                try {
+                    await fetch(WEB_APP_URL, {
+                        method: 'POST',
+                        mode: 'no-cors', 
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: new URLSearchParams({ 'nama': nama, 'kelas': kelas, 'skor': skor })
+                    });
+                    await new Promise(r => setTimeout(r, 1500));
+                } catch (error) { console.error(error); } finally { loadingDiv.remove(); }
+            }
             
             //--- Papan Peringkat Logic ---//
             const leaderboardLoading = document.getElementById('leaderboard-loading');
