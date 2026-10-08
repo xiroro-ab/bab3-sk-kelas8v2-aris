@@ -349,6 +349,23 @@
     </style>
 </head>
 <body>
+    <!-- Global Drawing Overlay -->
+    <canvas id="global-drawing-canvas" class="fixed inset-0 w-full h-full z-40 pointer-events-none"></canvas>
+    
+    <!-- Global Drawing Toolbar -->
+    <div id="global-drawing-toolbar" class="fixed bottom-4 right-4 z-50 bg-gray-900 border border-gray-700 p-3 rounded-2xl shadow-2xl flex items-center gap-3 transition-all duration-300 transform hover:scale-105">
+        <button id="toggle-draw-btn" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-xl shadow-lg transition flex items-center gap-2">
+            <i class="fas fa-mouse-pointer"></i> Mode Mouse
+        </button>
+        <div class="h-8 w-px bg-gray-600"></div>
+        <input type="color" id="global-board-color" value="#ffeb3b" class="h-10 w-10 p-1 border border-gray-600 rounded-lg cursor-pointer bg-gray-800" title="Warna Pena">
+        <input type="range" id="global-board-size" min="1" max="20" value="4" class="cursor-pointer w-24 accent-purple-500" title="Ukuran Pena">
+        <div class="h-8 w-px bg-gray-600"></div>
+        <button id="global-clear-board" class="bg-red-600 hover:bg-red-500 text-white py-2 px-3 rounded-xl shadow-lg transition" title="Hapus Coretan">
+            <i class="fas fa-trash-alt"></i>
+        </button>
+    </div>
+
     <!-- Sidebar -->
     <aside id="sidebar" class="sidebar">
         <div class="p-6 text-center border-b border-gray-700/50">
@@ -415,11 +432,7 @@
                             <i class="fas fa-tasks w-6 text-center"></i><span class="ml-4">E-LKPD</span>
                         </a>
                     </li>
-                    <li class="menu-item px-4 mb-2">
-                        <a href="#papantulis" class="nav-link flex items-center p-3 rounded-lg">
-                            <i class="fas fa-chalkboard w-6 text-center"></i><span class="ml-4">Papan Tulis</span>
-                        </a>
-                    </li>
+
                     <li class="menu-item px-4 mb-2">
                         <a href="#refleksi" class="nav-link flex items-center p-3 rounded-lg">
                             <i class="fas fa-sticky-note w-6 text-center"></i><span class="ml-4">Papan Refleksi</span>
@@ -1117,26 +1130,7 @@
                 </div>
             </section>
 
-            <!-- Papan Tulis -->
-            <section id="papantulis" class="page-content">
-                <h2 class="text-3xl font-bold mb-6 text-purple-400 text-glow">Papan Tulis Virtual</h2>
-                <div class="bg-gray-800 p-4 rounded-lg shadow-lg">
-                    <div class="flex flex-wrap gap-4 mb-4 items-center">
-                        <button id="clear-board" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg font-bold transition">Hapus Semua</button>
-                        <div class="flex items-center gap-2">
-                            <label class="text-gray-300">Warna Pena:</label>
-                            <input type="color" id="board-color" value="#ffffff" class="h-10 w-10 p-1 border border-gray-600 rounded cursor-pointer bg-gray-900">
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <label class="text-gray-300">Ukuran:</label>
-                            <input type="range" id="board-size" min="1" max="20" value="3" class="cursor-pointer">
-                        </div>
-                    </div>
-                    <div class="w-full overflow-hidden rounded-lg border-2 border-gray-600 bg-gray-900 relative" style="height: 60vh;">
-                        <canvas id="whiteboard" class="absolute top-0 left-0 w-full h-full cursor-crosshair touch-none"></canvas>
-                    </div>
-                </div>
-            </section>
+
 
             <!-- Papan Refleksi -->
             <section id="refleksi" class="page-content">
@@ -2266,27 +2260,52 @@
                     });
                 }
 
-                // --- Papan Tulis Virtual Logic ---
-                function initPapanTulis() {
-                    const canvas = document.getElementById('whiteboard');
-                    if(!canvas) return;
+                // --- Global Drawing Overlay Logic ---
+                function initGlobalDrawing() {
+                    const canvas = document.getElementById('global-drawing-canvas');
+                    const toggleBtn = document.getElementById('toggle-draw-btn');
+                    const colorPicker = document.getElementById('global-board-color');
+                    const sizePicker = document.getElementById('global-board-size');
+                    const clearBtn = document.getElementById('global-clear-board');
+                    
+                    if(!canvas || !toggleBtn) return;
                     const ctx = canvas.getContext('2d');
+                    let isDrawingMode = false;
                     let isDrawing = false;
                     
-                    // Setup canvas for high-DPI displays
                     function resize() {
-                        const rect = canvas.parentElement.getBoundingClientRect();
-                        canvas.width = rect.width;
-                        canvas.height = rect.height;
-                        // Fill with dark background
-                        ctx.fillStyle = '#111827';
-                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                        canvas.width = window.innerWidth;
+                        canvas.height = window.innerHeight;
                     }
                     
                     window.addEventListener('resize', resize);
                     resize();
 
+                    toggleBtn.addEventListener('click', () => {
+                        isDrawingMode = !isDrawingMode;
+                        if (isDrawingMode) {
+                            canvas.classList.remove('pointer-events-none');
+                            canvas.classList.add('cursor-crosshair');
+                            toggleBtn.classList.replace('bg-gray-600', 'bg-blue-600');
+                            toggleBtn.classList.replace('hover:bg-gray-500', 'hover:bg-blue-500');
+                            toggleBtn.innerHTML = '<i class="fas fa-pen"></i> Mode Coret';
+                            document.body.style.overflow = 'hidden';
+                        } else {
+                            canvas.classList.add('pointer-events-none');
+                            canvas.classList.remove('cursor-crosshair');
+                            toggleBtn.classList.replace('bg-blue-600', 'bg-gray-600');
+                            toggleBtn.classList.replace('hover:bg-blue-500', 'hover:bg-gray-500');
+                            toggleBtn.innerHTML = '<i class="fas fa-mouse-pointer"></i> Mode Mouse';
+                            document.body.style.overflow = '';
+                        }
+                    });
+
+                    clearBtn.addEventListener('click', () => {
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    });
+
                     function startPosition(e) {
+                        if (!isDrawingMode) return;
                         isDrawing = true;
                         draw(e);
                     }
@@ -2297,15 +2316,14 @@
                     }
 
                     function draw(e) {
-                        if (!isDrawing) return;
+                        if (!isDrawing || !isDrawingMode) return;
                         
-                        const rect = canvas.getBoundingClientRect();
-                        const x = (e.clientX || e.touches[0].clientX) - rect.left;
-                        const y = (e.clientY || e.touches[0].clientY) - rect.top;
+                        const x = e.clientX || (e.touches && e.touches[0].clientX);
+                        const y = e.clientY || (e.touches && e.touches[0].clientY);
 
-                        ctx.lineWidth = document.getElementById('board-size').value;
+                        ctx.lineWidth = sizePicker.value;
                         ctx.lineCap = 'round';
-                        ctx.strokeStyle = document.getElementById('board-color').value;
+                        ctx.strokeStyle = colorPicker.value;
 
                         ctx.lineTo(x, y);
                         ctx.stroke();
@@ -2318,15 +2336,16 @@
                     canvas.addEventListener('mousemove', draw);
                     canvas.addEventListener('mouseout', endPosition);
 
-                    canvas.addEventListener('touchstart', startPosition, {passive: true});
+                    canvas.addEventListener('touchstart', startPosition, {passive: false});
                     canvas.addEventListener('touchend', endPosition);
-                    canvas.addEventListener('touchmove', draw, {passive: true});
-
-                    document.getElementById('clear-board').addEventListener('click', () => {
-                        ctx.fillStyle = '#111827';
-                        ctx.fillRect(0, 0, canvas.width, canvas.height);
-                    });
+                    canvas.addEventListener('touchmove', (e) => {
+                        if (isDrawingMode) e.preventDefault();
+                        draw(e);
+                    }, {passive: false});
                 }
+                
+                // Initialize right away
+                initGlobalDrawing();
 
                 // --- Papan Refleksi Logic ---
                 function initRefleksi() {
@@ -2390,7 +2409,6 @@
                     const targetId = hash.substring(1);
                     if (targetId === 'icebreaking') initIceBreaking();
                     if (targetId === 'elkpd') initELKPD();
-                    if (targetId === 'papantulis') initPapanTulis();
                     if (targetId === 'refleksi') initRefleksi();
                     
                     // Auto-refresh leaderboard polling
