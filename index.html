@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pembelajaran Sistem Komputer - Kelas 8</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://meet.jit.si/external_api.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -451,6 +452,11 @@
                         </a>
                     </li>
 
+                    <li class="menu-item px-4 mb-2">
+                        <a href="#ruang-diskusi" class="nav-link flex items-center p-3 rounded-lg">
+                            <i class="fas fa-video w-6 text-center"></i><span class="ml-4">Ruang Diskusi</span>
+                        </a>
+                    </li>
                     <li class="menu-item px-4 mb-2">
                         <a href="#posttest" class="nav-link flex items-center p-3 rounded-lg">
                             <i class="fas fa-list-ol w-6 text-center"></i><span class="ml-4">Post Test</span>
@@ -1280,6 +1286,46 @@
                         <div id="pt-score-display" class="text-6xl font-black text-sky-400 text-glow mb-6">100</div>
                         <p class="text-gray-300">Jawabanmu sudah tersimpan di database guru. Terima kasih!</p>
                     </div>
+                </div>
+            </section>
+
+            <!-- Ruang Diskusi (Breakout Room) -->
+            <section id="ruang-diskusi" class="page-content">
+                <div class="mb-6">
+                    <h2 class="text-3xl font-bold text-sky-400 text-glow"><i class="fas fa-video mr-2"></i> Ruang Diskusi Kelompok</h2>
+                    <p class="text-gray-300 mt-2">Pilih kelompokmu dan berdiskusi langsung secara online menggunakan Jitsi Meet!</p>
+                </div>
+                
+                <div class="bg-gray-800 p-6 rounded-lg shadow-lg" id="jitsi-login-container">
+                    <div class="mb-4">
+                        <label class="block text-gray-300 font-bold mb-2">Nama Kamu:</label>
+                        <input type="text" id="jitsi-name" class="w-full p-3 rounded-lg bg-gray-900 border border-gray-600 focus:border-sky-500 text-white outline-none" placeholder="Contoh: Budi">
+                    </div>
+                    <div class="mb-6">
+                        <label class="block text-gray-300 font-bold mb-2">Pilih Kelompok:</label>
+                        <select id="jitsi-room" class="w-full p-3 rounded-lg bg-gray-900 border border-gray-600 focus:border-sky-500 text-white outline-none">
+                            <option value="">-- Pilih Kelompok --</option>
+                            <option value="Kelompok_1">Kelompok 1</option>
+                            <option value="Kelompok_2">Kelompok 2</option>
+                            <option value="Kelompok_3">Kelompok 3</option>
+                            <option value="Kelompok_4">Kelompok 4</option>
+                            <option value="Kelompok_5">Kelompok 5</option>
+                            <option value="Kelompok_6">Kelompok 6</option>
+                            <option value="Kelompok_7">Kelompok 7</option>
+                            <option value="Kelompok_8">Kelompok 8</option>
+                            <option value="Kelompok_9">Kelompok 9</option>
+                            <option value="Kelompok_10">Kelompok 10</option>
+                        </select>
+                    </div>
+                    <button id="jitsi-join-btn" class="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-400 hover:to-indigo-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition">Masuk Ruangan Diskusi</button>
+                    <p id="jitsi-error" class="text-red-500 text-sm mt-3 hidden">Nama dan Kelompok harus diisi!</p>
+                </div>
+
+                <div id="jitsi-meet-container" class="mt-6 hidden h-[600px] w-full rounded-lg overflow-hidden border border-gray-700 shadow-xl relative">
+                    <div class="absolute top-2 left-2 z-10">
+                         <button id="jitsi-leave-btn" class="bg-red-600 hover:bg-red-500 text-white font-bold py-2 px-4 rounded-lg shadow-lg">Keluar Ruangan</button>
+                    </div>
+                    <div id="jitsi-iframe-wrapper" class="w-full h-full pt-14"></div>
                 </div>
             </section>
 
@@ -2951,6 +2997,80 @@
                         }
                     };
                 }
+
+                // --- Ruang Diskusi Logic ---
+                let jitsiAPI = null;
+                function initRuangDiskusi() {
+                    const joinBtn = document.getElementById('jitsi-join-btn');
+                    const leaveBtn = document.getElementById('jitsi-leave-btn');
+                    const loginContainer = document.getElementById('jitsi-login-container');
+                    const meetContainer = document.getElementById('jitsi-meet-container');
+                    const wrapper = document.getElementById('jitsi-iframe-wrapper');
+                    const errorMsg = document.getElementById('jitsi-error');
+                    
+                    if(!joinBtn) return;
+                    
+                    joinBtn.onclick = () => {
+                        const name = document.getElementById('jitsi-name').value;
+                        const roomSuffix = document.getElementById('jitsi-room').value;
+                        
+                        if(!name || !roomSuffix) {
+                            errorMsg.classList.remove('hidden');
+                            return;
+                        }
+                        errorMsg.classList.add('hidden');
+                        
+                        // Sembunyikan login, tampilkan meet
+                        loginContainer.classList.add('hidden');
+                        meetContainer.classList.remove('hidden');
+                        
+                        // Nama ruangan dibuat unik dengan prefix khusus agar tidak bocor ke orang lain
+                        const roomName = "Kelas8_SistemKomputer_" + roomSuffix;
+                        
+                        const domain = 'meet.jit.si';
+                        const options = {
+                            roomName: roomName,
+                            width: '100%',
+                            height: '100%',
+                            parentNode: wrapper,
+                            userInfo: {
+                                displayName: name
+                            },
+                            configOverwrite: {
+                                startWithAudioMuted: false,
+                                startWithVideoMuted: false,
+                                prejoinPageEnabled: false // Langsung masuk ruangan tanpa pre-join screen
+                            },
+                            interfaceConfigOverwrite: {
+                                TOOLBAR_BUTTONS: [
+                                    'microphone', 'camera', 'desktop', 'fullscreen', 'hangup', 'chat'
+                                ],
+                                SHOW_PROMOTIONAL_CLOSE_PAGE: false
+                            }
+                        };
+                        
+                        jitsiAPI = new JitsiMeetExternalAPI(domain, options);
+                        
+                        jitsiAPI.addEventListener('videoConferenceLeft', () => {
+                            leaveRoom();
+                        });
+                    };
+                    
+                    leaveBtn.onclick = () => {
+                        leaveRoom();
+                    };
+                    
+                    function leaveRoom() {
+                        if(jitsiAPI) {
+                            jitsiAPI.dispose();
+                            jitsiAPI = null;
+                        }
+                        wrapper.innerHTML = '';
+                        meetContainer.classList.add('hidden');
+                        loginContainer.classList.remove('hidden');
+                    }
+                }
+                
                 // Hook new features into router
                 let leaderboardInterval;
                 const oldRouter = router;
@@ -2960,6 +3080,7 @@
                     const targetId = hash.substring(1);
                     if (targetId === 'icebreaking') initIceBreaking();
                     if (targetId === 'elkpd') initELKPD();
+                    if (targetId === 'ruang-diskusi') initRuangDiskusi();
                     if (targetId === 'posttest') initPostTest();
                     if (targetId === 'refleksi-guru') initRefleksiGuru();
                     if (targetId === 'refleksi-siswa') initRefleksiSiswa();
