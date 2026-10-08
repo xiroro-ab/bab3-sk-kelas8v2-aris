@@ -1819,6 +1819,9 @@
                     }
                 }
             }
+            
+            // Make function available globally for the inline onclick handler
+            window.fetchLeaderboard = fetchLeaderboard;
 
             function displayLeaderboard(data) {
                 ['1', '2', '3'].forEach((rank, index) => {
