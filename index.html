@@ -452,8 +452,18 @@
                     </li>
 
                     <li class="menu-item px-4 mb-2">
-                        <a href="#refleksi" class="nav-link flex items-center p-3 rounded-lg">
-                            <i class="fas fa-sticky-note w-6 text-center"></i><span class="ml-4">Papan Refleksi</span>
+                        <a href="#posttest" class="nav-link flex items-center p-3 rounded-lg">
+                            <i class="fas fa-list-ol w-6 text-center"></i><span class="ml-4">Post Test</span>
+                        </a>
+                    </li>
+                    <li class="menu-item px-4 mb-2">
+                        <a href="#refleksi-guru" class="nav-link flex items-center p-3 rounded-lg">
+                            <i class="fas fa-chalkboard-teacher w-6 text-center"></i><span class="ml-4">Refleksi Guru</span>
+                        </a>
+                    </li>
+                    <li class="menu-item px-4 mb-2">
+                        <a href="#refleksi-siswa" class="nav-link flex items-center p-3 rounded-lg">
+                            <i class="fas fa-user-graduate w-6 text-center"></i><span class="ml-4">Refleksi Siswa</span>
                         </a>
                     </li>
                     <li class="menu-item px-4 mb-2">
@@ -1234,6 +1244,64 @@
                     <button id="submit-lkpd-btn" class="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-400 hover:to-purple-400 text-white font-bold py-4 rounded-xl text-xl transition transform hover:scale-105 shadow-xl">
                         <i class="fas fa-paper-plane mr-2"></i> Kumpulkan Hasil LKPD
                     </button>
+                </div>
+            </section>
+
+            <!-- Post Test -->
+            <section id="posttest" class="page-content">
+                <div class="mb-6">
+                    <h2 class="text-3xl font-bold text-sky-400 text-glow"><i class="fas fa-list-ol mr-2"></i> Post Test</h2>
+                    <p class="text-gray-300 mt-2">Uji pemahamanmu dengan menjawab 10 pertanyaan berikut!</p>
+                </div>
+                
+                <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+                    <div id="posttest-login" class="mb-6">
+                        <h3 class="text-xl font-bold text-white mb-4">Mulai Ujian</h3>
+                        <input type="text" id="pt-nama" placeholder="Nama Lengkap" class="w-full p-3 rounded-lg bg-gray-900 border border-gray-600 focus:border-sky-500 text-white outline-none mb-3">
+                        <select id="pt-kelas" class="w-full p-3 rounded-lg bg-gray-900 border border-gray-600 focus:border-sky-500 text-white outline-none mb-3">
+                            <option value="">Pilih Kelas</option>
+                            <option value="8.1">8.1</option>
+                            <option value="8.2">8.2</option>
+                            <option value="8.3">8.3</option>
+                            <option value="8.4">8.4</option>
+                        </select>
+                        <input type="text" id="pt-token" placeholder="Token Ujian" class="w-full p-3 rounded-lg bg-gray-900 border border-gray-600 focus:border-sky-500 text-white outline-none mb-4">
+                        <p id="pt-error" class="text-red-500 text-sm mb-3 hidden">Nama, Kelas, atau Token tidak valid!</p>
+                        <button id="pt-start-btn" class="w-full bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition">Mulai Post Test</button>
+                    </div>
+
+                    <div id="posttest-content" class="hidden">
+                        <div id="pt-questions" class="space-y-6"></div>
+                        <button id="pt-submit-btn" class="mt-8 w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition">Kumpulkan Jawaban</button>
+                    </div>
+
+                    <div id="posttest-result" class="hidden text-center py-10">
+                        <h3 class="text-3xl font-bold text-white mb-4">Skor Kamu:</h3>
+                        <div id="pt-score-display" class="text-6xl font-black text-sky-400 text-glow mb-6">100</div>
+                        <p class="text-gray-300">Jawabanmu sudah tersimpan di database guru. Terima kasih!</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Refleksi Guru -->
+            <section id="refleksi-guru" class="page-content">
+                <div class="mb-6">
+                    <h2 class="text-3xl font-bold text-purple-400 text-glow"><i class="fas fa-chalkboard-teacher mr-2"></i> Lembar Refleksi Guru</h2>
+                    <p class="text-gray-300 mt-2">Halaman khusus untuk evaluasi dan refleksi pengajaran.</p>
+                </div>
+                <div class="bg-gray-800 p-6 rounded-lg shadow-lg text-center">
+                    <p class="text-gray-400 italic">Fitur ini akan segera ditambahkan pada pengerjaan berikutnya.</p>
+                </div>
+            </section>
+
+            <!-- Refleksi Siswa -->
+            <section id="refleksi-siswa" class="page-content">
+                <div class="mb-6">
+                    <h2 class="text-3xl font-bold text-pink-400 text-glow"><i class="fas fa-user-graduate mr-2"></i> Lembar Refleksi Siswa</h2>
+                    <p class="text-gray-300 mt-2">Ceritakan pengalaman belajarmu hari ini!</p>
+                </div>
+                <div class="bg-gray-800 p-6 rounded-lg shadow-lg text-center">
+                    <p class="text-gray-400 italic">Fitur ini akan segera ditambahkan pada pengerjaan berikutnya.</p>
                 </div>
             </section>
 
@@ -2509,6 +2577,103 @@
                 // Initialize right away
                 initGlobalDrawing();
 
+                function initPostTest() {
+                    const loginDiv = document.getElementById('posttest-login');
+                    const contentDiv = document.getElementById('posttest-content');
+                    const resultDiv = document.getElementById('posttest-result');
+                    const startBtn = document.getElementById('pt-start-btn');
+                    const submitBtn = document.getElementById('pt-submit-btn');
+                    const questionsContainer = document.getElementById('pt-questions');
+                    const errorMsg = document.getElementById('pt-error');
+                    
+                    if(!startBtn) return;
+                    
+                    const TOKEN = "1234";
+
+                    const soal = [
+                        { q: "1. Sebuah perusahaan baru saja membeli komputer tercanggih dengan spesifikasi hardware paling mutakhir. Semua software yang dibutuhkan untuk operasional kantor seperti sistem operasi dan aplikasi perkantoran juga telah terpasang. Namun, komputer tersebut sama sekali tidak bisa menghasilkan laporan keuangan yang diinginkan karena tidak ada staf yang memiliki keahlian untuk mengoperasikan software akuntansi yang ada. Berdasarkan analisis situasi tersebut, komponen sistem komputer manakah yang menjadi kendala utama?", o: ["A. Kegagalan pada Hardware", "B. Ketidakcocokan Software", "C. Keterbatasan Brainware", "D. Kerusakan pada Sistem Operasi"], a: 2 },
+                        { q: "2. Seorang desainer grafis mengeluhkan komputernya menjadi sangat lambat (lemot) saat ia mencoba melakukan rendering video 4K dan menjalankan beberapa aplikasi berat secara bersamaan. Proses membuka file dari hardisk dan menampilkan gambar di monitor berjalan normal. Setelah dianalisis, masalah utamanya adalah waktu yang dibutuhkan untuk menyelesaikan tugas-tugas kalkulasi yang kompleks sangat lama. Perangkat keras manakah yang paling mungkin menjadi penyebab utama dari kelambatan kinerja tersebut?", o: ["A. RAM (Random Access Memory)", "B. Hardisk (Penyimpanan)", "C. CPU (Central Processing Unit)", "D. GPU (Graphics Processing Unit)"], a: 2 },
+                        { q: "3. Microsoft Windows, Android, dan iOS adalah contoh dari...", o: ["A. Aplikasi", "B. Sistem Operasi", "C. Utility", "D. Programming Language"], a: 1 },
+                        { q: "4. Manusia yang mengoperasikan komputer disebut...", o: ["A. Software", "B. Driver", "C. User Interface", "D. Brainware"], a: 3 },
+                        { q: "5. Perangkat yang menampilkan hasil pemrosesan data secara visual adalah...", o: ["A. Printer", "B. Speaker", "C. Monitor", "D. Scanner"], a: 2 },
+                        { q: "6. Fungsi utama dari RAM adalah...", o: ["A. Menyimpan data secara permanen", "B. Menyimpan data sementara saat komputer menyala", "C. Memproses grafis", "D. Menghubungkan komponen"], a: 1 },
+                        { q: "7. Chrome, Word, dan Photoshop adalah contoh perangkat lunak...", o: ["A. Sistem", "B. Aplikasi", "C. Driver", "D. Firmware"], a: 1 },
+                        { q: "8. Seseorang dengan peran membuat program atau aplikasi disebut...", o: ["A. Operator", "B. Administrator", "C. Programmer", "D. System Analyst"], a: 2 },
+                        { q: "9. Perangkat input untuk memasukkan teks dan angka adalah...", o: ["A. Mouse", "B. Scanner", "C. Joystick", "D. Keyboard"], a: 3 },
+                        { q: "10. Siklus dasar cara kerja komputer adalah...", o: ["A. Proses -> Input -> Output", "B. Output -> Proses -> Input", "C. Input -> Proses -> Output", "D. Input -> Output -> Proses"], a: 2 }
+                    ];
+
+                    startBtn.onclick = () => {
+                        const nama = document.getElementById('pt-nama').value;
+                        const kelas = document.getElementById('pt-kelas').value;
+                        const token = document.getElementById('pt-token').value;
+                        
+                        if(nama && kelas && token === TOKEN) {
+                            errorMsg.classList.add('hidden');
+                            loginDiv.classList.add('hidden');
+                            contentDiv.classList.remove('hidden');
+                            renderQuestions();
+                        } else {
+                            errorMsg.classList.remove('hidden');
+                        }
+                    };
+
+                    function renderQuestions() {
+                        questionsContainer.innerHTML = '';
+                        soal.forEach((s, idx) => {
+                            let optionsHTML = '';
+                            s.o.forEach((opt, oIdx) => {
+                                optionsHTML += `
+                                    <label class="flex items-center gap-3 p-3 rounded-lg bg-gray-700 hover:bg-gray-600 cursor-pointer transition border border-transparent hover:border-sky-500">
+                                        <input type="radio" name="pt-q${idx}" value="${oIdx}" class="w-5 h-5 accent-sky-500">
+                                        <span class="text-gray-200">${opt}</span>
+                                    </label>
+                                `;
+                            });
+                            questionsContainer.innerHTML += `
+                                <div class="bg-gray-900 p-5 rounded-lg border border-gray-700 shadow-md">
+                                    <p class="text-white font-bold mb-4 leading-relaxed">${s.q}</p>
+                                    <div class="flex flex-col gap-2">
+                                        ${optionsHTML}
+                                    </div>
+                                </div>
+                            `;
+                        });
+                    }
+
+                    submitBtn.onclick = async () => {
+                        if (!confirm("Apakah kamu yakin ingin mengumpulkan jawaban?")) return;
+                        
+                        let score = 0;
+                        soal.forEach((s, idx) => {
+                            const selected = document.querySelector(`input[name="pt-q${idx}"]:checked`);
+                            if(selected && parseInt(selected.value) === s.a) score += 10;
+                        });
+                        
+                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengirim...';
+                        submitBtn.disabled = true;
+
+                        const nama = document.getElementById('pt-nama').value;
+                        const kelas = document.getElementById('pt-kelas').value;
+
+                        const formData = new FormData();
+                        formData.append('nama', nama + ' (Posttest)');
+                        formData.append('kelas', kelas);
+                        formData.append('skor', score);
+
+                        try {
+                            await fetch(WEB_APP_URL, { method: 'POST', mode: 'no-cors', body: formData });
+                            contentDiv.classList.add('hidden');
+                            resultDiv.classList.remove('hidden');
+                            document.getElementById('pt-score-display').innerText = score;
+                        } catch (error) {
+                            alert('Koneksi gagal. Silakan coba lagi.');
+                            submitBtn.innerHTML = 'Kumpulkan Jawaban';
+                            submitBtn.disabled = false;
+                        }
+                    };
+                }
+
                 // --- Papan Refleksi Logic ---
                 // Hook new features into router
                 let leaderboardInterval;
@@ -2519,6 +2684,7 @@
                     const targetId = hash.substring(1);
                     if (targetId === 'icebreaking') initIceBreaking();
                     if (targetId === 'elkpd') initELKPD();
+                    if (targetId === 'posttest') initPostTest();
                     
                     // Auto-refresh leaderboard polling
                     if (targetId === 'peringkat') {
