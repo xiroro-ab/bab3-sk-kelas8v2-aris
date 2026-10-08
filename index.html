@@ -1367,26 +1367,12 @@
             // LOGIKA KUIS "KAHOOT MODE" (FINAL: PERFECT TOUCH RESPONSE)
             // ================================================================
 
-            // 1. CONFIG FIREBASE
-            const firebaseConfig = {
-                apiKey: "AIzaSyDzKKAx1dc1FeVWd9EFGsHJl3WYdrdS7_8",
-                authDomain: "kuis-informatika-k8.firebaseapp.com",
-                databaseURL: "https://kuis-informatika-k8-default-rtdb.firebaseio.com",
-                projectId: "kuis-informatika-k8",
-                storageBucket: "kuis-informatika-k8.firebasestorage.app",
-                messagingSenderId: "26150311392",
-                appId: "1:26150311392:web:aea5a5915baa1bed44c785",
-                measurementId: "G-EHSFMC5SCK"
-            };
-
+            // 1. CONFIG GOOGLE APPS SCRIPT
             const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby9z2P5_SxcywHITuomEtLatvde-U_cpBTpDw5m-7lCuFoCR1uXJtuCtZJ7dtlO300T_A/exec';
 
-            if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-            const db = firebase.database();
-
             // Identitas Player
-            let myPlayerId = 'p_' + Date.now() + '_' + Math.floor(Math.random() * 999);
-            let myName = '', myClass = '', myScore = 0, isAdmin = false;
+            let myName = '', myClass = '', myScore = 0;
+            let currentQuestionIndex = 0;
             
             // Variabel Jawaban Siswa
             let myAnswerIndex = -1; 
@@ -1413,8 +1399,10 @@
             
             if(classSelect) {
                 classSelect.addEventListener('change', (e) => {
-                    if(e.target.value === 'TEACHER') passInput.classList.remove('hidden');
-                    else passInput.classList.add('hidden');
+                    if(e.target.value === 'TEACHER') {
+                        alert("Mode Admin/Guru dinonaktifkan pada versi Single Player.");
+                        classSelect.value = "8.1";
+                    }
                 });
             }
 
@@ -1423,143 +1411,27 @@
                     e.preventDefault();
                     myName = document.getElementById('player-name').value;
                     myClass = classSelect.value;
-
-                    if (myClass === 'TEACHER') {
-                        if (passInput.value === 'admin123') { 
-                            isAdmin = true;
-                            setupAdminPanel();
-                            db.ref('gameState').set({ step: 'lobby' });
-                        } else {
-                            alert("Password Guru Salah!");
-                        }
-                    } else {
-                        // SISWA
-                        db.ref('players/' + myPlayerId).set({
-                            name: myName,
-                            kelas: myClass,
-                            score: 0,
-                            online: true
-                        }).then(() => {
-                            showScreen('quiz-lobby');
-                            listenToGameLoop(); 
-                        });
-                        db.ref('players/' + myPlayerId).onDisconnect().remove();
-                    }
+                    myScore = 0;
+                    currentQuestionIndex = 0;
+                    hasParticipated = true;
+                    
+                    showScreen('quiz-arena');
+                    startNextQuestion();
                 });
             }
 
-            // --- B. PANEL GURU ---
-            function setupAdminPanel() {
-                document.getElementById('admin-controls').classList.remove('hidden');
-                document.getElementById('admin-nav').classList.remove('hidden');
-                document.getElementById('admin-interim-nav').classList.remove('hidden');
-                
-                listenToGameLoop(); 
-
-                document.getElementById('btn-start-game').addEventListener('click', () => {
-                    startQuestion(0);
-                });
-
-                document.getElementById('btn-show-interim').addEventListener('click', () => {
-                     db.ref('gameState').update({ step: 'interim' });
-                });
-
-                document.getElementById('btn-next-question').addEventListener('click', nextQuestionHandler);
-                document.getElementById('btn-next-from-interim').addEventListener('click', nextQuestionHandler);
-
-                document.getElementById('btn-end-game').addEventListener('click', () => {
-                     db.ref('gameState').set({ step: 'finished' });
-                });
-
-                document.getElementById('btn-reset-game').addEventListener('click', () => {
-                    if(confirm("Reset total?")) {
-                        db.ref('gameState').set({ step: 'lobby' });
-                        db.ref('players').remove();
-                        location.reload();
-                    }
-                });
-            }
-
-            function startQuestion(idx) {
-                db.ref('gameState').set({ 
-                    step: 'question', 
-                    index: idx, 
-                    startTime: Date.now() 
-                });
-            }
-
-            function nextQuestionHandler() {
-                db.ref('gameState/index').once('value', snap => {
-                    let idx = snap.val() || 0;
-                    if(idx < questions.length - 1) {
-                        startQuestion(idx + 1);
-                    } else {
-                        db.ref('gameState').set({ step: 'finished' });
-                    }
-                });
-            }
-
-            // --- C. GAME LOOP ---
+            // --- B. GAME LOOP SINGLE PLAYER ---
             let timerInterval;
 
-            function listenToGameLoop() {
-                db.ref('players').on('value', snap => {
-                    const list = document.getElementById('player-list');
-                    list.innerHTML = '';
-                    if(snap.val()) {
-                        Object.values(snap.val()).forEach(p => {
-                            list.innerHTML += `<div class="bg-white/10 px-4 py-2 rounded text-white font-bold border border-white/20">${p.name} (${p.score})</div>`;
-                        });
-                    }
-                });
-
-                db.ref('gameState').on('value', snap => {
-                    const state = snap.val();
-                    if(!state) return;
-
-                    const btnShowInterim = document.getElementById('btn-show-interim');
-                    const btnNext = document.getElementById('btn-next-question');
-                    const btnEnd = document.getElementById('btn-end-game');
-
-                    if(state.step === 'lobby') {
-                        showScreen('quiz-lobby');
-                        hasParticipated = false; 
-                    }
-                    else if(state.step === 'question') {
-                        showScreen('quiz-arena');
-                        hasParticipated = true; 
-                        renderQuestion(state.index, state.startTime); 
-                        
-                        if(isAdmin) {
-                            btnShowInterim.classList.add('hidden');
-                            btnNext.classList.add('hidden');
-                            btnEnd.classList.add('hidden');
-                        }
-                    }
-                    else if(state.step === 'reveal') {
-                        showScreen('quiz-arena');
-                        revealAnswer(state.index);
-                        
-                        if(isAdmin) {
-                            btnShowInterim.classList.remove('hidden'); 
-                            btnNext.classList.add('hidden');
-                            if(state.index >= questions.length - 1) {
-                                btnShowInterim.classList.add('hidden');
-                                btnEnd.classList.remove('hidden');
-                            }
-                        }
-                    }
-                    else if(state.step === 'interim') {
-                        showScreen('quiz-interim');
-                        renderInterimBoard();
-                    }
-                    else if(state.step === 'finished') {
-                         handleGameFinished();
-                    }
-                });
+            function startNextQuestion() {
+                if (currentQuestionIndex >= questions.length) {
+                    handleGameFinished();
+                    return;
+                }
+                const startTime = Date.now();
+                renderQuestion(currentQuestionIndex, startTime);
             }
 
-            // --- D. RENDER SOAL (FIXED: TOUCH RESPONSE) ---
             function renderQuestion(idx, startTime) {
                 const q = questions[idx];
                 myAnswerIndex = -1;
@@ -1568,184 +1440,160 @@
                 document.getElementById('my-live-score').innerText = `Skor: ${myScore}`;
                 document.getElementById('student-feedback-overlay').classList.add('hidden');
 
-                const teacherView = document.getElementById('teacher-view-question');
                 const optTexts = document.querySelectorAll('.opt-text');
                 const optBtns = document.querySelectorAll('.arena-opt');
                 const imgEl = document.getElementById('arena-image');
+                const teacherView = document.getElementById('teacher-view-question');
+
+                // Tampilkan soal di layar siswa
+                if (teacherView) teacherView.classList.remove('hidden');
 
                 // 1. BERSIHKAN STYLE LAMA
                 optBtns.forEach(btn => {
                     btn.disabled = false;
-                    // Hapus semua class modifikasi
-                    btn.classList.remove(
-                        'opacity-20', 'ring-4', 'ring-white', 'ring-green-400', 
-                        'scale-95', 'scale-105', 'scale-90',
-                        'cursor-not-allowed', 'cursor-default', 'cursor-pointer', 'hover:scale-105'
-                    );
-                    // Tambahkan transisi halus
-                    btn.classList.add('transition-all', 'duration-200');
+                    btn.classList.remove('opacity-20', 'ring-4', 'ring-white', 'ring-green-400', 'scale-95', 'scale-105', 'scale-90', 'cursor-not-allowed', 'cursor-default');
+                    btn.classList.add('transition-all', 'duration-200', 'cursor-pointer', 'hover:scale-105');
                 });
 
-                // 2. TAMPILAN GURU vs SISWA
-                if(isAdmin) {
-                    teacherView.classList.remove('hidden');
-                    document.getElementById('arena-question').innerText = q.q;
-                    if(q.img) { imgEl.src = q.img; imgEl.classList.remove('hidden'); }
-                    else { imgEl.classList.add('hidden'); }
-                    optTexts.forEach((span, i) => span.innerText = q.opts[i]);
+                // 2. MASUKKAN TEKS SOAL
+                const qEl = document.getElementById('arena-question');
+                if(qEl) qEl.innerText = q.q;
+                
+                if(q.img && imgEl) { imgEl.src = q.img; imgEl.classList.remove('hidden'); }
+                else if(imgEl) { imgEl.classList.add('hidden'); }
+                optTexts.forEach((span, i) => span.innerText = q.opts[i]);
 
-                    // Guru tidak ada hover effect
-                    optBtns.forEach(btn => btn.classList.add('cursor-default'));
-
-                } else {
-                    teacherView.classList.add('hidden'); 
-                    optTexts.forEach((span, i) => span.innerText = q.opts[i]);
-
-                    // Siswa ada hover & pointer
-                    optBtns.forEach(btn => btn.classList.add('cursor-pointer', 'hover:scale-105'));
-                }
-
-                // 3. LOGIKA KLIK (VISUAL FEEDBACK DIPERBAIKI)
+                // 3. LOGIKA KLIK JAWABAN
                 let answered = false;
-                if(!isAdmin) {
-                    optBtns.forEach((btn, i) => {
-                        let newBtn = btn.cloneNode(true);
-                        btn.parentNode.replaceChild(newBtn, btn);
+                optBtns.forEach((btn, i) => {
+                    let newBtn = btn.cloneNode(true);
+                    btn.parentNode.replaceChild(newBtn, btn);
 
-                        newBtn.addEventListener('click', () => {
-                            if(answered) return;
-                            answered = true;
+                    newBtn.addEventListener('click', () => {
+                        if(answered) return;
+                        answered = true;
 
-                            myAnswerIndex = i;
-                            const now = Date.now();
-                            const elapsedSec = (now - startTime) / 1000;
-                            const remaining = Math.max(0, 10 - elapsedSec);
-                            const potentialScore = Math.floor(remaining * 100); 
-                            newBtn.dataset.tempScore = potentialScore;
+                        myAnswerIndex = i;
+                        const now = Date.now();
+                        const elapsedSec = (now - startTime) / 1000;
+                        const remaining = Math.max(0, 10 - elapsedSec);
+                        const potentialScore = Math.floor(remaining * 100); 
+                        newBtn.dataset.tempScore = potentialScore;
 
-                            // EFEK VISUAL:
-                            // 1. Matikan semua tombol lain (kecilkan & redupkan)
-                            document.querySelectorAll('.arena-opt').forEach((b, idx) => {
-                                b.classList.remove('hover:scale-105', 'cursor-pointer'); // Matikan hover
-                                b.classList.add('cursor-not-allowed');
-                                b.disabled = true;
-                                
-                                if (idx !== i) {
-                                    b.classList.add('opacity-20', 'scale-90'); // Tombol lain mengecil
-                                }
-                            });
-
-                            // 2. Tonjolkan tombol yang dipilih
-                            newBtn.classList.remove('opacity-20', 'scale-90');
-                            newBtn.classList.add('ring-4', 'ring-white', 'scale-105', 'z-10'); // Tombol terpilih membesar
+                        // Matikan tombol lain
+                        document.querySelectorAll('.arena-opt').forEach((b, idx) => {
+                            b.classList.remove('hover:scale-105', 'cursor-pointer');
+                            b.classList.add('cursor-not-allowed');
+                            b.disabled = true;
+                            if (idx !== i) b.classList.add('opacity-20', 'scale-90');
                         });
-                    });
-                }
 
-                // Timer
+                        newBtn.classList.remove('opacity-20', 'scale-90');
+                        newBtn.classList.add('ring-4', 'ring-white', 'scale-105', 'z-10');
+                    });
+                });
+
+                // Timer 10 detik
                 if(timerInterval) clearInterval(timerInterval);
                 const timerEl = document.getElementById('live-timer');
                 
                 timerInterval = setInterval(() => {
                     const elapsed = (Date.now() - startTime) / 1000;
                     const left = Math.max(0, Math.ceil(10 - elapsed));
-                    timerEl.innerText = left;
+                    if(timerEl) timerEl.innerText = left;
                     
-                    if(left <= 3) document.getElementById('timer-circle').classList.add('bg-red-600', 'animate-pulse');
-                    else document.getElementById('timer-circle').classList.remove('bg-red-600', 'animate-pulse');
+                    const circle = document.getElementById('timer-circle');
+                    if(circle) {
+                        if(left <= 3) circle.classList.add('bg-red-600', 'animate-pulse');
+                        else circle.classList.remove('bg-red-600', 'animate-pulse');
+                    }
 
                     if(left <= 0) {
                         clearInterval(timerInterval);
-                        if(isAdmin) {
-                            db.ref('gameState').update({ step: 'reveal', index: idx });
-                        }
+                        revealAnswer(idx);
                     }
                 }, 100);
             }
 
-            // --- E. REVEAL ANSWER ---
+            // --- C. REVEAL ANSWER ---
             function revealAnswer(idx) {
                 const q = questions[idx];
                 const optBtns = document.querySelectorAll('.arena-opt');
                 
                 optBtns.forEach((btn, i) => {
                     btn.disabled = true;
-                    btn.classList.remove('cursor-pointer', 'hover:scale-105', 'scale-105', 'scale-90'); // Reset scale
+                    btn.classList.remove('cursor-pointer', 'hover:scale-105', 'scale-105', 'scale-90'); 
                     btn.classList.add('cursor-default'); 
 
                     if(i === q.a) {
-                        // Kunci Jawaban
                         btn.classList.remove('opacity-20');
-                        btn.classList.add('ring-4', 'ring-green-400', 'scale-105', 'z-20'); // Paling menonjol
+                        btn.classList.add('ring-4', 'ring-green-400', 'scale-105', 'z-20'); 
                     } else {
-                        // Jawaban Salah
                         btn.classList.add('opacity-20', 'scale-90');
                     }
                 });
 
-                if(!isAdmin) {
-                    let title = "WAKTU HABIS";
-                    let bg = "bg-gray-800";
-                    let points = 0;
+                let title = "WAKTU HABIS";
+                let bg = "bg-gray-800";
+                let points = 0;
 
-                    if (myAnswerIndex !== -1) {
-                        const isCorrect = (myAnswerIndex === q.a);
-                        const selectedBtn = optBtns[myAnswerIndex];
-                        
-                        if(isCorrect) {
-                            points = parseInt(selectedBtn.dataset.tempScore || 0);
-                            title = "BENAR! 🤩";
-                            bg = "bg-green-600";
-                            myScore += points;
-                            db.ref('players/'+myPlayerId+'/score').set(myScore);
-                        } else {
-                            title = "SALAH 😢";
-                            bg = "bg-red-600";
-                            points = 0; 
-                        }
+                if (myAnswerIndex !== -1) {
+                    const isCorrect = (myAnswerIndex === q.a);
+                    const selectedBtn = optBtns[myAnswerIndex];
+                    
+                    if(isCorrect) {
+                        points = parseInt(selectedBtn.dataset.tempScore || 0);
+                        title = "BENAR! 🤩";
+                        bg = "bg-green-600";
+                        myScore += points;
                     } else {
-                        title = "TIDAK MENJAWAB 😴";
+                        title = "SALAH 😢";
+                        bg = "bg-red-600";
+                        points = 0; 
                     }
+                } else {
+                    title = "TIDAK MENJAWAB 😴";
+                }
 
-                    const overlay = document.getElementById('student-feedback-overlay');
+                const overlay = document.getElementById('student-feedback-overlay');
+                if(overlay) {
                     overlay.classList.remove('hidden');
                     document.getElementById('feedback-title').innerText = title;
                     document.getElementById('feedback-points').innerText = "+" + points;
                     document.getElementById('feedback-score-badge').className = `p-4 rounded-xl mb-4 ${bg}`;
                 }
+
+                // Lanjut ke soal berikutnya otomatis setelah 3 detik
+                setTimeout(() => {
+                    currentQuestionIndex++;
+                    startNextQuestion();
+                }, 3000);
             }
 
-            // --- F. FINISH ---
+            // --- D. FINISH & SUBMIT ---
             async function handleGameFinished() {
-                if(isAdmin) {
-                    alert("Game Selesai! Mengarahkan ke Papan Peringkat...");
-                    window.location.hash = "#peringkat";
-                    window.location.reload();
-                } else {
-                    if(!hasParticipated) return;
-                    
-                    const loadingDiv = document.createElement('div');
-                    loadingDiv.className = "fixed inset-0 bg-black bg-opacity-90 flex flex-col items-center justify-center z-50";
-                    loadingDiv.innerHTML = `
-                        <div class="text-white text-3xl font-bold animate-pulse mb-4">Menyimpan Skor...</div>
-                        <div class="text-gray-400">Mohon tunggu sebentar...</div>
-                    `;
-                    document.body.appendChild(loadingDiv);
+                if(!hasParticipated) return;
+                
+                const loadingDiv = document.createElement('div');
+                loadingDiv.className = "fixed inset-0 bg-black bg-opacity-90 flex flex-col items-center justify-center z-50";
+                loadingDiv.innerHTML = `
+                    <div class="text-white text-3xl font-bold animate-pulse mb-4">Menyimpan Skor...</div>
+                    <div class="text-gray-400 mb-2">Total Skormu: <span class="text-yellow-400 font-bold">${myScore}</span> Pts</div>
+                    <div class="text-gray-400">Sedang mengirim ke Papan Peringkat...</div>
+                `;
+                document.body.appendChild(loadingDiv);
 
-                    const randomDelay = Math.floor(Math.random() * 3000) + 500;
-                    await new Promise(r => setTimeout(r, randomDelay));
-                    await submitScore(myName, myClass, myScore);
-                    await new Promise(r => setTimeout(r, 2000));
-
+                await submitScore(myName, myClass, myScore);
+                
+                setTimeout(() => {
                     loadingDiv.remove();
                     window.location.hash = "#peringkat";
                     window.location.reload();
-                }
+                }, 1000);
             }
 
             async function submitScore(nama, kelas, skor) {
                 try {
-                    // Google Apps Script doPost requires FormData for best compatibility when using no-cors
                     const formData = new FormData();
                     formData.append('nama', nama);
                     formData.append('kelas', kelas);
@@ -1759,40 +1607,13 @@
                 } catch (error) { console.error('Error submitting score:', error); }
             }
 
-            // --- G. INTERIM ---
-            function renderInterimBoard() {
-                db.ref('players').once('value', snap => {
-                    const listEl = document.getElementById('interim-list');
-                    listEl.innerHTML = '';
-                    if(!snap.val()) return;
-                    
-                    let players = Object.values(snap.val());
-                    players.sort((a, b) => b.score - a.score);
-
-                    players.slice(0, 5).forEach((p, i) => {
-                        let rankColor = "bg-gray-700";
-                        if(i===0) rankColor = "bg-yellow-600 border-2 border-yellow-400";
-                        if(i===1) rankColor = "bg-gray-500";
-                        if(i===2) rankColor = "bg-orange-700";
-
-                        listEl.innerHTML += `
-                            <div class="${rankColor} p-4 rounded-lg flex justify-between items-center text-white text-xl shadow-lg transform hover:scale-105 transition">
-                                <div class="flex items-center gap-4">
-                                    <span class="font-bold text-2xl w-8">#${i+1}</span>
-                                    <span class="font-bold">${p.name}</span>
-                                </div>
-                                <span class="font-bold">${p.score} Pts</span>
-                            </div>
-                        `;
-                    });
-                });
-            }
-
             function showScreen(id) {
                 ['quiz-login', 'quiz-lobby', 'quiz-arena', 'quiz-interim'].forEach(s => {
-                    document.getElementById(s).classList.add('hidden');
+                    const el = document.getElementById(s);
+                    if(el) el.classList.add('hidden');
                 });
-                document.getElementById(id).classList.remove('hidden');
+                const targetEl = document.getElementById(id);
+                if(targetEl) targetEl.classList.remove('hidden');
             }
             
             //--- Papan Peringkat Logic ---//
