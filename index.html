@@ -1092,76 +1092,117 @@
             <!-- E-LKPD -->
             <section id="elkpd" class="page-content">
                 <h2 class="text-3xl font-bold mb-6 text-purple-400 text-glow">E-LKPD: Detektif Komputer</h2>
-                <div class="bg-gray-800 p-6 rounded-lg shadow-lg mb-6">
-                    <h3 class="text-2xl font-bold text-sky-400 mb-4">Misi 1: Koper Misteri</h3>
-                    <p class="mb-4 text-gray-300">Seret (drag) dan lepaskan (drop) item berikut ke dalam kotak yang tepat!</p>
-                    <div id="lkpd-items" class="flex flex-wrap gap-4 p-4 bg-gray-900 rounded-lg min-h-[80px] border border-gray-700">
-                        <!-- Draggable Items -->
-                        <div class="draggable-item bg-gray-700 hover:bg-gray-600 p-3 rounded cursor-pointer border border-gray-500 font-bold" draggable="true" id="item1">Monitor</div>
-                        <div class="draggable-item bg-gray-700 hover:bg-gray-600 p-3 rounded cursor-pointer border border-gray-500 font-bold" draggable="true" id="item2">Microsoft Word</div>
-                        <div class="draggable-item bg-gray-700 hover:bg-gray-600 p-3 rounded cursor-pointer border border-gray-500 font-bold" draggable="true" id="item3">Programmer</div>
-                        <div class="draggable-item bg-gray-700 hover:bg-gray-600 p-3 rounded cursor-pointer border border-gray-500 font-bold" draggable="true" id="item4">Keyboard</div>
-                        <div class="draggable-item bg-gray-700 hover:bg-gray-600 p-3 rounded cursor-pointer border border-gray-500 font-bold" draggable="true" id="item5">Browser Chrome</div>
-                        <div class="draggable-item bg-gray-700 hover:bg-gray-600 p-3 rounded cursor-pointer border border-gray-500 font-bold" draggable="true" id="item6">User (Pengguna)</div>
+                
+                <!-- Login Kelompok -->
+                <div id="lkpd-login" class="bg-gray-800 p-8 rounded-lg shadow-lg max-w-xl mx-auto">
+                    <h3 class="text-2xl font-bold mb-6 text-center text-sky-400">Login Kelompok</h3>
+                    <div class="mb-4">
+                        <label class="block text-gray-300 mb-2">Pilih Kelompok:</label>
+                        <select id="lkpd-group" class="w-full p-3 rounded-lg bg-gray-900 border border-gray-600 focus:border-purple-500 text-white outline-none">
+                            <option value="">-- Pilih Kelompok --</option>
+                            <option value="Kelompok 1">Kelompok 1</option>
+                            <option value="Kelompok 2">Kelompok 2</option>
+                            <option value="Kelompok 3">Kelompok 3</option>
+                            <option value="Kelompok 4">Kelompok 4</option>
+                            <option value="Kelompok 5">Kelompok 5</option>
+                            <option value="Kelompok 6">Kelompok 6</option>
+                        </select>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-                        <div class="drop-zone bg-gray-900 border-2 border-dashed border-sky-500 p-4 rounded-lg min-h-[200px]" id="box-hardware">
-                            <h4 class="font-bold text-sky-400 mb-4 text-center text-xl">Hardware</h4>
-                        </div>
-                        <div class="drop-zone bg-gray-900 border-2 border-dashed border-pink-500 p-4 rounded-lg min-h-[200px]" id="box-software">
-                            <h4 class="font-bold text-pink-400 mb-4 text-center text-xl">Software</h4>
-                        </div>
-                        <div class="drop-zone bg-gray-900 border-2 border-dashed border-green-500 p-4 rounded-lg min-h-[200px]" id="box-brainware">
-                            <h4 class="font-bold text-green-400 mb-4 text-center text-xl">Brainware</h4>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
-                    <h3 class="text-2xl font-bold text-sky-400 mb-4">Misi 2: Analisis Kasus "Salah Satu Hilang"</h3>
-                    <div class="mb-6">
-                        <label class="block mb-2 font-bold text-gray-200">Kasus 1: Kamu punya laptop terbaru (Hardware) dan kamu sangat jago desain (Brainware), tapi tidak ada aplikasi Photoshop (Software). Apa yang terjadi?</label>
-                        <textarea class="w-full bg-gray-900 border border-gray-600 focus:border-purple-500 outline-none p-4 rounded-lg text-white" rows="3" placeholder="Ketik jawaban analisismu di sini..."></textarea>
+                    <div class="mb-4">
+                        <label class="block text-gray-300 mb-2">Password Kelompok:</label>
+                        <input type="password" id="lkpd-password" placeholder="Masukkan Password Kelompok" class="w-full p-3 rounded-lg bg-gray-900 border border-gray-600 focus:border-purple-500 text-white outline-none">
+                        <p class="text-xs text-gray-500 mt-1">Hint: KEL1, KEL2, dst.</p>
                     </div>
                     <div class="mb-6">
-                        <label class="block mb-2 font-bold text-gray-200">Kasus 2: Kamu gamer (Brainware), game favorit sudah diunduh (Software), tapi mouse pada komputermu tiba-tiba rusak (Hardware).</label>
-                        <textarea class="w-full bg-gray-900 border border-gray-600 focus:border-purple-500 outline-none p-4 rounded-lg text-white" rows="3" placeholder="Ketik jawaban analisismu di sini..."></textarea>
+                        <label class="block text-gray-300 mb-2">Nama Anggota Kelompok:</label>
+                        <textarea id="lkpd-members" placeholder="1. Nama Pertama&#10;2. Nama Kedua&#10;3. Nama Ketiga" rows="4" class="w-full p-3 rounded-lg bg-gray-900 border border-gray-600 focus:border-purple-500 text-white outline-none"></textarea>
                     </div>
-                    <button onclick="alert('Kerja bagus! LKPD berhasil disubmit dan siap dipresentasikan.')" class="w-full md:w-auto btn-gradient text-white font-bold py-3 px-8 rounded-lg mt-2 text-lg">Simpan Hasil LKPD</button>
+                    <button id="btn-login-lkpd" class="w-full btn-gradient py-3 rounded-lg font-bold text-white text-lg">Mulai Kerjakan LKPD</button>
+                    <p id="lkpd-login-error" class="text-red-400 text-center mt-4 hidden">Password Salah atau Data belum lengkap!</p>
                 </div>
-            </section>
 
+                <!-- Konten LKPD -->
+                <div id="lkpd-content" class="hidden space-y-6">
+                    <div class="bg-gray-800 p-6 rounded-lg shadow-lg border-t-4 border-purple-500">
+                        <h3 class="text-2xl font-bold text-white mb-2"><i class="fas fa-bullseye text-purple-400 mr-2"></i> Tujuan Pembelajaran</h3>
+                        <ul class="list-disc pl-6 text-gray-300 space-y-2">
+                            <li>Mengidentifikasi tiga komponen utama sistem komputer.</li>
+                            <li>Menjelaskan fungsi masing-masing komponen.</li>
+                            <li>Mengklasifikasikan komponen hardware, software, dan pengguna.</li>
+                            <li>Menganalisis keterkaitan ketiga komponen.</li>
+                        </ul>
+                    </div>
 
+                    <div class="bg-gray-800 p-6 rounded-lg shadow-lg border-t-4 border-sky-500">
+                        <h3 class="text-2xl font-bold text-white mb-2"><i class="fas fa-tools text-sky-400 mr-2"></i> Alat, Bahan, & Petunjuk Kerja</h3>
+                        <p class="text-gray-300 mb-2"><strong>Alat & Bahan:</strong> Gawai (Laptop/HP), Akses Internet, Buku/Modul Materi.</p>
+                        <p class="text-gray-300"><strong>Petunjuk:</strong> Diskusikan bersama teman sekelompokmu melalui Breakout Room. Jawablah misi-misi di bawah ini secara teliti dan tekan tombol Submit di akhir halaman. Semua anggota kelompok harus berkontribusi.</p>
+                    </div>
 
-            <!-- Papan Refleksi -->
-            <section id="refleksi" class="page-content">
-                <h2 class="text-3xl font-bold mb-6 text-purple-400 text-glow">Papan Refleksi</h2>
-                <div class="bg-gray-800 p-6 rounded-lg shadow-lg mb-8">
-                    <form id="refleksi-form" class="flex flex-col gap-4 max-w-2xl mx-auto">
-                        <p class="text-center text-gray-300 mb-2">Bagaimana perasaanmu setelah belajar Informatika hari ini?</p>
-                        <div class="flex justify-center gap-6 mb-4">
-                            <label class="cursor-pointer flex flex-col items-center hover:scale-110 transition">
-                                <input type="radio" name="emoji" value="Senang" class="peer sr-only" required>
-                                <span class="text-4xl peer-checked:drop-shadow-[0_0_10px_rgba(255,255,255,0.8)] filter grayscale peer-checked:grayscale-0">🤩</span>
-                                <span class="text-sm mt-1 text-gray-400 peer-checked:text-white">Senang</span>
-                            </label>
-                            <label class="cursor-pointer flex flex-col items-center hover:scale-110 transition">
-                                <input type="radio" name="emoji" value="Paham" class="peer sr-only">
-                                <span class="text-4xl peer-checked:drop-shadow-[0_0_10px_rgba(255,255,255,0.8)] filter grayscale peer-checked:grayscale-0">💡</span>
-                                <span class="text-sm mt-1 text-gray-400 peer-checked:text-white">Paham</span>
-                            </label>
-                            <label class="cursor-pointer flex flex-col items-center hover:scale-110 transition">
-                                <input type="radio" name="emoji" value="Bingung" class="peer sr-only">
-                                <span class="text-4xl peer-checked:drop-shadow-[0_0_10px_rgba(255,255,255,0.8)] filter grayscale peer-checked:grayscale-0">🤔</span>
-                                <span class="text-sm mt-1 text-gray-400 peer-checked:text-white">Bingung</span>
-                            </label>
+                    <!-- Misi 1 -->
+                    <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+                        <h3 class="text-2xl font-bold text-sky-400 mb-4">Misi 1: Koper Misteri</h3>
+                        <p class="mb-4 text-gray-300">Amati gambar-gambar komponen komputer yang ditemukan di koper misteri berikut ini:</p>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6 text-center text-sm">
+                            <div class="bg-gray-700 p-3 rounded-lg"><strong>Monitor</strong> <img src="https://images.unsplash.com/photo-1547082299-de196ea013d6?w=200&h=200&fit=crop" class="mx-auto mt-2 rounded"></div>
+                            <div class="bg-gray-700 p-3 rounded-lg flex flex-col justify-between"><strong>Microsoft Word</strong> <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Microsoft_Office_Word_%282019%E2%80%93present%29.svg/512px-Microsoft_Office_Word_%282019%E2%80%93present%29.svg.png" class="mx-auto mt-2 h-20 object-contain rounded"></div>
+                            <div class="bg-gray-700 p-3 rounded-lg"><strong>Programmer</strong> <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=200&h=200&fit=crop" class="mx-auto mt-2 rounded"></div>
+                            <div class="bg-gray-700 p-3 rounded-lg"><strong>Keyboard</strong> <img src="https://images.unsplash.com/photo-1595225476474-87563907a212?w=200&h=200&fit=crop" class="mx-auto mt-2 rounded"></div>
+                            <div class="bg-gray-700 p-3 rounded-lg flex flex-col justify-between"><strong>Browser Chrome</strong> <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Google_Chrome_icon_%28February_2022%29.svg/512px-Google_Chrome_icon_%28February_2022%29.svg.png" class="mx-auto mt-2 h-20 object-contain rounded"></div>
+                            <div class="bg-gray-700 p-3 rounded-lg"><strong>Gamer</strong> <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?w=200&h=200&fit=crop" class="mx-auto mt-2 rounded"></div>
                         </div>
-                        <input type="text" id="refleksi-nama" placeholder="Nama Lengkap" class="p-3 bg-gray-900 border border-gray-600 focus:border-purple-500 outline-none rounded-lg text-white" required>
-                        <textarea id="refleksi-teks" placeholder="Tuliskan pengalaman belajarmu hari ini..." class="p-4 bg-gray-900 border border-gray-600 focus:border-purple-500 outline-none rounded-lg text-white" rows="3" required></textarea>
-                        <button type="submit" class="btn-gradient py-3 rounded-lg font-bold text-lg mt-2">Kirim ke Mading Virtual</button>
-                    </form>
-                </div>
-                <div id="refleksi-board" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <!-- Refleksi Cards will appear here -->
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-gray-300 font-bold mb-1">Sebutkan yang termasuk <span class="text-sky-400">Hardware</span>:</label>
+                                <input type="text" id="lkpd-ans-1" class="w-full p-3 rounded-lg bg-gray-900 border border-gray-600 focus:border-sky-500 text-white outline-none" placeholder="Ketik di sini...">
+                            </div>
+                            <div>
+                                <label class="block text-gray-300 font-bold mb-1">Sebutkan yang termasuk <span class="text-pink-400">Software</span>:</label>
+                                <input type="text" id="lkpd-ans-2" class="w-full p-3 rounded-lg bg-gray-900 border border-gray-600 focus:border-pink-500 text-white outline-none" placeholder="Ketik di sini...">
+                            </div>
+                            <div>
+                                <label class="block text-gray-300 font-bold mb-1">Sebutkan yang termasuk <span class="text-green-400">Brainware</span>:</label>
+                                <input type="text" id="lkpd-ans-3" class="w-full p-3 rounded-lg bg-gray-900 border border-gray-600 focus:border-green-500 text-white outline-none" placeholder="Ketik di sini...">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Misi 2 -->
+                    <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+                        <h3 class="text-2xl font-bold text-sky-400 mb-4">Misi 2: Analisis Kasus "Salah Satu Hilang"</h3>
+                        <div class="mb-6">
+                            <label class="block mb-2 font-bold text-gray-200">Kasus 1: Kamu punya laptop terbaru (Hardware) dan kamu sangat jago desain (Brainware), tapi tidak ada aplikasi Photoshop (Software). Apa yang terjadi?</label>
+                            <textarea id="lkpd-ans-4" class="w-full bg-gray-900 border border-gray-600 focus:border-sky-500 outline-none p-4 rounded-lg text-white" rows="3" placeholder="Ketik jawaban analisismu di sini..."></textarea>
+                        </div>
+                        <div class="mb-6">
+                            <label class="block mb-2 font-bold text-gray-200">Kasus 2: Kamu gamer (Brainware), game favorit sudah diunduh (Software), tapi mouse pada komputermu tiba-tiba rusak (Hardware). Apa yang terjadi?</label>
+                            <textarea id="lkpd-ans-5" class="w-full bg-gray-900 border border-gray-600 focus:border-sky-500 outline-none p-4 rounded-lg text-white" rows="3" placeholder="Ketik jawaban analisismu di sini..."></textarea>
+                        </div>
+                        <div class="mb-6">
+                            <label class="block mb-2 font-bold text-yellow-400">Kesimpulan: Bagaimana seharusnya ketiga komponen ini bekerja sama?</label>
+                            <textarea id="lkpd-ans-6" class="w-full bg-gray-900 border border-yellow-600 focus:border-yellow-400 outline-none p-4 rounded-lg text-white" rows="3" placeholder="Ketik kesimpulan kelompokmu di sini..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Refleksi Terintegrasi -->
+                    <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+                        <h3 class="text-2xl font-bold text-purple-400 mb-4">Refleksi Kelompok</h3>
+                        <div class="mb-4 flex flex-col gap-2">
+                            <label class="text-gray-300">Bagaimana perasaan kelompokmu setelah mengerjakan E-LKPD ini?</label>
+                            <select id="lkpd-ref-emoji" class="w-full md:w-1/2 p-3 rounded-lg bg-gray-900 border border-gray-600 focus:border-purple-500 text-white outline-none">
+                                <option value="🤩 Senang & Paham">🤩 Senang & Paham</option>
+                                <option value="💡 Mulai Mengerti">💡 Mulai Mengerti</option>
+                                <option value="🤔 Masih Bingung">🤔 Masih Bingung</option>
+                            </select>
+                        </div>
+                        <textarea id="lkpd-ref-teks" class="w-full bg-gray-900 border border-gray-600 focus:border-purple-500 outline-none p-4 rounded-lg text-white" rows="2" placeholder="Tulis hal baru apa yang kalian pelajari hari ini..."></textarea>
+                    </div>
+
+                    <!-- Submit -->
+                    <button id="submit-lkpd-btn" class="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-400 hover:to-purple-400 text-white font-bold py-4 rounded-xl text-xl transition transform hover:scale-105 shadow-xl">
+                        <i class="fas fa-paper-plane mr-2"></i> Kumpulkan Hasil LKPD
+                    </button>
                 </div>
             </section>
 
@@ -2224,40 +2265,71 @@
 
                 // --- E-LKPD Logic (Drag and Drop) ---
                 function initELKPD() {
-                    const draggables = document.querySelectorAll('.draggable-item');
-                    const dropZones = document.querySelectorAll('.drop-zone');
+                    const loginDiv = document.getElementById('lkpd-login');
+                    const contentDiv = document.getElementById('lkpd-content');
+                    const btnLogin = document.getElementById('btn-login-lkpd');
+                    const btnSubmit = document.getElementById('submit-lkpd-btn');
+                    const errorMsg = document.getElementById('lkpd-login-error');
+                    
+                    const groupPasswords = {
+                        "Kelompok 1": "KEL1",
+                        "Kelompok 2": "KEL2",
+                        "Kelompok 3": "KEL3",
+                        "Kelompok 4": "KEL4",
+                        "Kelompok 5": "KEL5",
+                        "Kelompok 6": "KEL6"
+                    };
 
-                    draggables.forEach(draggable => {
-                        draggable.addEventListener('dragstart', () => {
-                            draggable.classList.add('opacity-50');
-                            draggable.dataset.dragging = 'true';
-                        });
+                    if (!btnLogin) return;
 
-                        draggable.addEventListener('dragend', () => {
-                            draggable.classList.remove('opacity-50');
-                            delete draggable.dataset.dragging;
-                        });
-                    });
+                    btnLogin.onclick = () => {
+                        const group = document.getElementById('lkpd-group').value;
+                        const pwd = document.getElementById('lkpd-password').value;
+                        const members = document.getElementById('lkpd-members').value;
+                        
+                        if (group && groupPasswords[group] === pwd && members.trim() !== '') {
+                            loginDiv.classList.add('hidden');
+                            contentDiv.classList.remove('hidden');
+                            errorMsg.classList.add('hidden');
+                        } else {
+                            errorMsg.classList.remove('hidden');
+                        }
+                    };
 
-                    dropZones.forEach(zone => {
-                        zone.addEventListener('dragover', e => {
-                            e.preventDefault();
-                            zone.classList.add('bg-gray-800');
-                        });
+                    if (btnSubmit) {
+                        btnSubmit.onclick = async () => {
+                            const group = document.getElementById('lkpd-group').value;
+                            const members = document.getElementById('lkpd-members').value;
+                            
+                            const data = new FormData();
+                            data.append('tipe', 'lkpd');
+                            data.append('kelompok', group);
+                            data.append('anggota', members);
+                            data.append('ans1', document.getElementById('lkpd-ans-1').value);
+                            data.append('ans2', document.getElementById('lkpd-ans-2').value);
+                            data.append('ans3', document.getElementById('lkpd-ans-3').value);
+                            data.append('ans4', document.getElementById('lkpd-ans-4').value);
+                            data.append('ans5', document.getElementById('lkpd-ans-5').value);
+                            data.append('ans6', document.getElementById('lkpd-ans-6').value);
+                            data.append('emoji', document.getElementById('lkpd-ref-emoji').value);
+                            data.append('refleksi', document.getElementById('lkpd-ref-teks').value);
+                            
+                            btnSubmit.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengirim...';
+                            btnSubmit.disabled = true;
 
-                        zone.addEventListener('dragleave', () => {
-                            zone.classList.remove('bg-gray-800');
-                        });
-
-                        zone.addEventListener('drop', e => {
-                            e.preventDefault();
-                            zone.classList.remove('bg-gray-800');
-                            const draggingElement = document.querySelector('[data-dragging="true"]');
-                            if (draggingElement) {
-                                zone.appendChild(draggingElement);
+                            try {
+                                await fetch(WEB_APP_URL, { method: 'POST', body: data });
+                                alert('Berhasil! LKPD telah tersimpan di Database Guru. Kalian luar biasa!');
+                                btnSubmit.innerHTML = '<i class="fas fa-check"></i> Selesai';
+                                btnSubmit.classList.replace('from-blue-500', 'from-green-500');
+                                btnSubmit.classList.replace('to-purple-500', 'to-emerald-500');
+                            } catch (error) {
+                                alert('Oops! Terjadi kesalahan koneksi.');
+                                btnSubmit.innerHTML = '<i class="fas fa-paper-plane mr-2"></i> Coba Lagi';
+                                btnSubmit.disabled = false;
                             }
-                        });
-                    });
+                        };
+                    }
                 }
 
                 // --- Global Drawing Overlay Logic ---
@@ -2348,58 +2420,6 @@
                 initGlobalDrawing();
 
                 // --- Papan Refleksi Logic ---
-                function initRefleksi() {
-                    const form = document.getElementById('refleksi-form');
-                    const board = document.getElementById('refleksi-board');
-                    const storageKey = 'refleksi_data_k8';
-
-                    function loadRefleksi() {
-                        board.innerHTML = '';
-                        const data = JSON.parse(localStorage.getItem(storageKey)) || [];
-                        data.reverse().forEach(item => {
-                            const card = document.createElement('div');
-                            card.className = 'bg-gray-900 border border-gray-700 p-5 rounded-lg shadow-lg relative transform hover:-translate-y-1 transition';
-                            card.innerHTML = `
-                                <div class="absolute -top-4 -right-4 text-4xl filter drop-shadow-md">${item.emoji}</div>
-                                <h4 class="font-bold text-purple-400 mb-2">${item.nama}</h4>
-                                <p class="text-gray-300 italic">"${item.teks}"</p>
-                                <span class="text-xs text-gray-500 mt-4 block">${item.waktu}</span>
-                            `;
-                            board.appendChild(card);
-                        });
-                    }
-
-                    if(form) {
-                        form.addEventListener('submit', (e) => {
-                            e.preventDefault();
-                            const nama = document.getElementById('refleksi-nama').value;
-                            const teks = document.getElementById('refleksi-teks').value;
-                            const emojiEl = document.querySelector('input[name="emoji"]:checked');
-                            
-                            if(!emojiEl) {
-                                alert('Pilih emoji perasaanmu dulu!');
-                                return;
-                            }
-                            
-                            const emojimap = { 'Senang': '🤩', 'Paham': '💡', 'Bingung': '🤔' };
-                            
-                            const data = JSON.parse(localStorage.getItem(storageKey)) || [];
-                            data.push({
-                                nama, teks,
-                                emoji: emojimap[emojiEl.value],
-                                waktu: new Date().toLocaleString('id-ID')
-                            });
-                            localStorage.setItem(storageKey, JSON.stringify(data));
-                            
-                            form.reset();
-                            document.querySelectorAll('input[name="emoji"]').forEach(el => el.checked = false);
-                            loadRefleksi();
-                        });
-                    }
-                    
-                    loadRefleksi();
-                }
-
                 // Hook new features into router
                 let leaderboardInterval;
                 const oldRouter = router;
@@ -2409,7 +2429,6 @@
                     const targetId = hash.substring(1);
                     if (targetId === 'icebreaking') initIceBreaking();
                     if (targetId === 'elkpd') initELKPD();
-                    if (targetId === 'refleksi') initRefleksi();
                     
                     // Auto-refresh leaderboard polling
                     if (targetId === 'peringkat') {
