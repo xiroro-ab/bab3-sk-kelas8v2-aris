@@ -2104,9 +2104,11 @@
                         cards.sort(() => 0.5 - Math.random());
                         cards.forEach((item, index) => {
                             const card = document.createElement('div');
-                            card.className = 'bg-gray-700 w-20 h-24 md:w-24 md:h-32 rounded-lg flex items-center justify-center text-4xl cursor-pointer transition transform hover:scale-105';
+                            // Tambahkan warna biru muda untuk belakang kartu agar lebih menarik
+                            card.className = 'bg-indigo-600 w-20 h-24 md:w-24 md:h-32 rounded-xl flex items-center justify-center text-4xl cursor-pointer transition-all transform hover:scale-105 shadow-md border-2 border-indigo-400';
                             card.dataset.value = item;
                             card.dataset.index = index;
+                            card.textContent = '❓'; // Agar tidak terlihat seperti placeholder kosong
                             card.addEventListener('click', flipCard);
                             grid.appendChild(card);
                         });
@@ -2119,13 +2121,14 @@
                     function flipCard() {
                         if (flippedCards.length < 2 && !this.classList.contains('flipped') && !this.classList.contains('matched')) {
                             this.textContent = this.dataset.value;
-                            this.classList.add('flipped', 'bg-purple-600');
+                            this.classList.remove('bg-indigo-600', 'border-indigo-400');
+                            this.classList.add('flipped', 'bg-purple-600', 'border-purple-400');
                             flippedCards.push(this);
 
                             if (flippedCards.length === 2) {
                                 moves++;
                                 movesEl.textContent = `Langkah: ${moves}`;
-                                setTimeout(checkMatch, 500);
+                                setTimeout(checkMatch, 600);
                             }
                         }
                     }
@@ -2133,25 +2136,27 @@
                     function checkMatch() {
                         const [card1, card2] = flippedCards;
                         if (card1.dataset.value === card2.dataset.value) {
-                            card1.classList.add('matched', 'bg-green-600');
-                            card2.classList.add('matched', 'bg-green-600');
-                            card1.classList.remove('bg-purple-600');
-                            card2.classList.remove('bg-purple-600');
+                            card1.classList.remove('bg-purple-600', 'border-purple-400');
+                            card2.classList.remove('bg-purple-600', 'border-purple-400');
+                            card1.classList.add('matched', 'bg-green-500', 'border-green-300');
+                            card2.classList.add('matched', 'bg-green-500', 'border-green-300');
                             matchedPairs++;
                             if (matchedPairs === cards.length / 2) {
                                 alert(`Hebat! Kamu menyelesaikan permainan dalam ${moves} langkah!`);
                                 resetBtn.classList.remove('hidden');
                             }
                         } else {
-                            card1.textContent = '';
-                            card2.textContent = '';
-                            card1.classList.remove('flipped', 'bg-purple-600');
-                            card2.classList.remove('flipped', 'bg-purple-600');
+                            card1.textContent = '❓';
+                            card2.textContent = '❓';
+                            card1.classList.remove('flipped', 'bg-purple-600', 'border-purple-400');
+                            card2.classList.remove('flipped', 'bg-purple-600', 'border-purple-400');
+                            card1.classList.add('bg-indigo-600', 'border-indigo-400');
+                            card2.classList.add('bg-indigo-600', 'border-indigo-400');
                         }
                         flippedCards = [];
                     }
 
-                    resetBtn.addEventListener('click', createBoard);
+                    resetBtn.onclick = createBoard;
                     createBoard();
                 }
 
