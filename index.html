@@ -350,6 +350,7 @@
 </head>
 <body>
     <!-- Global Drawing Overlay -->
+    <div id="laser-pointer" class="fixed w-4 h-4 bg-red-500 rounded-full pointer-events-none z-[100] transform -translate-x-1/2 -translate-y-1/2 hidden shadow-[0_0_15px_red]"></div>
     <canvas id="global-drawing-canvas" class="fixed inset-0 w-full h-full z-40 pointer-events-none"></canvas>
     
     <!-- Global Drawing Toolbar -->
@@ -360,9 +361,14 @@
 
     <!-- The actual toolbar (hidden by default) -->
     <div id="global-drawing-toolbar" class="fixed bottom-20 right-4 z-50 bg-gray-900 border border-gray-700 p-3 rounded-2xl shadow-2xl flex flex-col items-center gap-3 transition-all duration-300 opacity-0 translate-y-10 pointer-events-none">
-        <button id="toggle-draw-btn" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-xl shadow-lg transition flex items-center gap-2 w-full justify-center">
-            <i class="fas fa-mouse-pointer"></i> Mode Mouse
-        </button>
+        <div class="flex gap-2 w-full">
+            <button id="toggle-draw-btn" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-3 rounded-xl shadow-lg transition flex-1 flex flex-col items-center gap-1 text-xs">
+                <i class="fas fa-pen"></i> Coret
+            </button>
+            <button id="toggle-laser-btn" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-3 rounded-xl shadow-lg transition flex-1 flex flex-col items-center gap-1 text-xs">
+                <i class="fas fa-location-arrow"></i> Laser
+            </button>
+        </div>
         <div class="h-px w-full bg-gray-700"></div>
         <div class="flex flex-col items-center gap-2">
             <label class="text-xs text-gray-400">Warna</label>
@@ -2392,6 +2398,39 @@
                             fab.classList.replace('hover:bg-gray-500', 'hover:bg-sky-500');
                         }
                     });
+                    const toggleLaserBtn = document.getElementById('toggle-laser-btn');
+                    const laserPointer = document.getElementById('laser-pointer');
+                    
+                    let isLaserMode = false;
+                    toggleLaserBtn.addEventListener('click', () => {
+                        isLaserMode = !isLaserMode;
+                        if(isLaserMode) {
+                            laserPointer.classList.remove('hidden');
+                            toggleLaserBtn.classList.replace('bg-gray-600', 'bg-red-600');
+                            toggleLaserBtn.classList.replace('hover:bg-gray-500', 'hover:bg-red-500');
+                            
+                            if (isDrawingMode) toggleBtn.click();
+                        } else {
+                            laserPointer.classList.add('hidden');
+                            toggleLaserBtn.classList.replace('bg-red-600', 'bg-gray-600');
+                            toggleLaserBtn.classList.replace('hover:bg-red-500', 'hover:bg-gray-500');
+                        }
+                    });
+
+                    document.addEventListener('mousemove', (e) => {
+                        if(isLaserMode) {
+                            laserPointer.style.left = e.clientX + 'px';
+                            laserPointer.style.top = e.clientY + 'px';
+                        }
+                    });
+                    
+                    document.addEventListener('touchmove', (e) => {
+                        if(isLaserMode && e.touches.length > 0) {
+                            laserPointer.style.left = e.touches[0].clientX + 'px';
+                            laserPointer.style.top = e.touches[0].clientY + 'px';
+                        }
+                    }, {passive: true});
+
                     const ctx = canvas.getContext('2d');
                     let isDrawingMode = false;
                     let isDrawing = false;
@@ -2407,18 +2446,18 @@
                     toggleBtn.addEventListener('click', () => {
                         isDrawingMode = !isDrawingMode;
                         if (isDrawingMode) {
+                            if (isLaserMode) toggleLaserBtn.click();
+                            
                             canvas.classList.remove('pointer-events-none');
                             canvas.classList.add('cursor-crosshair');
                             toggleBtn.classList.replace('bg-gray-600', 'bg-blue-600');
                             toggleBtn.classList.replace('hover:bg-gray-500', 'hover:bg-blue-500');
-                            toggleBtn.innerHTML = '<i class="fas fa-pen"></i> Mode Coret';
                             document.body.style.overflow = 'hidden';
                         } else {
                             canvas.classList.add('pointer-events-none');
                             canvas.classList.remove('cursor-crosshair');
                             toggleBtn.classList.replace('bg-blue-600', 'bg-gray-600');
                             toggleBtn.classList.replace('hover:bg-blue-500', 'hover:bg-gray-500');
-                            toggleBtn.innerHTML = '<i class="fas fa-mouse-pointer"></i> Mode Mouse';
                             document.body.style.overflow = '';
                         }
                     });
