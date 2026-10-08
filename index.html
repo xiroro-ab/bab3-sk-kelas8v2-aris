@@ -353,16 +353,28 @@
     <canvas id="global-drawing-canvas" class="fixed inset-0 w-full h-full z-40 pointer-events-none"></canvas>
     
     <!-- Global Drawing Toolbar -->
-    <div id="global-drawing-toolbar" class="fixed bottom-4 right-4 z-50 bg-gray-900 border border-gray-700 p-3 rounded-2xl shadow-2xl flex items-center gap-3 transition-all duration-300 transform hover:scale-105">
-        <button id="toggle-draw-btn" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-xl shadow-lg transition flex items-center gap-2">
+    <!-- Main FAB to toggle the toolbar -->
+    <button id="main-draw-fab" class="fixed bottom-4 right-4 z-[60] bg-sky-600 hover:bg-sky-500 text-white rounded-full h-14 w-14 flex items-center justify-center shadow-2xl transition-all transform hover:scale-110">
+        <i class="fas fa-paint-brush text-2xl"></i>
+    </button>
+
+    <!-- The actual toolbar (hidden by default) -->
+    <div id="global-drawing-toolbar" class="fixed bottom-20 right-4 z-50 bg-gray-900 border border-gray-700 p-3 rounded-2xl shadow-2xl flex flex-col items-center gap-3 transition-all duration-300 opacity-0 translate-y-10 pointer-events-none">
+        <button id="toggle-draw-btn" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-xl shadow-lg transition flex items-center gap-2 w-full justify-center">
             <i class="fas fa-mouse-pointer"></i> Mode Mouse
         </button>
-        <div class="h-8 w-px bg-gray-600"></div>
-        <input type="color" id="global-board-color" value="#ffeb3b" class="h-10 w-10 p-1 border border-gray-600 rounded-lg cursor-pointer bg-gray-800" title="Warna Pena">
-        <input type="range" id="global-board-size" min="1" max="20" value="4" class="cursor-pointer w-24 accent-purple-500" title="Ukuran Pena">
-        <div class="h-8 w-px bg-gray-600"></div>
-        <button id="global-clear-board" class="bg-red-600 hover:bg-red-500 text-white py-2 px-3 rounded-xl shadow-lg transition" title="Hapus Coretan">
-            <i class="fas fa-trash-alt"></i>
+        <div class="h-px w-full bg-gray-700"></div>
+        <div class="flex flex-col items-center gap-2">
+            <label class="text-xs text-gray-400">Warna</label>
+            <input type="color" id="global-board-color" value="#ffeb3b" class="h-10 w-10 p-1 border border-gray-600 rounded-lg cursor-pointer bg-gray-800" title="Warna Pena">
+        </div>
+        <div class="flex flex-col items-center gap-2 w-full">
+            <label class="text-xs text-gray-400">Tebal</label>
+            <input type="range" id="global-board-size" min="1" max="20" value="4" class="cursor-pointer w-full accent-sky-500" title="Ukuran Pena">
+        </div>
+        <div class="h-px w-full bg-gray-700"></div>
+        <button id="global-clear-board" class="bg-red-600 hover:bg-red-500 text-white py-2 px-3 w-full rounded-xl shadow-lg transition flex items-center justify-center gap-2" title="Hapus Coretan">
+            <i class="fas fa-trash-alt"></i> Hapus
         </button>
     </div>
 
@@ -2360,8 +2372,26 @@
                     const colorPicker = document.getElementById('global-board-color');
                     const sizePicker = document.getElementById('global-board-size');
                     const clearBtn = document.getElementById('global-clear-board');
+                    const fab = document.getElementById('main-draw-fab');
+                    const toolbar = document.getElementById('global-drawing-toolbar');
                     
-                    if(!canvas || !toggleBtn) return;
+                    if(!canvas || !toggleBtn || !fab || !toolbar) return;
+                    
+                    let isToolbarOpen = false;
+                    fab.addEventListener('click', () => {
+                        isToolbarOpen = !isToolbarOpen;
+                        if(isToolbarOpen) {
+                            toolbar.classList.remove('opacity-0', 'translate-y-10', 'pointer-events-none');
+                            fab.innerHTML = '<i class="fas fa-times text-2xl"></i>';
+                            fab.classList.replace('bg-sky-600', 'bg-gray-600');
+                            fab.classList.replace('hover:bg-sky-500', 'hover:bg-gray-500');
+                        } else {
+                            toolbar.classList.add('opacity-0', 'translate-y-10', 'pointer-events-none');
+                            fab.innerHTML = '<i class="fas fa-paint-brush text-2xl"></i>';
+                            fab.classList.replace('bg-gray-600', 'bg-sky-600');
+                            fab.classList.replace('hover:bg-gray-500', 'hover:bg-sky-500');
+                        }
+                    });
                     const ctx = canvas.getContext('2d');
                     let isDrawingMode = false;
                     let isDrawing = false;
