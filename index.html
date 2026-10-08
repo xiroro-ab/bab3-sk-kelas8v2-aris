@@ -1287,10 +1287,55 @@
             <section id="refleksi-guru" class="page-content">
                 <div class="mb-6">
                     <h2 class="text-3xl font-bold text-purple-400 text-glow"><i class="fas fa-chalkboard-teacher mr-2"></i> Lembar Refleksi Guru</h2>
-                    <p class="text-gray-300 mt-2">Halaman khusus untuk evaluasi dan refleksi pengajaran.</p>
+                    <p class="text-gray-300 mt-2">Halaman khusus untuk evaluasi dan refleksi pengajaran hari ini.</p>
                 </div>
-                <div class="bg-gray-800 p-6 rounded-lg shadow-lg text-center">
-                    <p class="text-gray-400 italic">Fitur ini akan segera ditambahkan pada pengerjaan berikutnya.</p>
+                <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+                    <div id="rg-form">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="text-gray-400 text-sm">Nama Guru</label>
+                                <input type="text" id="rg-nama" value="Aris Bermansyah, S.Kom" class="w-full p-3 rounded-lg bg-gray-900 border border-gray-600 focus:border-purple-500 text-white outline-none">
+                            </div>
+                            <div>
+                                <label class="text-gray-400 text-sm">Mata Pelajaran & Kelas</label>
+                                <input type="text" id="rg-mapel" value="Informatika - Kelas 8" class="w-full p-3 rounded-lg bg-gray-900 border border-gray-600 focus:border-purple-500 text-white outline-none">
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="text-gray-300 font-bold mb-1 block">1. Apakah tujuan pembelajaran tercapai? (Lihat dari hasil asesmen)</label>
+                                <textarea id="rg-q1" class="w-full p-3 rounded-lg bg-gray-900 border border-gray-600 focus:border-purple-500 text-white outline-none h-24" placeholder="Ketik refleksimu di sini..."></textarea>
+                            </div>
+                            <div>
+                                <label class="text-gray-300 font-bold mb-1 block">2. Apakah Peserta Didik menunjukkan antusiasme dan partisipasi aktif?</label>
+                                <textarea id="rg-q2" class="w-full p-3 rounded-lg bg-gray-900 border border-gray-600 focus:border-purple-500 text-white outline-none h-24" placeholder="Ketik refleksimu di sini..."></textarea>
+                            </div>
+                            <div>
+                                <label class="text-gray-300 font-bold mb-1 block">3. Apa kendala atau kesulitan yang saya hadapi saat mengajar?</label>
+                                <textarea id="rg-q3" class="w-full p-3 rounded-lg bg-gray-900 border border-gray-600 focus:border-purple-500 text-white outline-none h-24" placeholder="Ketik refleksimu di sini..."></textarea>
+                            </div>
+                            <div>
+                                <label class="text-gray-300 font-bold mb-1 block">4. Apa kendala atau kesulitan yang dihadapi Peserta Didik?</label>
+                                <textarea id="rg-q4" class="w-full p-3 rounded-lg bg-gray-900 border border-gray-600 focus:border-purple-500 text-white outline-none h-24" placeholder="Ketik refleksimu di sini..."></textarea>
+                            </div>
+                            <div>
+                                <label class="text-gray-300 font-bold mb-1 block">5. Apa momen terbaik atau paling berhasil dalam pembelajaran hari ini? Mengapa?</label>
+                                <textarea id="rg-q5" class="w-full p-3 rounded-lg bg-gray-900 border border-gray-600 focus:border-purple-500 text-white outline-none h-24" placeholder="Ketik refleksimu di sini..."></textarea>
+                            </div>
+                            <div>
+                                <label class="text-gray-300 font-bold mb-1 block">6. Apa yang perlu saya perbaiki untuk pembelajaran berikutnya?</label>
+                                <textarea id="rg-q6" class="w-full p-3 rounded-lg bg-gray-900 border border-gray-600 focus:border-purple-500 text-white outline-none h-24" placeholder="Ketik refleksimu di sini..."></textarea>
+                            </div>
+                        </div>
+                        <p id="rg-error" class="text-red-500 text-sm mt-4 hidden">Mohon isi semua pertanyaan refleksi!</p>
+                        <button id="rg-submit-btn" class="mt-6 w-full bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-400 hover:to-indigo-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition">Kirim Refleksi Guru</button>
+                    </div>
+                    <div id="rg-success" class="hidden text-center py-10">
+                        <i class="fas fa-check-circle text-6xl text-green-400 mb-4"></i>
+                        <h3 class="text-2xl font-bold text-white mb-2">Terkirim!</h3>
+                        <p class="text-gray-300">Terima kasih atas refleksinya. Catatan Anda telah tersimpan ke dalam database Guru.</p>
+                    </div>
                 </div>
             </section>
 
@@ -1298,10 +1343,103 @@
             <section id="refleksi-siswa" class="page-content">
                 <div class="mb-6">
                     <h2 class="text-3xl font-bold text-pink-400 text-glow"><i class="fas fa-user-graduate mr-2"></i> Lembar Refleksi Siswa</h2>
-                    <p class="text-gray-300 mt-2">Ceritakan pengalaman belajarmu hari ini!</p>
+                    <p class="text-gray-300 mt-2">Ceritakan pengalaman belajarmu hari ini dengan jujur ya!</p>
                 </div>
-                <div class="bg-gray-800 p-6 rounded-lg shadow-lg text-center">
-                    <p class="text-gray-400 italic">Fitur ini akan segera ditambahkan pada pengerjaan berikutnya.</p>
+                <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+                    <div id="rs-form">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                            <input type="text" id="rs-nama" placeholder="Nama Kamu" class="w-full p-3 rounded-lg bg-gray-900 border border-gray-600 focus:border-pink-500 text-white outline-none">
+                            <select id="rs-kelas" class="w-full p-3 rounded-lg bg-gray-900 border border-gray-600 focus:border-pink-500 text-white outline-none">
+                                <option value="">Pilih Kelas</option>
+                                <option value="8.1">8.1</option>
+                                <option value="8.2">8.2</option>
+                                <option value="8.3">8.3</option>
+                                <option value="8.4">8.4</option>
+                            </select>
+                        </div>
+
+                        <div class="space-y-6">
+                            <div>
+                                <label class="text-gray-300 font-bold mb-3 block">1. Bagaimana perasaanmu setelah belajar Informatika hari ini?</label>
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                    <label class="flex flex-col items-center justify-center p-4 rounded-xl border border-gray-600 cursor-pointer hover:border-pink-500 transition hover:bg-gray-700 bg-gray-900">
+                                        <input type="radio" name="rs-perasaan" value="Senang" class="hidden peer">
+                                        <div class="text-4xl mb-2 peer-checked:scale-125 transition">🥰</div>
+                                        <span class="text-gray-300 peer-checked:text-pink-400 font-bold">Senang</span>
+                                    </label>
+                                    <label class="flex flex-col items-center justify-center p-4 rounded-xl border border-gray-600 cursor-pointer hover:border-pink-500 transition hover:bg-gray-700 bg-gray-900">
+                                        <input type="radio" name="rs-perasaan" value="Paham" class="hidden peer">
+                                        <div class="text-4xl mb-2 peer-checked:scale-125 transition">💡</div>
+                                        <span class="text-gray-300 peer-checked:text-pink-400 font-bold">Paham</span>
+                                    </label>
+                                    <label class="flex flex-col items-center justify-center p-4 rounded-xl border border-gray-600 cursor-pointer hover:border-pink-500 transition hover:bg-gray-700 bg-gray-900">
+                                        <input type="radio" name="rs-perasaan" value="Bingung" class="hidden peer">
+                                        <div class="text-4xl mb-2 peer-checked:scale-125 transition">😕</div>
+                                        <span class="text-gray-300 peer-checked:text-pink-400 font-bold">Bingung</span>
+                                    </label>
+                                    <label class="flex flex-col items-center justify-center p-4 rounded-xl border border-gray-600 cursor-pointer hover:border-pink-500 transition hover:bg-gray-700 bg-gray-900">
+                                        <input type="radio" name="rs-perasaan" value="Bosan" class="hidden peer">
+                                        <div class="text-4xl mb-2 peer-checked:scale-125 transition">🥱</div>
+                                        <span class="text-gray-300 peer-checked:text-pink-400 font-bold">Bosan</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="text-gray-300 font-bold mb-2 block">2. Satu hal paling penting yang aku pelajari hari ini adalah:</label>
+                                <input type="text" id="rs-penting" class="w-full p-3 rounded-lg bg-gray-900 border border-gray-600 focus:border-pink-500 text-white outline-none" placeholder="Tuliskan di sini...">
+                            </div>
+
+                            <div>
+                                <label class="text-gray-300 font-bold mb-2 block">3. Aktivitas yang paling aku suka hari ini adalah (Boleh pilih lebih dari satu):</label>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                    <label class="flex items-center gap-3 p-3 rounded-lg bg-gray-900 hover:bg-gray-700 cursor-pointer border border-gray-600 hover:border-pink-500">
+                                        <input type="checkbox" name="rs-aktivitas" value="Menonton video" class="w-5 h-5 accent-pink-500">
+                                        <span class="text-gray-300">Menonton video</span>
+                                    </label>
+                                    <label class="flex items-center gap-3 p-3 rounded-lg bg-gray-900 hover:bg-gray-700 cursor-pointer border border-gray-600 hover:border-pink-500">
+                                        <input type="checkbox" name="rs-aktivitas" value="Diskusi dengan kelompok" class="w-5 h-5 accent-pink-500">
+                                        <span class="text-gray-300">Diskusi dengan kelompok</span>
+                                    </label>
+                                    <label class="flex items-center gap-3 p-3 rounded-lg bg-gray-900 hover:bg-gray-700 cursor-pointer border border-gray-600 hover:border-pink-500">
+                                        <input type="checkbox" name="rs-aktivitas" value="Mengisi LKPD" class="w-5 h-5 accent-pink-500">
+                                        <span class="text-gray-300">Mengisi LKPD</span>
+                                    </label>
+                                    <label class="flex items-center gap-3 p-3 rounded-lg bg-gray-900 hover:bg-gray-700 cursor-pointer border border-gray-600 hover:border-pink-500">
+                                        <input type="checkbox" name="rs-aktivitas" value="Presentasi" class="w-5 h-5 accent-pink-500">
+                                        <span class="text-gray-300">Presentasi di depan kelas</span>
+                                    </label>
+                                    <label class="flex items-center gap-3 p-3 rounded-lg bg-gray-900 hover:bg-gray-700 cursor-pointer border border-gray-600 hover:border-pink-500 sm:col-span-2">
+                                        <input type="checkbox" name="rs-aktivitas" value="Lainnya" class="w-5 h-5 accent-pink-500">
+                                        <input type="text" id="rs-aktivitas-lainnya" class="bg-transparent border-b border-gray-500 outline-none text-white w-full ml-2" placeholder="Lainnya...">
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="text-gray-300 font-bold mb-2 block">4. Apakah ada materi yang masih membuatku bingung?</label>
+                                <div class="flex flex-col gap-2">
+                                    <label class="flex items-center gap-3 p-3 rounded-lg bg-gray-900 hover:bg-gray-700 cursor-pointer border border-gray-600 hover:border-pink-500">
+                                        <input type="radio" name="rs-bingung" value="Tidak ada" class="w-5 h-5 accent-pink-500">
+                                        <span class="text-gray-300">Tidak ada, aku sudah paham semua.</span>
+                                    </label>
+                                    <label class="flex items-center gap-3 p-3 rounded-lg bg-gray-900 hover:bg-gray-700 cursor-pointer border border-gray-600 hover:border-pink-500">
+                                        <input type="radio" name="rs-bingung" value="Ada" class="w-5 h-5 accent-pink-500">
+                                        <span class="text-gray-300">Ada, yaitu tentang:</span>
+                                        <input type="text" id="rs-bingung-teks" class="bg-transparent border-b border-gray-500 outline-none text-white w-full ml-2 flex-1" placeholder="...">
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <p id="rs-error" class="text-red-500 text-sm mt-4 hidden">Mohon isi identitas dan semua pertanyaan dengan lengkap!</p>
+                        <button id="rs-submit-btn" class="mt-6 w-full bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-400 hover:to-rose-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition">Kumpulkan Refleksi</button>
+                    </div>
+                    <div id="rs-success" class="hidden text-center py-10">
+                        <div class="text-6xl mb-4 text-glow">🙌</div>
+                        <h3 class="text-2xl font-bold text-white mb-2">Terima Kasih!</h3>
+                        <p class="text-gray-300">Refleksimu sangat berarti untuk perbaikan pelajaran selanjutnya.</p>
+                    </div>
                 </div>
             </section>
 
@@ -2692,6 +2830,127 @@
                 }
 
                 // --- Papan Refleksi Logic ---
+                function initRefleksiGuru() {
+                    const submitBtn = document.getElementById('rg-submit-btn');
+                    const formDiv = document.getElementById('rg-form');
+                    const successDiv = document.getElementById('rg-success');
+                    const errorMsg = document.getElementById('rg-error');
+                    
+                    if(!submitBtn) return;
+                    
+                    if(localStorage.getItem('rgDone') === 'true') {
+                        formDiv.classList.add('hidden');
+                        successDiv.classList.remove('hidden');
+                        return;
+                    }
+                    
+                    submitBtn.onclick = async () => {
+                        const nama = document.getElementById('rg-nama').value;
+                        const mapel = document.getElementById('rg-mapel').value;
+                        const q1 = document.getElementById('rg-q1').value;
+                        const q2 = document.getElementById('rg-q2').value;
+                        const q3 = document.getElementById('rg-q3').value;
+                        const q4 = document.getElementById('rg-q4').value;
+                        const q5 = document.getElementById('rg-q5').value;
+                        const q6 = document.getElementById('rg-q6').value;
+                        
+                        if(!nama || !mapel || !q1 || !q2 || !q3 || !q4 || !q5 || !q6) {
+                            errorMsg.classList.remove('hidden');
+                            return;
+                        }
+                        errorMsg.classList.add('hidden');
+                        
+                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengirim...';
+                        submitBtn.disabled = true;
+                        
+                        const formData = new FormData();
+                        formData.append('tipe', 'refleksi_guru');
+                        formData.append('nama', nama);
+                        formData.append('mapel', mapel);
+                        formData.append('q1', q1);
+                        formData.append('q2', q2);
+                        formData.append('q3', q3);
+                        formData.append('q4', q4);
+                        formData.append('q5', q5);
+                        formData.append('q6', q6);
+                        
+                        try {
+                            await fetch(WEB_APP_URL, { method: 'POST', mode: 'no-cors', body: formData });
+                            localStorage.setItem('rgDone', 'true');
+                            formDiv.classList.add('hidden');
+                            successDiv.classList.remove('hidden');
+                        } catch (error) {
+                            alert('Gagal mengirim refleksi. Silakan coba lagi.');
+                            submitBtn.innerHTML = 'Kirim Refleksi Guru';
+                            submitBtn.disabled = false;
+                        }
+                    };
+                }
+
+                function initRefleksiSiswa() {
+                    const submitBtn = document.getElementById('rs-submit-btn');
+                    const formDiv = document.getElementById('rs-form');
+                    const successDiv = document.getElementById('rs-success');
+                    const errorMsg = document.getElementById('rs-error');
+                    
+                    if(!submitBtn) return;
+                    
+                    if(localStorage.getItem('rsDone') === 'true') {
+                        formDiv.classList.add('hidden');
+                        successDiv.classList.remove('hidden');
+                        return;
+                    }
+                    
+                    submitBtn.onclick = async () => {
+                        const nama = document.getElementById('rs-nama').value;
+                        const kelas = document.getElementById('rs-kelas').value;
+                        const perasaan = document.querySelector('input[name="rs-perasaan"]:checked')?.value;
+                        const penting = document.getElementById('rs-penting').value;
+                        
+                        const aktivitasNodes = document.querySelectorAll('input[name="rs-aktivitas"]:checked');
+                        let aktivitas = Array.from(aktivitasNodes).map(n => n.value);
+                        if(aktivitas.includes('Lainnya')) {
+                            aktivitas = aktivitas.filter(a => a !== 'Lainnya');
+                            const lainnya = document.getElementById('rs-aktivitas-lainnya').value;
+                            if(lainnya) aktivitas.push("Lainnya: " + lainnya);
+                        }
+                        
+                        const bingungOpt = document.querySelector('input[name="rs-bingung"]:checked')?.value;
+                        let bingung = bingungOpt;
+                        if(bingungOpt === 'Ada') {
+                            bingung = "Ada: " + document.getElementById('rs-bingung-teks').value;
+                        }
+                        
+                        if(!nama || !kelas || !perasaan || !penting || aktivitas.length === 0 || !bingungOpt || (bingungOpt === 'Ada' && !document.getElementById('rs-bingung-teks').value)) {
+                            errorMsg.classList.remove('hidden');
+                            return;
+                        }
+                        errorMsg.classList.add('hidden');
+                        
+                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengirim...';
+                        submitBtn.disabled = true;
+                        
+                        const formData = new FormData();
+                        formData.append('tipe', 'refleksi_siswa');
+                        formData.append('nama', nama);
+                        formData.append('kelas', kelas);
+                        formData.append('perasaan', perasaan);
+                        formData.append('penting', penting);
+                        formData.append('aktivitas', aktivitas.join(', '));
+                        formData.append('bingung', bingung);
+                        
+                        try {
+                            await fetch(WEB_APP_URL, { method: 'POST', mode: 'no-cors', body: formData });
+                            localStorage.setItem('rsDone', 'true');
+                            formDiv.classList.add('hidden');
+                            successDiv.classList.remove('hidden');
+                        } catch (error) {
+                            alert('Gagal mengirim refleksi. Silakan coba lagi.');
+                            submitBtn.innerHTML = 'Kumpulkan Refleksi';
+                            submitBtn.disabled = false;
+                        }
+                    };
+                }
                 // Hook new features into router
                 let leaderboardInterval;
                 const oldRouter = router;
@@ -2702,6 +2961,8 @@
                     if (targetId === 'icebreaking') initIceBreaking();
                     if (targetId === 'elkpd') initELKPD();
                     if (targetId === 'posttest') initPostTest();
+                    if (targetId === 'refleksi-guru') initRefleksiGuru();
+                    if (targetId === 'refleksi-siswa') initRefleksiSiswa();
                     
                     // Auto-refresh leaderboard polling
                     if (targetId === 'peringkat') {
