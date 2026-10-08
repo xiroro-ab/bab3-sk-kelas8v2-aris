@@ -1321,13 +1321,11 @@
                     </div>
                     <button id="jitsi-join-btn" class="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-400 hover:to-indigo-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition">Masuk Ruangan Diskusi</button>
                     <p id="jitsi-error" class="text-red-500 text-sm mt-3 hidden">Nama dan Kelompok harus diisi!</p>
-                </div>
-
-                <div id="jitsi-meet-container" class="mt-6 hidden h-[600px] w-full rounded-lg overflow-hidden border border-gray-700 shadow-xl relative">
-                    <div class="absolute top-2 left-2 z-10">
-                         <button id="jitsi-leave-btn" class="bg-red-600 hover:bg-red-500 text-white font-bold py-2 px-4 rounded-lg shadow-lg">Keluar Ruangan</button>
+                    <div id="jitsi-success" class="mt-4 hidden p-4 bg-green-900 border border-green-500 rounded-lg text-center">
+                        <p class="text-white font-bold mb-2">✅ Berhasil! Ruang Diskusi dibuka di Tab Baru.</p>
+                        <p class="text-gray-300 text-sm">Jika tidak terbuka otomatis, <a href="#" id="jitsi-manual-link" target="_blank" class="text-blue-400 underline">klik di sini</a>.</p>
+                        <p class="text-yellow-300 text-xs mt-2 mt-2"><i class="fas fa-exclamation-triangle"></i> Jangan lupa izinkan Kamera dan Mikrofon di tab Jitsi ya!</p>
                     </div>
-                    <div id="jitsi-iframe-wrapper" class="w-full h-full pt-14"></div>
                 </div>
             </section>
 
@@ -3001,14 +2999,11 @@
                 }
 
                 // --- Ruang Diskusi Logic ---
-                let jitsiAPI = null;
                 function initRuangDiskusi() {
                     const joinBtn = document.getElementById('jitsi-join-btn');
-                    const leaveBtn = document.getElementById('jitsi-leave-btn');
-                    const loginContainer = document.getElementById('jitsi-login-container');
-                    const meetContainer = document.getElementById('jitsi-meet-container');
-                    const wrapper = document.getElementById('jitsi-iframe-wrapper');
                     const errorMsg = document.getElementById('jitsi-error');
+                    const successMsg = document.getElementById('jitsi-success');
+                    const manualLink = document.getElementById('jitsi-manual-link');
                     
                     const groupPasswords = {
                         "Kelompok_1": "KEL1",
@@ -3033,66 +3028,33 @@
                         if(!name || !roomSuffix || !passwordInput) {
                             errorMsg.innerText = "Nama, Kelompok, dan Password harus diisi!";
                             errorMsg.classList.remove('hidden');
+                            successMsg.classList.add('hidden');
                             return;
                         }
                         
                         if(groupPasswords[roomSuffix] !== passwordInput.toUpperCase()) {
                             errorMsg.innerText = "Password salah! Dilarang menyelinap ke kelompok lain ya!";
                             errorMsg.classList.remove('hidden');
+                            successMsg.classList.add('hidden');
                             return;
                         }
                         
                         errorMsg.classList.add('hidden');
                         
-                        // Sembunyikan login, tampilkan meet
-                        loginContainer.classList.add('hidden');
-                        meetContainer.classList.remove('hidden');
+                        // Buat nama URL rahasia agar tidak bisa ditebak kelompok lain
+                        const secretHash = "ArisXiroro_X9A2B"; 
+                        const roomName = "Kelas8SistemKomputer_" + roomSuffix + "_" + secretHash;
                         
-                        // Nama ruangan dibuat unik dengan prefix khusus agar tidak bocor ke orang lain
-                        const roomName = "Kelas8_SistemKomputer_" + roomSuffix;
+                        // URL langsung Jitsi
+                        const jitsiURL = `https://meet.jit.si/${roomName}#userInfo.displayName="${encodeURIComponent(name)}"`;
                         
-                        const domain = 'meet.jit.si';
-                        const options = {
-                            roomName: roomName,
-                            width: '100%',
-                            height: '100%',
-                            parentNode: wrapper,
-                            userInfo: {
-                                displayName: name
-                            },
-                            configOverwrite: {
-                                startWithAudioMuted: false,
-                                startWithVideoMuted: false,
-                                prejoinPageEnabled: false // Langsung masuk ruangan tanpa pre-join screen
-                            },
-                            interfaceConfigOverwrite: {
-                                TOOLBAR_BUTTONS: [
-                                    'microphone', 'camera', 'desktop', 'fullscreen', 'hangup', 'chat'
-                                ],
-                                SHOW_PROMOTIONAL_CLOSE_PAGE: false
-                            }
-                        };
+                        // Tampilkan pesan sukses
+                        manualLink.href = jitsiURL;
+                        successMsg.classList.remove('hidden');
                         
-                        jitsiAPI = new JitsiMeetExternalAPI(domain, options);
-                        
-                        jitsiAPI.addEventListener('videoConferenceLeft', () => {
-                            leaveRoom();
-                        });
+                        // Buka Jitsi di tab baru
+                        window.open(jitsiURL, '_blank');
                     };
-                    
-                    leaveBtn.onclick = () => {
-                        leaveRoom();
-                    };
-                    
-                    function leaveRoom() {
-                        if(jitsiAPI) {
-                            jitsiAPI.dispose();
-                            jitsiAPI = null;
-                        }
-                        wrapper.innerHTML = '';
-                        meetContainer.classList.add('hidden');
-                        loginContainer.classList.remove('hidden');
-                    }
                 }
                 
                 // Hook new features into router
