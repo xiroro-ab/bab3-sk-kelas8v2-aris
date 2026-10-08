@@ -1805,7 +1805,7 @@
                     if (!Array.isArray(data)) throw new Error("Format data tidak valid");
                     
                     // Filter agar siswa posttest tidak muncul di papan peringkat game
-                    data = data.filter(item => item.Nama && !item.Nama.includes("(Posttest)"));
+                    data = data.filter(item => item.Nama && !String(item.Nama).includes("(Posttest)"));
 
                     data.sort((a, b) => {
                         if (b.Skor !== a.Skor) return b.Skor - a.Skor;
