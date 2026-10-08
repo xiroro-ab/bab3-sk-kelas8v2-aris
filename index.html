@@ -1184,7 +1184,7 @@
             });
             
             // Router function to handle page changes based on URL hash
-            const router = () => {
+            let router = () => {
                 const hash = window.location.hash || '#beranda';
                 const targetId = hash.substring(1);
 
