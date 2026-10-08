@@ -2247,7 +2247,10 @@
 
                 resetBtn.addEventListener('click', start);
 
-                // --- Ice Breaking Logic (Memory Game) ---
+                start();
+            };
+
+            // --- Ice Breaking Logic (Memory Game) ---
                 function initIceBreaking() {
                     const grid = document.getElementById('memory-game');
                     const movesEl = document.getElementById('memory-moves');
