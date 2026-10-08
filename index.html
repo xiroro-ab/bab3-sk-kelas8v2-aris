@@ -1303,7 +1303,7 @@
                     </div>
                     <div class="mb-6">
                         <label class="block text-gray-300 font-bold mb-2">Pilih Kelompok:</label>
-                        <select id="jitsi-room" class="w-full p-3 rounded-lg bg-gray-900 border border-gray-600 focus:border-sky-500 text-white outline-none">
+                        <select id="jitsi-room" class="w-full p-3 rounded-lg bg-gray-900 border border-gray-600 focus:border-sky-500 text-white outline-none mb-4">
                             <option value="">-- Pilih Kelompok --</option>
                             <option value="Kelompok_1">Kelompok 1</option>
                             <option value="Kelompok_2">Kelompok 2</option>
@@ -1316,6 +1316,8 @@
                             <option value="Kelompok_9">Kelompok 9</option>
                             <option value="Kelompok_10">Kelompok 10</option>
                         </select>
+                        <label class="block text-gray-300 font-bold mb-2">Password Ruangan:</label>
+                        <input type="password" id="jitsi-password" class="w-full p-3 rounded-lg bg-gray-900 border border-gray-600 focus:border-sky-500 text-white outline-none" placeholder="Masukkan password kelompok (Contoh: KEL1)">
                     </div>
                     <button id="jitsi-join-btn" class="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-400 hover:to-indigo-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition">Masuk Ruangan Diskusi</button>
                     <p id="jitsi-error" class="text-red-500 text-sm mt-3 hidden">Nama dan Kelompok harus diisi!</p>
@@ -3008,16 +3010,38 @@
                     const wrapper = document.getElementById('jitsi-iframe-wrapper');
                     const errorMsg = document.getElementById('jitsi-error');
                     
+                    const groupPasswords = {
+                        "Kelompok_1": "KEL1",
+                        "Kelompok_2": "KEL2",
+                        "Kelompok_3": "KEL3",
+                        "Kelompok_4": "KEL4",
+                        "Kelompok_5": "KEL5",
+                        "Kelompok_6": "KEL6",
+                        "Kelompok_7": "KEL7",
+                        "Kelompok_8": "KEL8",
+                        "Kelompok_9": "KEL9",
+                        "Kelompok_10": "KEL10"
+                    };
+                    
                     if(!joinBtn) return;
                     
                     joinBtn.onclick = () => {
                         const name = document.getElementById('jitsi-name').value;
                         const roomSuffix = document.getElementById('jitsi-room').value;
+                        const passwordInput = document.getElementById('jitsi-password').value;
                         
-                        if(!name || !roomSuffix) {
+                        if(!name || !roomSuffix || !passwordInput) {
+                            errorMsg.innerText = "Nama, Kelompok, dan Password harus diisi!";
                             errorMsg.classList.remove('hidden');
                             return;
                         }
+                        
+                        if(groupPasswords[roomSuffix] !== passwordInput.toUpperCase()) {
+                            errorMsg.innerText = "Password salah! Dilarang menyelinap ke kelompok lain ya!";
+                            errorMsg.classList.remove('hidden');
+                            return;
+                        }
+                        
                         errorMsg.classList.add('hidden');
                         
                         // Sembunyikan login, tampilkan meet
