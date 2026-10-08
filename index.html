@@ -853,7 +853,12 @@
 
             <!-- Papan Peringkat -->
             <section id="peringkat" class="page-content">
-                 <h2 class="text-3xl font-bold mb-6 text-purple-400 text-glow">🏆 Papan Peringkat</h2>
+                 <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                     <h2 class="text-3xl font-bold text-purple-400 text-glow">🏆 Papan Peringkat</h2>
+                     <button onclick="fetchLeaderboard()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg shadow transition flex items-center gap-2">
+                         <span>🔄 Muat Ulang Realtime</span>
+                     </button>
+                 </div>
                  <div id="leaderboard-loading" class="text-center">
                     <i class="fas fa-spinner fa-spin text-4xl"></i>
                     <p class="mt-2">Memuat data peringkat...</p>
@@ -1621,9 +1626,11 @@
             const leaderboardContent = document.getElementById('leaderboard-content');
             const leaderboardTable = document.getElementById('leaderboard-table');
 
-            async function fetchLeaderboard() {
-                leaderboardLoading.style.display = 'block';
-                leaderboardContent.classList.add('hidden');
+            async function fetchLeaderboard(isSilent = false) {
+                if (!isSilent) {
+                    leaderboardLoading.style.display = 'block';
+                    leaderboardContent.classList.add('hidden');
+                }
                 try {
                     const response = await fetch(WEB_APP_URL);
                     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -1636,7 +1643,9 @@
                     displayLeaderboard(data);
                 } catch (error) {
                     console.error('Error fetching leaderboard:', error);
-                    leaderboardLoading.innerHTML = `<p class="text-red-500">Gagal memuat data peringkat. Silakan coba lagi nanti.</p>`;
+                    if (!isSilent) {
+                        leaderboardLoading.innerHTML = `<p class="text-red-500">Gagal memuat data peringkat. Silakan coba lagi nanti.</p>`;
+                    }
                 }
             }
 
@@ -2291,6 +2300,7 @@
                 }
 
                 // Hook new features into router
+                let leaderboardInterval;
                 const oldRouter = router;
                 router = () => {
                     oldRouter();
@@ -2300,6 +2310,22 @@
                     if (targetId === 'elkpd') initELKPD();
                     if (targetId === 'papantulis') initPapanTulis();
                     if (targetId === 'refleksi') initRefleksi();
+                    
+                    // Auto-refresh leaderboard polling
+                    if (targetId === 'peringkat') {
+                        if (!leaderboardInterval) {
+                            leaderboardInterval = setInterval(() => {
+                                if (window.location.hash === '#peringkat') {
+                                    fetchLeaderboard(true); // silent refresh
+                                }
+                            }, 10000); // 10 seconds
+                        }
+                    } else {
+                        if (leaderboardInterval) {
+                            clearInterval(leaderboardInterval);
+                            leaderboardInterval = null;
+                        }
+                    }
                 };
                 window.removeEventListener('hashchange', oldRouter);
                 window.removeEventListener('load', oldRouter);
