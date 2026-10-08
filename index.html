@@ -1801,8 +1801,12 @@
                 try {
                     const response = await fetch(WEB_APP_URL);
                     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                    const data = await response.json();
+                    let data = await response.json();
                     if (!Array.isArray(data)) throw new Error("Format data tidak valid");
+                    
+                    // Filter agar siswa posttest tidak muncul di papan peringkat game
+                    data = data.filter(item => item.Nama && !item.Nama.includes("(Posttest)"));
+
                     data.sort((a, b) => {
                         if (b.Skor !== a.Skor) return b.Skor - a.Skor;
                         return new Date(a.Timestamp) - new Date(b.Timestamp);
@@ -2588,6 +2592,14 @@
                     
                     if(!startBtn) return;
                     
+                    if(localStorage.getItem('posttestDone') === 'true') {
+                        loginDiv.classList.add('hidden');
+                        contentDiv.classList.add('hidden');
+                        resultDiv.classList.remove('hidden');
+                        document.getElementById('pt-score-display').innerText = localStorage.getItem('posttestScore') || '100';
+                        return;
+                    }
+                    
                     const TOKEN = "1234";
 
                     const soal = [
@@ -2663,6 +2675,8 @@
 
                         try {
                             await fetch(WEB_APP_URL, { method: 'POST', mode: 'no-cors', body: formData });
+                            localStorage.setItem('posttestDone', 'true');
+                            localStorage.setItem('posttestScore', score);
                             contentDiv.classList.add('hidden');
                             resultDiv.classList.remove('hidden');
                             document.getElementById('pt-score-display').innerText = score;
