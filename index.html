@@ -3046,7 +3046,8 @@
                         const roomName = "Kelas8SistemKomputer_" + roomSuffix + "_" + secretHash;
                         
                         // Konfigurasi agar antarmuka Jitsi "bersih" dan tombol aneh-aneh (seperti invite/breakout) hilang
-                        const jitsiConfig = "&config.toolbarButtons=%5B%22camera%22,%22chat%22,%22desktop%22,%22fullscreen%22,%22hangup%22,%22microphone%22,%22participants-pane%22,%22raisehand%22,%22tileview%22,%22toggle-camera%22%5D&config.prejoinPageEnabled=false&config.disableDeepLinking=true";
+                        // Kita hilangkan "participants-pane" agar mereka tidak bisa buka daftar orang dan ngotak-ngatik room
+                        const jitsiConfig = "&config.toolbarButtons=%5B%22camera%22,%22chat%22,%22desktop%22,%22fullscreen%22,%22hangup%22,%22microphone%22,%22raisehand%22,%22tileview%22,%22toggle-camera%22%5D&config.prejoinPageEnabled=false&config.disableDeepLinking=true&config.breakoutRooms.hideAddRoomButton=true";
                         
                         // URL langsung Jitsi
                         const jitsiURL = `https://meet.jit.si/${roomName}#userInfo.displayName="${encodeURIComponent(name)}"${jitsiConfig}`;
