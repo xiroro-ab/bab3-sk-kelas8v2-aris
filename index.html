@@ -1147,13 +1147,16 @@
                     <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
                         <h3 class="text-2xl font-bold text-sky-400 mb-4">Misi 1: Koper Misteri</h3>
                         <p class="mb-4 text-gray-300">Amati gambar-gambar komponen komputer yang ditemukan di koper misteri berikut ini:</p>
-                        <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6 text-center text-sm">
-                            <div class="bg-gray-700 p-3 rounded-lg"><strong>Monitor</strong> <img src="https://images.unsplash.com/photo-1547082299-de196ea013d6?w=200&h=200&fit=crop" class="mx-auto mt-2 rounded"></div>
-                            <div class="bg-gray-700 p-3 rounded-lg flex flex-col justify-between"><strong>Microsoft Word</strong> <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Microsoft_Office_Word_%282019%E2%80%93present%29.svg/512px-Microsoft_Office_Word_%282019%E2%80%93present%29.svg.png" class="mx-auto mt-2 h-20 object-contain rounded"></div>
-                            <div class="bg-gray-700 p-3 rounded-lg"><strong>Programmer</strong> <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=200&h=200&fit=crop" class="mx-auto mt-2 rounded"></div>
-                            <div class="bg-gray-700 p-3 rounded-lg"><strong>Keyboard</strong> <img src="https://images.unsplash.com/photo-1595225476474-87563907a212?w=200&h=200&fit=crop" class="mx-auto mt-2 rounded"></div>
-                            <div class="bg-gray-700 p-3 rounded-lg flex flex-col justify-between"><strong>Browser Chrome</strong> <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Google_Chrome_icon_%28February_2022%29.svg/512px-Google_Chrome_icon_%28February_2022%29.svg.png" class="mx-auto mt-2 h-20 object-contain rounded"></div>
-                            <div class="bg-gray-700 p-3 rounded-lg"><strong>Gamer</strong> <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?w=200&h=200&fit=crop" class="mx-auto mt-2 rounded"></div>
+                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6 text-center text-sm">
+                            <div class="bg-gray-700 p-3 rounded-lg flex flex-col items-center justify-between border border-gray-600 hover:border-sky-400 transition"><strong>Monitor</strong> <img src="https://images.unsplash.com/photo-1547082299-de196ea013d6?w=200&h=200&fit=crop" class="mt-2 rounded object-cover h-24 w-full shadow"></div>
+                            <div class="bg-gray-700 p-3 rounded-lg flex flex-col items-center justify-between border border-gray-600 hover:border-sky-400 transition"><strong>Keyboard</strong> <img src="https://images.unsplash.com/photo-1595225476474-87563907a212?w=200&h=200&fit=crop" class="mt-2 rounded object-cover h-24 w-full shadow"></div>
+                            <div class="bg-gray-700 p-3 rounded-lg flex flex-col items-center justify-between border border-gray-600 hover:border-sky-400 transition"><strong>Mouse</strong> <img src="https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=200&h=200&fit=crop" class="mt-2 rounded object-cover h-24 w-full shadow"></div>
+                            <div class="bg-gray-700 p-3 rounded-lg flex flex-col items-center justify-between border border-gray-600 hover:border-sky-400 transition"><strong>Printer</strong> <img src="https://images.unsplash.com/photo-1612815154858-60aa4c59eaa6?w=200&h=200&fit=crop" class="mt-2 rounded object-cover h-24 w-full shadow"></div>
+                            <div class="bg-gray-700 p-3 rounded-lg flex flex-col items-center justify-between border border-gray-600 hover:border-sky-400 transition"><strong>CPU (Prosesor)</strong> <img src="https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?w=200&h=200&fit=crop" class="mt-2 rounded object-cover h-24 w-full shadow"></div>
+                            <div class="bg-gray-700 p-3 rounded-lg flex flex-col items-center justify-between border border-gray-600 hover:border-sky-400 transition"><strong>Microsoft Word</strong> <img src="https://img.icons8.com/color/150/microsoft-word-2019--v2.png" class="mt-2 rounded object-contain h-24 shadow bg-white p-1"></div>
+                            <div class="bg-gray-700 p-3 rounded-lg flex flex-col items-center justify-between border border-gray-600 hover:border-sky-400 transition"><strong>Browser Chrome</strong> <img src="https://img.icons8.com/color/150/chrome--v1.png" class="mt-2 rounded object-contain h-24 shadow bg-white p-1"></div>
+                            <div class="bg-gray-700 p-3 rounded-lg flex flex-col items-center justify-between border border-gray-600 hover:border-sky-400 transition"><strong>Programmer</strong> <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=200&h=200&fit=crop" class="mt-2 rounded object-cover h-24 w-full shadow"></div>
+                            <div class="bg-gray-700 p-3 rounded-lg flex flex-col items-center justify-between border border-gray-600 hover:border-sky-400 transition"><strong>Gamer</strong> <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?w=200&h=200&fit=crop" class="mt-2 rounded object-cover h-24 w-full shadow"></div>
                         </div>
                         
                         <div class="space-y-4">
@@ -2306,6 +2309,10 @@
 
                     if (btnSubmit) {
                         btnSubmit.onclick = async () => {
+                            if (!confirm("Apakah kalian yakin semua anggota kelompok sudah setuju dengan jawaban ini? Jika sudah yakin, tekan OK untuk mengumpulkan!")) {
+                                return;
+                            }
+
                             const group = document.getElementById('lkpd-group').value;
                             const members = document.getElementById('lkpd-members').value;
                             
